@@ -1,7 +1,14 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { lessons } from "./coach-data";
 
-export type Profile = { name: string; email: string; signedIn: boolean };
+export type Profile = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  profileImage: string | null;
+  authProvider: "email" | "google" | null;
+  isAuthenticated: boolean;
+};
 
 export type CoachState = {
   completedLessons: string[];
@@ -23,7 +30,14 @@ const DEFAULT: CoachState = {
   activeTab: "home",
   quizAnswers: {},
   quizXp: 0,
-  profile: { name: "", email: "", signedIn: false },
+  profile: {
+    firstName: "",
+    lastName: "",
+    email: "",
+    profileImage: null,
+    authProvider: null,
+    isAuthenticated: false,
+  },
   streak: 1,
 };
 
