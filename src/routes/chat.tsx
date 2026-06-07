@@ -1,0 +1,131 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Compass, Send, User } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/chat")({
+  head: () => ({ meta: [{ title: "AutoCoach AI — AutoCAD Coach" }] }),
+  component: ChatPage,
+});
+
+type Msg = { role: "user" | "assistant"; content: string };
+
+const SUGGESTIONS = [
+  "Why is TRIM not working?",
+  "How do I use JOIN?",
+  "Why won't EXTRUDE work?",
+  "What are layers for?",
+];
+
+function ChatPage() {
+  const [messages, setMessages] = useState<Msg[]>([
+    { role: "assistant", content: "Hi! I'm **AutoCoach**, your AutoCAD tutor. Ask me anything — TRIM, JOIN, EXTRUDE, LAYERS, you name it." },
+  ]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, loading]);
+
+  const send = async (text: string) => {
+    if (!text.trim() || loading) return;
+    const newMsgs: Msg[] = [...messages, { role: "user", content: text }];
+    setMessages(newMsgs);
+    setInput("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: newMsgs }),
+      });
+      if (!res.ok) {
+        const errText = await res.text();
+        toast.error(errText || "AutoCoach is unavailable.");
+        setMessages((m) => [...m, { role: "assistant", content: "Sorry, I couldn't reach AutoCoach right now. Try again in a moment." }]);
+      } else {
+        const data = await res.json();
+        setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
+      }
+    } catch {
+      toast.error("Network error.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto p-6 md:p-10 flex flex-col h-[calc(100vh-3.5rem)] md:h-screen">
+      <header className="mb-4">
+        <div className="flex items-center gap-3">
+          <div className="size-10 rounded-xl bg-primary/15 text-primary grid place-items-center ring-1 ring-primary/30">
+            <Compass className="size-5" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">AutoCoach</h1>
+            <p className="text-sm text-muted-foreground">Your friendly AutoCAD tutor.</p>
+          </div>
+        </div>
+      </header>
+
+      <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-2xl bg-card border border-border p-4 space-y-4">
+        {messages.map((m, i) => (
+          <div key={i} className={cn("flex gap-3", m.role === "user" && "flex-row-reverse")}>
+            <div className={cn(
+              "size-8 rounded-full grid place-items-center shrink-0",
+              m.role === "assistant" ? "bg-primary/15 text-primary" : "bg-secondary text-foreground"
+            )}>
+              {m.role === "assistant" ? <Compass className="size-4" /> : <User className="size-4" />}
+            </div>
+            <div className={cn(
+              "rounded-2xl px-4 py-2.5 text-sm max-w-[80%] whitespace-pre-wrap",
+              m.role === "assistant" ? "bg-secondary text-foreground" : "bg-primary text-primary-foreground"
+            )}>
+              {m.content}
+            </div>
+          </div>
+        ))}
+        {loading && (
+          <div className="flex gap-3">
+            <div className="size-8 rounded-full bg-primary/15 text-primary grid place-items-center"><Compass className="size-4" /></div>
+            <div className="rounded-2xl px-4 py-2.5 text-sm bg-secondary text-muted-foreground">AutoCoach is thinking…</div>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        {SUGGESTIONS.map((s) => (
+          <button
+            key={s}
+            onClick={() => send(s)}
+            disabled={loading}
+            className="text-xs rounded-full border border-border bg-card hover:border-primary/40 px-3 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+
+      <form
+        className="mt-3 flex gap-2"
+        onSubmit={(e) => { e.preventDefault(); send(input); }}
+      >
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask AutoCoach…"
+          className="bg-card border-border"
+          disabled={loading}
+        />
+        <Button type="submit" disabled={loading || !input.trim()} className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Send className="size-4" />
+        </Button>
+      </form>
+    </div>
+  );
+}
