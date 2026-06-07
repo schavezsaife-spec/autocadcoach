@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -13,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CoachProvider } from "../lib/coach-store";
 import { AppShell } from "../components/coach/AppShell";
+import { PublicNav } from "../components/coach/PublicNav";
 import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
@@ -126,11 +128,30 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <CoachProvider>
-        <AppShell>
-          <Outlet />
-        </AppShell>
+        <AppRouter />
         <Toaster />
       </CoachProvider>
     </QueryClientProvider>
+  );
+}
+
+function AppRouter() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isPublic = pathname === "/" || pathname === "" || pathname.startsWith("/auth");
+
+  if (isPublic) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background text-foreground">
+        <PublicNav />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
+  return (
+    <AppShell>
+      <Outlet />
+    </AppShell>
   );
 }

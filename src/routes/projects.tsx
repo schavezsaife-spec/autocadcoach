@@ -3,6 +3,7 @@ import { projects } from "@/lib/coach-data";
 import { useCoach } from "@/lib/coach-store";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock } from "lucide-react";
+import { useAuthGuard } from "@/lib/use-auth-guard";
 
 export const Route = createFileRoute("/projects")({
   head: () => ({ meta: [{ title: "Projects — AutoCAD Coach" }] }),
@@ -10,7 +11,9 @@ export const Route = createFileRoute("/projects")({
 });
 
 function ProjectsLayout() {
+  const authed = useAuthGuard();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  if (!authed) return null;
   const isList = pathname === "/projects" || pathname === "/projects/";
   if (!isList) return <Outlet />;
   return <ProjectList />;
