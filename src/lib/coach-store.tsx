@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { lessons } from "./coach-data";
+import { supabase } from "./supabase";
+import type { User } from "@supabase/supabase-js";
 
 export type Profile = {
   firstName: string;
@@ -73,6 +75,64 @@ export function CoachProvider({ children }: { children: ReactNode }) {
       try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {}
     }
   }, [state, hydrated]);
+
+  // Sync auth state from Supabase as the source of truth for
+  // isAuthenticated / email / firstName / lastName / authProvider.
+  // XP, completed lessons, and the profile image stay in localStorage.
+  useEffect(() => {
+    function applyUser(user: User | null) {
+      setState((s) => {
+        if (!user) {
+          if (!s.profile.isAuthenticated) return s;
+          return {
+            ...s,
+            profile: {
+              ...s.profile,
+              firstName: "",
+              lastName: "",
+              email: "",
+              authProvider: null,
+              isAuthenticated: false,
+            },
+          };
+        }
+        const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+        const firstName =
+          (meta.first_name as string) ||
+          (meta.given_name as string) ||
+          ((meta.full_name as string)?.split(" ")[0] ?? "") ||
+          ((meta.name as string)?.split(" ")[0] ?? "") ||
+          s.profile.firstName ||
+          (user.email?.split("@")[0] ?? "");
+        const lastName =
+          (meta.last_name as string) ||
+          (meta.family_name as string) ||
+          ((meta.full_name as string)?.split(" ").slice(1).join(" ") ?? "") ||
+          ((meta.name as string)?.split(" ").slice(1).join(" ") ?? "") ||
+          s.profile.lastName ||
+          "";
+        const provider =
+          (user.app_metadata?.provider as Profile["authProvider"]) ?? "email";
+        return {
+          ...s,
+          profile: {
+            ...s.profile,
+            firstName,
+            lastName,
+            email: user.email ?? "",
+            authProvider: provider === "google" ? "google" : "email",
+            isAuthenticated: true,
+          },
+        };
+      });
+    }
+
+    supabase.auth.getSession().then(({ data }) => applyUser(data.session?.user ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      applyUser(session?.user ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   const set: Ctx["set"] = (u) =>
     setState((s) => ({ ...s, ...(typeof u === "function" ? u(s) : u) }));
