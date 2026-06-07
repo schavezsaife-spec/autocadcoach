@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TroubleshootRouteImport } from './routes/troubleshoot'
 import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -22,11 +21,6 @@ import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as LessonsIdRouteImport } from './routes/lessons.$id'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
 
-const TroubleshootRoute = TroubleshootRouteImport.update({
-  id: '/troubleshoot',
-  path: '/troubleshoot',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const QuizRoute = QuizRouteImport.update({
   id: '/quiz',
   path: '/quiz',
@@ -92,7 +86,6 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/quiz': typeof QuizRoute
-  '/troubleshoot': typeof TroubleshootRoute
   '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -106,7 +99,6 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/quiz': typeof QuizRoute
-  '/troubleshoot': typeof TroubleshootRoute
   '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -121,7 +113,6 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/quiz': typeof QuizRoute
-  '/troubleshoot': typeof TroubleshootRoute
   '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -137,7 +128,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/projects'
     | '/quiz'
-    | '/troubleshoot'
     | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
@@ -151,7 +141,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/projects'
     | '/quiz'
-    | '/troubleshoot'
     | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
@@ -165,7 +154,6 @@ export interface FileRouteTypes {
     | '/profile'
     | '/projects'
     | '/quiz'
-    | '/troubleshoot'
     | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
@@ -180,19 +168,11 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   QuizRoute: typeof QuizRoute
-  TroubleshootRoute: typeof TroubleshootRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/troubleshoot': {
-      id: '/troubleshoot'
-      path: '/troubleshoot'
-      fullPath: '/troubleshoot'
-      preLoaderRoute: typeof TroubleshootRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/quiz': {
       id: '/quiz'
       path: '/quiz'
@@ -305,7 +285,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   QuizRoute: QuizRoute,
-  TroubleshootRoute: TroubleshootRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
