@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TroubleshootRouteImport } from './routes/troubleshoot'
 import { Route as QuizRouteImport } from './routes/quiz'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as LessonsRouteImport } from './routes/lessons'
@@ -17,6 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as LessonsIdRouteImport } from './routes/lessons.$id'
 
+const TroubleshootRoute = TroubleshootRouteImport.update({
+  id: '/troubleshoot',
+  path: '/troubleshoot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuizRoute = QuizRouteImport.update({
   id: '/quiz',
   path: '/quiz',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/lessons': typeof LessonsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
   '/quiz': typeof QuizRoute
+  '/troubleshoot': typeof TroubleshootRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/lessons': typeof LessonsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
   '/quiz': typeof QuizRoute
+  '/troubleshoot': typeof TroubleshootRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/lessons': typeof LessonsRouteWithChildren
   '/projects': typeof ProjectsRouteWithChildren
   '/quiz': typeof QuizRoute
+  '/troubleshoot': typeof TroubleshootRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/lessons'
     | '/projects'
     | '/quiz'
+    | '/troubleshoot'
     | '/lessons/$id'
     | '/projects/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/lessons'
     | '/projects'
     | '/quiz'
+    | '/troubleshoot'
     | '/lessons/$id'
     | '/projects/$id'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/lessons'
     | '/projects'
     | '/quiz'
+    | '/troubleshoot'
     | '/lessons/$id'
     | '/projects/$id'
   fileRoutesById: FileRoutesById
@@ -117,10 +129,18 @@ export interface RootRouteChildren {
   LessonsRoute: typeof LessonsRouteWithChildren
   ProjectsRoute: typeof ProjectsRouteWithChildren
   QuizRoute: typeof QuizRoute
+  TroubleshootRoute: typeof TroubleshootRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/troubleshoot': {
+      id: '/troubleshoot'
+      path: '/troubleshoot'
+      fullPath: '/troubleshoot'
+      preLoaderRoute: typeof TroubleshootRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quiz': {
       id: '/quiz'
       path: '/quiz'
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   LessonsRoute: LessonsRouteWithChildren,
   ProjectsRoute: ProjectsRouteWithChildren,
   QuizRoute: QuizRoute,
+  TroubleshootRoute: TroubleshootRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
