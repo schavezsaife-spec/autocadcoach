@@ -83,11 +83,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "AutoCAD Coach — Learn AutoCAD by doing" },
       { name: "description", content: "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor." },
       { name: "author", content: "Sofia Chavez Saife" },
-      { property: "og:title", content: "AutoCAD Coach" },
-      { property: "og:description", content: "Learn AutoCAD step by step with lessons, projects, and an AI tutor." },
+      { property: "og:title", content: "AutoCAD Coach — Learn AutoCAD by doing" },
+      { property: "og:description", content: "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "AutoCAD Coach — Learn AutoCAD by doing" },
+      { name: "twitter:description", content: "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c34db357-66a1-4d0b-9678-b9c5ec020b31/id-preview-5fb7824d--8632cfb9-7250-4303-8743-52e798c5ee97.lovable.app-1780874944187.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c34db357-66a1-4d0b-9678-b9c5ec020b31/id-preview-5fb7824d--8632cfb9-7250-4303-8743-52e798c5ee97.lovable.app-1780874944187.png" },
     ],
     links: [
       {
