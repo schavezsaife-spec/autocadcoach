@@ -61,16 +61,12 @@ function DashboardPage() {
           {filtered.map((l) => {
             const done = state.completedLessons.includes(l.id);
             const unlocked = isUnlocked(l.id);
-            return (
-              <Link
-                key={l.id}
-                to={unlocked ? "/lessons/$id" : "/lessons"}
-                params={unlocked ? { id: l.id } : undefined as never}
-                className={cn(
-                  "rounded-2xl bg-card border border-border p-5 transition-all",
-                  unlocked ? "hover:border-primary/40 hover:-translate-y-0.5" : "opacity-60 cursor-not-allowed"
-                )}
-              >
+            const cardCls = cn(
+              "rounded-2xl bg-card border border-border p-5 transition-all block",
+              unlocked ? "hover:border-primary/40 hover:-translate-y-0.5" : "opacity-60 cursor-not-allowed"
+            );
+            const inner = (
+              <>
                 <div className="flex items-center justify-between">
                   <Badge variant="outline" className="border-primary/30 text-primary">Day {l.day}</Badge>
                   {done ? (
@@ -83,7 +79,12 @@ function DashboardPage() {
                 </div>
                 <div className="mt-3 font-semibold">{l.title}</div>
                 <div className="text-sm text-muted-foreground mt-1">{l.description}</div>
-              </Link>
+              </>
+            );
+            return unlocked ? (
+              <Link key={l.id} to="/lessons/$id" params={{ id: l.id }} className={cardCls}>{inner}</Link>
+            ) : (
+              <div key={l.id} className={cardCls} aria-disabled>{inner}</div>
             );
           })}
         </div>
