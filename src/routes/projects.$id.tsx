@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Lightbox } from "@/components/coach/Lightbox";
 import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { useAuthGuard } from "@/lib/use-auth-guard";
 
 export const Route = createFileRoute("/projects/$id")({
   head: ({ params }) => ({
@@ -16,9 +17,11 @@ export const Route = createFileRoute("/projects/$id")({
 });
 
 function ProjectViewer() {
+  const authed = useAuthGuard();
   const { id } = Route.useParams();
   const { state, completeProject, resetProject } = useCoach();
   const [lightbox, setLightbox] = useState(false);
+  if (!authed) return null;
   const project = projects.find((p) => p.id === id);
 
   if (!project) {

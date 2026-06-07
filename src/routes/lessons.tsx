@@ -4,6 +4,7 @@ import { useCoach } from "@/lib/coach-store";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Lock, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuthGuard } from "@/lib/use-auth-guard";
 
 export const Route = createFileRoute("/lessons")({
   head: () => ({ meta: [{ title: "Lessons — AutoCAD Coach" }] }),
@@ -11,7 +12,9 @@ export const Route = createFileRoute("/lessons")({
 });
 
 function LessonsLayout() {
+  const authed = useAuthGuard();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  if (!authed) return null;
   const isList = pathname === "/lessons" || pathname === "/lessons/";
   if (!isList) return <Outlet />;
   return <LessonList />;

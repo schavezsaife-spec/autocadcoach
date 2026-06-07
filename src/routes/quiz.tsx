@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, RotateCcw, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useAuthGuard } from "@/lib/use-auth-guard";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({ meta: [{ title: "Quiz — AutoCAD Coach" }] }),
@@ -13,7 +14,9 @@ export const Route = createFileRoute("/quiz")({
 });
 
 function QuizPage() {
+  const authed = useAuthGuard();
   const { state, set } = useCoach();
+  if (!authed) return null;
   const answers = state.quizAnswers;
 
   const correctCount = quiz.reduce(

@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Lightbox } from "@/components/coach/Lightbox";
 import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target } from "lucide-react";
 import { toast } from "sonner";
+import { useAuthGuard } from "@/lib/use-auth-guard";
 
 export const Route = createFileRoute("/lessons/$id")({
   head: ({ params }) => ({
@@ -17,10 +18,12 @@ export const Route = createFileRoute("/lessons/$id")({
 });
 
 function LessonViewer() {
+  const authed = useAuthGuard();
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const { state, set, completeLesson, isUnlocked } = useCoach();
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  if (!authed) return null;
 
   const lesson = lessons.find((l) => l.id === id);
   if (!lesson) {

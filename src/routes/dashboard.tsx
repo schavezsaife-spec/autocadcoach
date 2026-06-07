@@ -7,6 +7,7 @@ import { useCoach } from "@/lib/coach-store";
 import { lessons } from "@/lib/coach-data";
 import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuthGuard } from "@/lib/use-auth-guard";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — AutoCAD Coach" }] }),
@@ -14,8 +15,10 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
+  const authed = useAuthGuard();
   const { state, totalXp, progressPct, isUnlocked } = useCoach();
   const [q, setQ] = useState("");
+  if (!authed) return null;
 
   const filtered = lessons.filter((l) =>
     l.title.toLowerCase().includes(q.toLowerCase()) || l.tag.toLowerCase().includes(q.toLowerCase())
