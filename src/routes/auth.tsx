@@ -122,7 +122,7 @@ function AuthPage() {
       // It calls supabase.auth.signInWithOAuth({ provider: "google" })
       // under the hood and then sets the Supabase session for us.
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: `${window.location.origin}/dashboard`,
+        redirect_uri: window.location.origin,
       });
       if (result.error) throw result.error;
       if (result.redirected) return; // browser is navigating to Google

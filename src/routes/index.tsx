@@ -42,15 +42,24 @@ function Index() {
           AutoCAD Coach turns engineering software into a step-by-step game. Master LINE, TRIM, LAYERS, EXTRUDE and more — with built-in projects and an AI tutor when you get stuck.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-glow)]">
-            <Link to="/lessons/$id" params={{ id: nextId }}>
-              {continueLabel} <ArrowRight className="ml-1 size-4" />
-            </Link>
-          </Button>
-          <Button asChild size="lg" variant="outline" className="border-border bg-card/40 hover:bg-card">
-            <Link to="/dashboard">View Dashboard</Link>
-          </Button>
-          {!isAuthed && (
+          {isAuthed ? (
+            <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-glow)]">
+              <Link to="/lessons/$id" params={{ id: nextId }}>
+                {continueLabel} <ArrowRight className="ml-1 size-4" />
+              </Link>
+            </Button>
+          ) : (
+            <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-glow)]">
+              <Link to="/auth">
+                Start Learning <ArrowRight className="ml-1 size-4" />
+              </Link>
+            </Button>
+          )}
+          {isAuthed ? (
+            <Button asChild size="lg" variant="outline" className="border-border bg-card/40 hover:bg-card">
+              <Link to="/dashboard">View Dashboard</Link>
+            </Button>
+          ) : (
             <Button asChild size="lg" variant="outline" className="border-primary/40 bg-primary/10 text-primary hover:bg-primary/15">
               <Link to="/auth">
                 <LogIn className="mr-1.5 size-4" /> Sign in
