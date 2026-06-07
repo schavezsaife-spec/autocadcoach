@@ -11,6 +11,9 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { CoachProvider } from "../lib/coach-store";
+import { AppShell } from "../components/coach/AppShell";
+import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -77,11 +80,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "AutoCAD Coach — Learn AutoCAD by doing" },
+      { name: "description", content: "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor." },
+      { name: "author", content: "Sofia Chavez Saife" },
+      { property: "og:title", content: "AutoCAD Coach" },
+      { property: "og:description", content: "Learn AutoCAD step by step with lessons, projects, and an AI tutor." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
@@ -101,7 +104,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
       </head>
@@ -118,8 +121,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <CoachProvider>
+        <AppShell>
+          <Outlet />
+        </AppShell>
+        <Toaster />
+      </CoachProvider>
     </QueryClientProvider>
   );
 }
