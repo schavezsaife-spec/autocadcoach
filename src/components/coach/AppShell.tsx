@@ -1,10 +1,12 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Home, LayoutDashboard, BookOpen, Wrench, ClipboardCheck,
-  User, AlertTriangle, MessageCircle, Menu, X, Compass,
+  User, AlertTriangle, MessageCircle, Menu, X, Compass, LogIn,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { useCoach } from "@/lib/coach-store";
+import { ProfileAvatar } from "./ProfileAvatar";
 
 const nav = [
   { to: "/", label: "Home", icon: Home },
@@ -21,12 +23,18 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
+  // Auth page renders standalone (no sidebar/header).
+  if (pathname.startsWith("/auth")) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen flex w-full bg-background text-foreground">
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-64 flex-col bg-sidebar border-r border-sidebar-border">
         <BrandHeader />
         <NavList pathname={pathname} onClick={() => {}} />
+        <UserFooter />
         <FooterCredit />
       </aside>
 
@@ -39,13 +47,16 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
             <span className="font-semibold tracking-tight">AutoCAD Coach</span>
           </div>
-          <button
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-            className="rounded-md p-2 hover:bg-sidebar-accent"
-          >
-            <Menu className="size-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <MobileAuthBadge />
+            <button
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+              className="rounded-md p-2 hover:bg-sidebar-accent"
+            >
+              <Menu className="size-5" />
+            </button>
+          </div>
         </header>
 
         {open && (
@@ -59,6 +70,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </button>
               </div>
               <NavList pathname={pathname} onClick={() => setOpen(false)} />
+              <UserFooter onNavigate={() => setOpen(false)} />
               <FooterCredit />
             </aside>
           </div>
@@ -115,5 +127,70 @@ function FooterCredit() {
     <div className="p-4 border-t border-sidebar-border text-[11px] text-muted-foreground">
       Created by <span className="text-primary font-medium">Sofia Chavez Saife</span>
     </div>
+  );
+}
+
+function UserFooter({ onNavigate }: { onNavigate?: () => void }) {
+  const { state } = useCoach();
+  const p = state.profile;
+
+  if (!p.isAuthenticated) {
+    return (
+      <div className="p-3 border-t border-sidebar-border">
+        <Link
+          to="/auth"
+          onClick={onNavigate}
+          className="flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-3 py-2.5 text-sm font-medium hover:bg-primary/90"
+        >
+          <LogIn className="size-4" /> Sign in
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      to="/profile"
+      onClick={onNavigate}
+      className="flex items-center gap-3 p-3 border-t border-sidebar-border hover:bg-sidebar-accent transition-colors"
+    >
+      <ProfileAvatar
+        image={p.profileImage}
+        firstName={p.firstName}
+        lastName={p.lastName}
+        size="md"
+      />
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-medium text-sidebar-foreground truncate">
+          {`${p.firstName} ${p.lastName}`.trim() || "AutoCAD Learner"}
+        </div>
+        <div className="text-[11px] text-muted-foreground truncate">{p.email}</div>
+      </div>
+    </Link>
+  );
+}
+
+function MobileAuthBadge() {
+  const { state } = useCoach();
+  const p = state.profile;
+  if (!p.isAuthenticated) {
+    return (
+      <Link
+        to="/auth"
+        className="inline-flex items-center gap-1 rounded-md bg-primary text-primary-foreground px-2.5 py-1.5 text-xs font-medium hover:bg-primary/90"
+      >
+        <LogIn className="size-3.5" /> Sign in
+      </Link>
+    );
+  }
+  return (
+    <Link to="/profile" aria-label="View profile">
+      <ProfileAvatar
+        image={p.profileImage}
+        firstName={p.firstName}
+        lastName={p.lastName}
+        size="sm"
+      />
+    </Link>
   );
 }
