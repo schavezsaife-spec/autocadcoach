@@ -1,0 +1,106 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { useCoach } from "@/lib/coach-store";
+import { lessons } from "@/lib/coach-data";
+import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export const Route = createFileRoute("/dashboard")({
+  head: () => ({ meta: [{ title: "Dashboard — AutoCAD Coach" }] }),
+  component: DashboardPage,
+});
+
+function DashboardPage() {
+  const { state, totalXp, progressPct, isUnlocked } = useCoach();
+  const [q, setQ] = useState("");
+
+  const filtered = lessons.filter((l) =>
+    l.title.toLowerCase().includes(q.toLowerCase()) || l.tag.toLowerCase().includes(q.toLowerCase())
+  );
+
+  return (
+    <div className="max-w-6xl mx-auto p-6 md:p-10 space-y-8">
+      <header>
+        <h1 className="text-3xl font-bold tracking-tight">Your Workspace</h1>
+        <p className="text-muted-foreground mt-1">Track progress and pick your next lesson.</p>
+      </header>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Stat icon={BookOpen} label="Lessons" value={`${state.completedLessons.length}/${lessons.length}`} />
+        <Stat icon={Trophy} label="Total XP" value={`${totalXp}`} accent />
+        <Stat icon={Wrench} label="Projects" value={`${state.completedProjects.length}`} />
+        <Stat icon={Flame} label="Streak" value={`${state.streak} day${state.streak === 1 ? "" : "s"}`} />
+      </div>
+
+      <div className="rounded-2xl bg-card border border-border p-5">
+        <div className="flex items-center justify-between mb-3">
+          <div className="font-semibold">Overall progress</div>
+          <div className="text-sm text-muted-foreground">{progressPct}%</div>
+        </div>
+        <Progress value={progressPct} className="h-2" />
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-4 gap-3">
+          <h2 className="text-xl font-semibold">Lessons</h2>
+          <div className="relative w-full max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search lessons…"
+              className="pl-9 bg-card border-border"
+            />
+          </div>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((l) => {
+            const done = state.completedLessons.includes(l.id);
+            const unlocked = isUnlocked(l.id);
+            const cardCls = cn(
+              "rounded-2xl bg-card border border-border p-5 transition-all block",
+              unlocked ? "hover:border-primary/40 hover:-translate-y-0.5" : "opacity-60 cursor-not-allowed"
+            );
+            const inner = (
+              <>
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline" className="border-primary/30 text-primary">Day {l.day}</Badge>
+                  {done ? (
+                    <Badge className="bg-primary/20 text-primary border-primary/30"><CheckCircle2 className="size-3 mr-1" /> Done</Badge>
+                  ) : !unlocked ? (
+                    <Badge variant="outline" className="text-muted-foreground"><Lock className="size-3 mr-1" /> Locked</Badge>
+                  ) : (
+                    <Badge variant="outline" className="border-border">{l.xp} XP</Badge>
+                  )}
+                </div>
+                <div className="mt-3 font-semibold">{l.title}</div>
+                <div className="text-sm text-muted-foreground mt-1">{l.description}</div>
+              </>
+            );
+            return unlocked ? (
+              <Link key={l.id} to="/lessons/$id" params={{ id: l.id }} className={cardCls}>{inner}</Link>
+            ) : (
+              <div key={l.id} className={cardCls} aria-disabled>{inner}</div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Stat({ icon: Icon, label, value, accent }: { icon: typeof BookOpen; label: string; value: string; accent?: boolean }) {
+  return (
+    <div className={cn("rounded-2xl bg-card border border-border p-5", accent && "ring-1 ring-primary/30")}>
+      <div className={cn("size-9 rounded-lg grid place-items-center", accent ? "bg-primary/20 text-primary" : "bg-secondary text-foreground")}>
+        <Icon className="size-4" />
+      </div>
+      <div className="mt-3 text-sm text-muted-foreground">{label}</div>
+      <div className="text-2xl font-bold">{value}</div>
+    </div>
+  );
+}
