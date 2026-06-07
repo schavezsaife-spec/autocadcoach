@@ -18,6 +18,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as LessonsIdRouteImport } from './routes/lessons.$id'
+import { Route as ApiChatRouteImport } from './routes/api.chat'
 
 const TroubleshootRoute = TroubleshootRouteImport.update({
   id: '/troubleshoot',
@@ -64,6 +65,11 @@ const LessonsIdRoute = LessonsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => LessonsRoute,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRouteWithChildren
   '/quiz': typeof QuizRoute
   '/troubleshoot': typeof TroubleshootRoute
+  '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRouteWithChildren
   '/quiz': typeof QuizRoute
   '/troubleshoot': typeof TroubleshootRoute
+  '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRouteWithChildren
   '/quiz': typeof QuizRoute
   '/troubleshoot': typeof TroubleshootRoute
+  '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/quiz'
     | '/troubleshoot'
+    | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/quiz'
     | '/troubleshoot'
+    | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/quiz'
     | '/troubleshoot'
+    | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   ProjectsRoute: typeof ProjectsRouteWithChildren
   QuizRoute: typeof QuizRoute
   TroubleshootRoute: typeof TroubleshootRoute
+  ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -210,6 +223,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonsIdRouteImport
       parentRoute: typeof LessonsRoute
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -244,6 +264,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsRoute: ProjectsRouteWithChildren,
   QuizRoute: QuizRoute,
   TroubleshootRoute: TroubleshootRoute,
+  ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
