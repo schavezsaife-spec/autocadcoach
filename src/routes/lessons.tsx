@@ -29,6 +29,20 @@ function LessonList() {
         {lessons.map((l) => {
           const done = state.completedLessons.includes(l.id);
           const unlocked = isUnlocked(l.id);
+          const cardCls = cn(
+            "block rounded-2xl bg-card border border-border p-5 transition-all",
+            unlocked ? "hover:border-primary/40" : "opacity-60 cursor-not-allowed"
+          );
+          const inner = (
+            <>
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className="border-primary/30 text-primary">Day {l.day}</Badge>
+                <Badge variant="outline" className="border-border">{l.xp} XP</Badge>
+              </div>
+              <div className="mt-2 font-semibold text-lg">{l.title}</div>
+              <div className="text-sm text-muted-foreground mt-1">{l.description}</div>
+            </>
+          );
           return (
             <li key={l.id} className="relative pl-16">
               <div className={cn(
@@ -37,21 +51,11 @@ function LessonList() {
               )}>
                 {done ? <CheckCircle2 className="size-4" /> : unlocked ? <Sparkles className="size-4" /> : <Lock className="size-4" />}
               </div>
-              <Link
-                to={unlocked ? "/lessons/$id" : "/lessons"}
-                params={unlocked ? { id: l.id } : undefined as never}
-                className={cn(
-                  "block rounded-2xl bg-card border border-border p-5 transition-all",
-                  unlocked ? "hover:border-primary/40" : "opacity-60 cursor-not-allowed"
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="border-primary/30 text-primary">Day {l.day}</Badge>
-                  <Badge variant="outline" className="border-border">{l.xp} XP</Badge>
-                </div>
-                <div className="mt-2 font-semibold text-lg">{l.title}</div>
-                <div className="text-sm text-muted-foreground mt-1">{l.description}</div>
-              </Link>
+              {unlocked ? (
+                <Link to="/lessons/$id" params={{ id: l.id }} className={cardCls}>{inner}</Link>
+              ) : (
+                <div className={cardCls} aria-disabled>{inner}</div>
+              )}
             </li>
           );
         })}
