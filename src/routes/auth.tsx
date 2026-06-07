@@ -1,11 +1,27 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCoach } from "@/lib/coach-store";
+import { supabase } from "@/lib/supabase";
+import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { Compass, Eye, EyeOff, Loader2 } from "lucide-react";
+import { AlertCircle, Compass, Eye, EyeOff, Loader2 } from "lucide-react";
+
+/**
+ * Setup checklist for the developer:
+ *
+ * 1. Configure Supabase env vars in `.env` (auto-filled by Lovable Cloud):
+ *      VITE_SUPABASE_URL=
+ *      VITE_SUPABASE_ANON_KEY=        (a.k.a. VITE_SUPABASE_PUBLISHABLE_KEY)
+ *
+ * 2. Enable Google in the Backend dashboard:
+ *      Authentication → Providers → Google → enabled
+ *    Lovable Cloud ships managed Google OAuth credentials out of the box,
+ *    so no client ID / secret is required for development. To use your own
+ *    Google credentials, override them under Auth Settings → Sign In Methods.
+ */
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -20,7 +36,7 @@ export const Route = createFileRoute("/auth")({
 type Mode = "signup" | "signin";
 
 function AuthPage() {
-  const { set } = useCoach();
+  const { state } = useCoach();
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("signup");
   const [firstName, setFirstName] = useState("");
@@ -30,69 +46,95 @@ function AuthPage() {
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // If the user is already signed in (e.g. after a Google redirect), send them on.
+  useEffect(() => {
+    if (state.profile.isAuthenticated) {
+      navigate({ to: "/dashboard" });
+    }
+  }, [state.profile.isAuthenticated, navigate]);
 
   function emailValid(v: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   }
 
-  function handleEmailSubmit(e: React.FormEvent) {
+  async function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setErrorMsg(null);
     if (mode === "signup" && !firstName.trim()) {
-      toast.error("Please enter your first name");
+      setErrorMsg("Please enter your first name");
       return;
     }
     if (!emailValid(email)) {
-      toast.error("Please enter a valid email");
+      setErrorMsg("Please enter a valid email");
       return;
     }
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      setErrorMsg("Password must be at least 6 characters");
       return;
     }
     setLoading(true);
-    // TODO: Replace with real Supabase auth.
-    // signup: await supabase.auth.signUp({ email, password, options: { data: { first_name, last_name }, emailRedirectTo: window.location.origin } })
-    // signin: await supabase.auth.signInWithPassword({ email, password })
-    setTimeout(() => {
-      set({
-        profile: {
-          firstName: firstName.trim() || email.split("@")[0],
-          lastName: lastName.trim(),
+    try {
+      if (mode === "signup") {
+        const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
-          profileImage: null,
-          authProvider: "email",
-          isAuthenticated: true,
-        },
-      });
-      toast.success(mode === "signup" ? "Account created!" : "Welcome back!");
-      setLoading(false);
+          password,
+          options: {
+            data: {
+              first_name: firstName.trim(),
+              last_name: lastName.trim(),
+            },
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+          },
+        });
+        if (error) throw error;
+        if (!data.session) {
+          toast.success("Account created — check your email to confirm.");
+          setMode("signin");
+          setPassword("");
+          return;
+        }
+        toast.success("Account created!");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+        if (error) throw error;
+        toast.success("Welcome back!");
+      }
       navigate({ to: "/dashboard" });
-    }, 400);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Authentication failed";
+      setErrorMsg(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function handleGoogle() {
+  async function handleGoogle() {
+    setErrorMsg(null);
     setGoogleLoading(true);
-    // TODO: Replace with real Google OAuth.
-    // Lovable Cloud:
-    //   import { lovable } from "@/integrations/lovable/index";
-    //   await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    // Firebase:
-    //   await signInWithPopup(auth, new GoogleAuthProvider());
-    setTimeout(() => {
-      set({
-        profile: {
-          firstName: "Google",
-          lastName: "User",
-          email: "google.user@example.com",
-          profileImage: null,
-          authProvider: "google",
-          isAuthenticated: true,
-        },
+    try {
+      // Lovable Cloud's managed Google OAuth broker.
+      // It calls supabase.auth.signInWithOAuth({ provider: "google" })
+      // under the hood and then sets the Supabase session for us.
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}/dashboard`,
       });
+      if (result.error) throw result.error;
+      if (result.redirected) return; // browser is navigating to Google
       toast.success("Signed in with Google");
-      setGoogleLoading(false);
       navigate({ to: "/dashboard" });
-    }, 400);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Google sign-in failed";
+      setErrorMsg(message);
+      toast.error(message);
+    } finally {
+      setGoogleLoading(false);
+    }
   }
 
   return (
@@ -149,6 +191,15 @@ function AuthPage() {
           </div>
 
           <form onSubmit={handleEmailSubmit} className="space-y-4">
+            {errorMsg && (
+              <div
+                role="alert"
+                className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              >
+                <AlertCircle className="size-4 mt-0.5 shrink-0" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
             {mode === "signup" && (
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
