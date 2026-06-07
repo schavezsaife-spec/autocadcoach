@@ -1,13 +1,15 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCoach } from "@/lib/coach-store";
 import { lessons, projects } from "@/lib/coach-data";
 import { toast } from "sonner";
-import { LogOut, LogIn, Trophy } from "lucide-react";
+import { LogOut, Trophy } from "lucide-react";
 import { ProfileAvatar } from "@/components/coach/ProfileAvatar";
 import { ProfileImageUploader } from "@/components/coach/ProfileImageUploader";
 import { EditProfileForm } from "@/components/coach/EditProfileForm";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [{ title: "Profile — AutoCAD Coach" }] }),
@@ -19,43 +21,33 @@ function ProfilePage() {
   const navigate = useNavigate();
   const p = state.profile;
 
+  // Require a real Supabase session — redirect to /auth if missing.
+  useEffect(() => {
+    if (!p.isAuthenticated) {
+      navigate({ to: "/auth" });
+    }
+  }, [p.isAuthenticated, navigate]);
+
   if (!p.isAuthenticated) {
     return (
-      <div className="max-w-md mx-auto p-6 md:p-10 text-center">
-        <ProfileAvatar image={null} size="xl" className="mx-auto" />
-        <h1 className="text-3xl font-bold tracking-tight mt-6">Sign in to view your profile</h1>
-        <p className="text-muted-foreground mt-2">
-          Create an account to track XP, completed lessons, and unlock projects.
-        </p>
-        <Button
-          asChild
-          size="lg"
-          className="mt-6 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-glow)]"
-        >
-          <Link to="/auth">
-            <LogIn className="size-4 mr-2" /> Sign in or Create account
-          </Link>
-        </Button>
+      <div className="max-w-md mx-auto p-6 md:p-10 text-center text-muted-foreground">
+        Redirecting to sign in…
       </div>
     );
   }
 
   const completedProjectsCount = state.completedProjects.length;
 
-  function signOut() {
-    // TODO: call supabase.auth.signOut() here when the backend is connected.
-    set({
-      profile: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        profileImage: null,
-        authProvider: null,
-        isAuthenticated: false,
-      },
-    });
+  async function signOut() {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    // Clear the locally-cached profile image too so a new user starts clean.
+    set({ profile: { ...p, profileImage: null } });
     toast("Signed out");
-    navigate({ to: "/" });
+    navigate({ to: "/auth" });
   }
 
   return (
