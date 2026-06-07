@@ -2,13 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Compass, Send, User } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertTriangle, Compass, Send, User, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { troubleshooting } from "@/lib/coach-data";
+import { useAuthGuard } from "@/lib/use-auth-guard";
 
 export const Route = createFileRoute("/chat")({
-  head: () => ({ meta: [{ title: "AutoCoach AI — AutoCAD Coach" }] }),
-  component: ChatPage,
+  head: () => ({ meta: [{ title: "AutoCoach — AutoCAD Coach" }] }),
+  component: CoachPage,
 });
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -20,7 +23,40 @@ const SUGGESTIONS = [
   "What are layers for?",
 ];
 
-function ChatPage() {
+function CoachPage() {
+  const authed = useAuthGuard();
+  if (!authed) return null;
+  return (
+    <div className="max-w-3xl mx-auto p-6 md:p-10 flex flex-col h-[calc(100vh-3.5rem)] md:h-screen">
+      <header className="mb-4">
+        <div className="flex items-center gap-3">
+          <div className="size-10 rounded-xl bg-primary/15 text-primary grid place-items-center ring-1 ring-primary/30">
+            <Compass className="size-5" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">AutoCoach</h1>
+            <p className="text-sm text-muted-foreground">Your AutoCAD tutor &amp; fix-it guide.</p>
+          </div>
+        </div>
+      </header>
+
+      <Tabs defaultValue="ask" className="flex-1 flex flex-col min-h-0">
+        <TabsList className="self-start">
+          <TabsTrigger value="ask"><Compass className="size-4 mr-1.5" /> Ask AutoCoach</TabsTrigger>
+          <TabsTrigger value="troubleshoot"><Wrench className="size-4 mr-1.5" /> Troubleshoot</TabsTrigger>
+        </TabsList>
+        <TabsContent value="ask" className="flex-1 min-h-0 mt-4">
+          <AskAutoCoach />
+        </TabsContent>
+        <TabsContent value="troubleshoot" className="flex-1 min-h-0 mt-4 overflow-y-auto">
+          <TroubleshootGrid />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+function AskAutoCoach() {
   const [messages, setMessages] = useState<Msg[]>([
     { role: "assistant", content: "Hi! I'm **AutoCoach**, your AutoCAD tutor. Ask me anything — TRIM, JOIN, EXTRUDE, LAYERS, you name it." },
   ]);
@@ -60,19 +96,7 @@ function ChatPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 md:p-10 flex flex-col h-[calc(100vh-3.5rem)] md:h-screen">
-      <header className="mb-4">
-        <div className="flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-primary/15 text-primary grid place-items-center ring-1 ring-primary/30">
-            <Compass className="size-5" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">AutoCoach</h1>
-            <p className="text-sm text-muted-foreground">Your friendly AutoCAD tutor.</p>
-          </div>
-        </div>
-      </header>
-
+    <div className="flex flex-col h-full">
       <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-2xl bg-card border border-border p-4 space-y-4">
         {messages.map((m, i) => (
           <div key={i} className={cn("flex gap-3", m.role === "user" && "flex-row-reverse")}>
@@ -126,6 +150,31 @@ function ChatPage() {
           <Send className="size-4" />
         </Button>
       </form>
+    </div>
+  );
+}
+
+function TroubleshootGrid() {
+  return (
+    <div className="grid sm:grid-cols-2 gap-4">
+      {troubleshooting.map((t) => (
+        <article key={t.title} className="rounded-2xl bg-card border border-border p-5 hover:border-primary/40 transition-colors">
+          <div className="flex items-center gap-2 text-destructive">
+            <AlertTriangle className="size-4" />
+            <h2 className="font-semibold text-foreground">{t.title}</h2>
+          </div>
+          <div className="mt-3">
+            <div className="text-xs uppercase tracking-wide text-muted-foreground">Cause</div>
+            <p className="text-sm mt-1">{t.cause}</p>
+          </div>
+          <div className="mt-3">
+            <div className="flex items-center gap-1 text-xs uppercase tracking-wide text-primary">
+              <Wrench className="size-3" /> Fix
+            </div>
+            <p className="text-sm mt-1">{t.fix}</p>
+          </div>
+        </article>
+      ))}
     </div>
   );
 }
