@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, Sparkles, Trophy, Wrench } from "lucide-react";
+import { ArrowRight, BookOpen, LogIn, Sparkles, Trophy, Wrench } from "lucide-react";
 import { useCoach } from "@/lib/coach-store";
 import { lessons } from "@/lib/coach-data";
 
@@ -19,6 +19,7 @@ function Index() {
   const { state, completedLessonsNext } = useNextLesson();
   const nextId = completedLessonsNext;
   const continueLabel = state.completedLessons.length > 0 ? "Continue Lesson" : "Start Learning";
+  const isAuthed = state.profile.isAuthenticated;
 
   return (
     <div className="relative overflow-hidden">
@@ -49,6 +50,13 @@ function Index() {
           <Button asChild size="lg" variant="outline" className="border-border bg-card/40 hover:bg-card">
             <Link to="/dashboard">View Dashboard</Link>
           </Button>
+          {!isAuthed && (
+            <Button asChild size="lg" variant="outline" className="border-primary/40 bg-primary/10 text-primary hover:bg-primary/15">
+              <Link to="/auth">
+                <LogIn className="mr-1.5 size-4" /> Sign in
+              </Link>
+            </Button>
+          )}
         </div>
       </section>
 
