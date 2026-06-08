@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight, BookOpen, Compass, Menu, Sparkles, Target, Trophy, Wrench, X,
@@ -368,5 +368,3 @@ function Footer() {
   );
 }
 
-// Avoid unused import warning
-void useEffect;
