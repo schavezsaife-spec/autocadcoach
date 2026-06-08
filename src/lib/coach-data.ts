@@ -218,6 +218,8 @@ export const lessons: Lesson[] = [
   },
 ];
 
+import phoneStandImg from "@/assets/phone-stand.jpg";
+
 export type Project = {
   id: string;
   title: string;
@@ -262,7 +264,7 @@ export const projects: Project[] = [
       "FILLET the back corner.",
       "Dimension all sides.",
     ],
-    image: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=1200",
+    image: phoneStandImg,
   },
   {
     id: "car-outline", title: "Car Outline", difficulty: "Medium", time: "60 min",
@@ -301,15 +303,78 @@ export const projects: Project[] = [
 
 export type QuizQ = { q: string; choices: string[]; answer: number; xp: number };
 
-export const quiz: QuizQ[] = [
-  { q: "Which command makes parallel copies at a set distance?", choices: ["MIRROR", "OFFSET", "COPY", "ARRAY"], answer: 1, xp: 20 },
-  { q: "JOIN says '0 items joined'. Most likely cause?", choices: ["Wrong layer", "Endpoints don't touch", "Object is a block", "Layer is off"], answer: 1, xp: 20 },
-  { q: "EXTRUDE requires the source shape to be...", choices: ["Open", "Closed", "On Layer 0", "Hatched"], answer: 1, xp: 20 },
-  { q: "Layers are mainly used to...", choices: ["Save the file", "Organize and control objects", "Speed up zoom", "Change units"], answer: 1, xp: 15 },
-  { q: "MIRROR needs which input?", choices: ["A radius", "Two points (a mirror line)", "An angle", "A scale"], answer: 1, xp: 20 },
-  { q: "ARRAY can be...", choices: ["Only rectangular", "Only polar", "Rectangular, polar, or path", "Only along a line"], answer: 2, xp: 20 },
-  { q: "Common beginner mistake?", choices: ["Drawing without OSNAP", "Saving too often", "Using layers", "Pressing Esc"], answer: 0, xp: 15 },
-];
+export type LessonQuizQ = QuizQ & { explanation: string };
+
+/**
+ * Per-lesson mini quiz. Each lesson needs at least one correct answer to be
+ * marked complete. XP for the lesson is awarded only once.
+ */
+export const lessonQuizzes: Record<string, LessonQuizQ[]> = {
+  interface: [
+    { q: "Which key combination zooms to all geometry in the drawing?", choices: ["Z then E", "Z then A", "F2", "Ctrl + 0"], answer: 0, xp: 10, explanation: "ZOOM EXTENTS (Z then E) frames every visible object in the drawing." },
+    { q: "Where do you read what AutoCAD expects you to do next?", choices: ["The ribbon", "The status bar", "The command line", "The title bar"], answer: 2, xp: 10, explanation: "The command line is your map — it tells you exactly what input AutoCAD is waiting for." },
+  ],
+  "line-circle": [
+    { q: "How do you confirm a typed coordinate in AutoCAD?", choices: ["Space then Tab", "Press Enter", "Click again", "Press Esc"], answer: 1, xp: 10, explanation: "AutoCAD only accepts a typed coordinate after you press Enter (or Spacebar)." },
+    { q: "After CIRCLE, what does AutoCAD ask for first?", choices: ["Radius", "Center point", "Diameter", "A layer"], answer: 1, xp: 10, explanation: "CIRCLE always asks for the center point first, then the radius (or diameter)." },
+  ],
+  trim: [
+    { q: "How many times do you press Enter to select 'all' as cutting edges?", choices: ["Once", "Twice", "Three times", "Hold Shift+Enter"], answer: 1, xp: 10, explanation: "Type TR then press Enter twice — the second Enter selects every visible object as cutting edges." },
+    { q: "After choosing cutting edges, what do you do?", choices: ["Type a distance", "Click the segments to remove", "Press F8", "Pick a layer"], answer: 1, xp: 10, explanation: "Click the actual segments you want gone. They must lie between cutting edges." },
+  ],
+  "move-copy": [
+    { q: "What is the keyboard alias for COPY?", choices: ["C", "CO", "CP", "MV"], answer: 1, xp: 10, explanation: "CO is the standard AutoCAD alias for COPY. C is reserved for CIRCLE." },
+    { q: "Why should you pick a snapped base point?", choices: ["So the object can be deleted", "So the move is precise and repeatable", "To change its color", "To freeze it"], answer: 1, xp: 10, explanation: "Picking a corner/endpoint as base point gives you a deterministic, repeatable offset." },
+  ],
+  osnap: [
+    { q: "Which function key toggles OSNAP on/off?", choices: ["F1", "F3", "F7", "F11"], answer: 1, xp: 10, explanation: "F3 toggles object snapping. F11 toggles object snap tracking." },
+    { q: "Drawing without OSNAP usually causes what problem?", choices: ["Slow zoom", "Geometry that doesn't actually connect", "Locked layers", "Hidden objects"], answer: 1, xp: 10, explanation: "Without snapping, endpoints land a fraction off — which breaks TRIM, JOIN, EXTRUDE." },
+  ],
+  layers: [
+    { q: "Which command opens Layer Properties?", choices: ["L", "LA", "LP", "LAY"], answer: 1, xp: 10, explanation: "LA is the alias for LAYER, which opens Layer Properties Manager." },
+    { q: "What is the main purpose of layers?", choices: ["Speed up file save", "Organize and control objects", "Round corners", "Change units"], answer: 1, xp: 10, explanation: "Layers group related geometry so you can color, freeze, or lock it together." },
+  ],
+  "dim-text": [
+    { q: "What does DIM expect you to click?", choices: ["A layer", "Two endpoints to dimension between", "A color", "A pattern"], answer: 1, xp: 10, explanation: "DIM measures the distance between two picked points." },
+    { q: "Why bump up text height?", choices: ["Faster zoom", "So it stays readable when zoomed out", "To save the file", "To enable hatching"], answer: 1, xp: 10, explanation: "Plot scale matters — tiny text becomes invisible on a printed sheet." },
+  ],
+  hatch: [
+    { q: "HATCH requires the target region to be…", choices: ["Open", "Closed", "On Layer 0", "3D"], answer: 1, xp: 10, explanation: "Patterns can only fill an enclosed boundary. Close any gaps first." },
+    { q: "Where do you click after picking a pattern?", choices: ["A boundary edge", "Inside the closed region", "Outside the region", "Anywhere"], answer: 1, xp: 10, explanation: "Click inside the enclosed area — HATCH detects the boundary around your pick." },
+  ],
+  blocks: [
+    { q: "Which command creates a block?", choices: ["B", "BL", "BLK", "BC"], answer: 0, xp: 10, explanation: "B (BLOCK) opens the Block Definition dialog." },
+    { q: "What is the base point used for?", choices: ["Layer assignment", "Insertion alignment", "Color", "Snap mode"], answer: 1, xp: 10, explanation: "The base point is the handle AutoCAD uses every time you insert the block." },
+  ],
+  join: [
+    { q: "JOIN fails with '0 joined'. Most likely cause?", choices: ["Wrong layer", "Endpoints don't touch", "Block is locked", "Hatching"], answer: 1, xp: 10, explanation: "Segments must share an endpoint exactly. Snap them with OSNAP first." },
+    { q: "After JOIN succeeds, the result is…", choices: ["A block", "A single polyline", "A hatch", "A dimension"], answer: 1, xp: 10, explanation: "Joined collinear lines become a single polyline you can edit as one." },
+  ],
+  extrude: [
+    { q: "EXTRUDE only works on what kind of shape?", choices: ["Open", "Closed", "Hatched", "Dimensioned"], answer: 1, xp: 10, explanation: "You need a closed 2D region (polyline, circle, region) before EXTRUDE can run." },
+    { q: "Which workspace lets you see 3D solids easily?", choices: ["Drafting & Annotation", "3D Modeling", "AutoCAD Classic", "Sheet Set"], answer: 1, xp: 10, explanation: "Switch to 3D Modeling so the ribbon, view cube and conceptual shading become available." },
+  ],
+  "polyline-rect": [
+    { q: "Inside PL, which option closes the polyline back to start?", choices: ["E", "C", "X", "L"], answer: 1, xp: 10, explanation: "Type C inside the PL command to close the polyline." },
+    { q: "REC asks for…", choices: ["Three corners", "Two opposite corners", "A radius", "A length only"], answer: 1, xp: 10, explanation: "Rectangle is defined by two diagonally opposite corners." },
+  ],
+  "offset-mirror": [
+    { q: "What do you type first inside OFFSET?", choices: ["A layer", "A distance", "A pattern", "A radius"], answer: 1, xp: 10, explanation: "OFFSET asks for the offset distance before selecting the source object." },
+    { q: "MIRROR needs which input?", choices: ["A radius", "Two points (mirror line)", "An angle", "A scale"], answer: 1, xp: 10, explanation: "Two picked points define the axis the geometry is reflected across." },
+  ],
+  "fillet-chamfer": [
+    { q: "What does FILLET do?", choices: ["Adds text", "Rounds a corner with a radius", "Joins layers", "Mirrors objects"], answer: 1, xp: 10, explanation: "FILLET replaces a sharp corner with a tangent arc of a given radius." },
+    { q: "If FILLET radius is 0, the corner becomes…", choices: ["A perfect circle", "A sharp 90° corner", "Hatched", "Deleted"], answer: 1, xp: 10, explanation: "Radius 0 essentially TRIM/EXTENDs the two lines into a clean corner." },
+  ],
+  "array-review": [
+    { q: "ARRAY supports which patterns?", choices: ["Only rectangular", "Only polar", "Rectangular, polar, or path", "Only along a line"], answer: 2, xp: 10, explanation: "Modern ARRAY supports rectangular, polar (circular), and path-based copies." },
+    { q: "What happens if spacing is negative in a rectangular ARRAY?", choices: ["It mirrors", "Copies overlap / stack backward", "It deletes the source", "Nothing"], answer: 1, xp: 10, explanation: "Negative spacing reverses direction so copies grow back toward the origin and overlap." },
+  ],
+};
+
+export function getLessonQuiz(id: string): LessonQuizQ[] {
+  return lessonQuizzes[id] ?? [];
+}
 
 export type TroubleshootItem = { title: string; cause: string; fix: string };
 
