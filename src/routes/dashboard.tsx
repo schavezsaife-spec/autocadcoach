@@ -7,7 +7,7 @@ import { useCoach } from "@/lib/coach-store";
 import { lessons } from "@/lib/coach-data";
 import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuthGuard } from "@/lib/use-auth-guard";
+import { GuestGate } from "@/components/coach/GuestGate";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — AutoCAD Coach" }] }),
@@ -15,30 +15,30 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
-  const authed = useAuthGuard();
   const { state, totalXp, progressPct, isUnlocked } = useCoach();
   const [q, setQ] = useState("");
-  if (!authed) return null;
+  const isAuthed = state.profile.isAuthenticated;
 
   const filtered = lessons.filter((l) =>
     l.title.toLowerCase().includes(q.toLowerCase()) || l.tag.toLowerCase().includes(q.toLowerCase())
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-6 md:p-10 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-8">
       <header>
-        <h1 className="text-3xl font-bold tracking-tight">Your Workspace</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Your Workspace</h1>
         <p className="text-muted-foreground mt-1">Track progress and pick your next lesson.</p>
       </header>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <GuestGate isAuthenticated={isAuthed}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Stat icon={BookOpen} label="Lessons" value={`${state.completedLessons.length}/${lessons.length}`} />
         <Stat icon={Trophy} label="Total XP" value={`${totalXp}`} accent />
         <Stat icon={Wrench} label="Projects" value={`${state.completedProjects.length}`} />
         <Stat icon={Flame} label="Streak" value={`${state.streak} day${state.streak === 1 ? "" : "s"}`} />
       </div>
 
-      <div className="rounded-2xl bg-card border border-border p-5">
+      <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
         <div className="flex items-center justify-between mb-3">
           <div className="font-semibold">Overall progress</div>
           <div className="text-sm text-muted-foreground">{progressPct}%</div>
@@ -46,10 +46,10 @@ function DashboardPage() {
         <Progress value={progressPct} className="h-2" />
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-4 gap-3">
+      <div className="mt-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
           <h2 className="text-xl font-semibold">Lessons</h2>
-          <div className="relative w-full max-w-xs">
+          <div className="relative w-full sm:max-w-xs">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               value={q}
@@ -60,12 +60,12 @@ function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
           {filtered.map((l) => {
             const done = state.completedLessons.includes(l.id);
             const unlocked = isUnlocked(l.id);
             const cardCls = cn(
-              "rounded-2xl bg-card border border-border p-5 transition-all block",
+              "rounded-2xl bg-card border border-border p-4 sm:p-5 transition-all block",
               unlocked ? "hover:border-primary/40 hover:-translate-y-0.5" : "opacity-60 cursor-not-allowed"
             );
             const inner = (
@@ -92,6 +92,7 @@ function DashboardPage() {
           })}
         </div>
       </div>
+      </GuestGate>
     </div>
   );
 }
