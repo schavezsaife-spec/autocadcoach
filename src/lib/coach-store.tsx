@@ -18,8 +18,7 @@ export type CoachState = {
   selectedLesson: string | null;
   lessonStep: Record<string, number>;
   activeTab: string;
-  quizAnswers: Record<number, number>;
-  quizXp: number;
+  lessonQuizPassed: Record<string, boolean>;
   profile: Profile;
   streak: number;
 };
@@ -30,8 +29,7 @@ const DEFAULT: CoachState = {
   selectedLesson: null,
   lessonStep: {},
   activeTab: "home",
-  quizAnswers: {},
-  quizXp: 0,
+  lessonQuizPassed: {},
   profile: {
     firstName: "",
     lastName: "",
@@ -49,9 +47,12 @@ type Ctx = {
   state: CoachState;
   set: (u: Partial<CoachState> | ((s: CoachState) => Partial<CoachState>)) => void;
   completeLesson: (id: string) => void;
+  passLessonQuiz: (id: string) => void;
   completeProject: (id: string) => void;
   resetProject: (id: string) => void;
   isUnlocked: (id: string) => boolean;
+  hydrated: boolean;
+  signOut: () => Promise<void>;
   totalXp: number;
   progressPct: number;
 };
@@ -83,17 +84,23 @@ export function CoachProvider({ children }: { children: ReactNode }) {
     function applyUser(user: User | null) {
       setState((s) => {
         if (!user) {
-          if (!s.profile.isAuthenticated) return s;
+          // Fully clear all personal state when no Supabase session exists.
+          if (
+            !s.profile.isAuthenticated &&
+            !s.profile.profileImage &&
+            !s.profile.firstName &&
+            !s.profile.lastName &&
+            !s.profile.email
+          ) {
+            return s;
+          }
           return {
             ...s,
-            profile: {
-              ...s.profile,
-              firstName: "",
-              lastName: "",
-              email: "",
-              authProvider: null,
-              isAuthenticated: false,
-            },
+            profile: { ...DEFAULT.profile },
+            completedLessons: [],
+            completedProjects: [],
+            lessonStep: {},
+            lessonQuizPassed: {},
           };
         }
         const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
@@ -142,6 +149,11 @@ export function CoachProvider({ children }: { children: ReactNode }) {
       s.completedLessons.includes(id) ? s : { ...s, completedLessons: [...s.completedLessons, id] }
     );
 
+  const passLessonQuiz = (id: string) =>
+    setState((s) =>
+      s.lessonQuizPassed[id] ? s : { ...s, lessonQuizPassed: { ...s.lessonQuizPassed, [id]: true } }
+    );
+
   const completeProject = (id: string) =>
     setState((s) =>
       s.completedProjects.includes(id) ? s : { ...s, completedProjects: [...s.completedProjects, id] }
@@ -160,13 +172,34 @@ export function CoachProvider({ children }: { children: ReactNode }) {
     state.completedLessons.reduce(
       (sum, id) => sum + (lessons.find((l) => l.id === id)?.xp ?? 0),
       0
-    ) + state.quizXp;
+    );
 
   const progressPct = Math.round((state.completedLessons.length / lessons.length) * 100);
 
+  async function signOut() {
+    // Sign out from Supabase first so the onAuthStateChange listener also fires.
+    try { await supabase.auth.signOut(); } catch {}
+    // Wipe everything locally — no traces of the previous user.
+    try { localStorage.removeItem(KEY); } catch {}
+    try { sessionStorage.clear(); } catch {}
+    setState({ ...DEFAULT });
+  }
+
   return (
     <CoachCtx.Provider
-      value={{ state, set, completeLesson, completeProject, resetProject, isUnlocked, totalXp, progressPct }}
+      value={{
+        state,
+        set,
+        completeLesson,
+        passLessonQuiz,
+        completeProject,
+        resetProject,
+        isUnlocked,
+        hydrated,
+        signOut,
+        totalXp,
+        progressPct,
+      }}
     >
       {children}
     </CoachCtx.Provider>

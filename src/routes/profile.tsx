@@ -9,7 +9,6 @@ import { LogOut, Trophy } from "lucide-react";
 import { ProfileAvatar } from "@/components/coach/ProfileAvatar";
 import { ProfileImageUploader } from "@/components/coach/ProfileImageUploader";
 import { EditProfileForm } from "@/components/coach/EditProfileForm";
-import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({ meta: [{ title: "Profile — AutoCAD Coach" }] }),
@@ -17,37 +16,33 @@ export const Route = createFileRoute("/profile")({
 });
 
 function ProfilePage() {
-  const { state, set, totalXp, progressPct } = useCoach();
+  const { state, set, totalXp, progressPct, hydrated, signOut } = useCoach();
   const navigate = useNavigate();
   const p = state.profile;
 
-  // Require a real Supabase session — redirect to /auth if missing.
+  // Wait for hydration before deciding to redirect to avoid flicker.
   useEffect(() => {
-    if (!p.isAuthenticated) {
+    if (hydrated && !p.isAuthenticated) {
       navigate({ to: "/auth" });
     }
-  }, [p.isAuthenticated, navigate]);
+  }, [hydrated, p.isAuthenticated, navigate]);
 
-  if (!p.isAuthenticated) {
+  if (!hydrated || !p.isAuthenticated) {
     return (
-      <div className="max-w-md mx-auto p-6 md:p-10 text-center text-muted-foreground">
-        Redirecting to sign in…
+      <div className="max-w-3xl mx-auto p-6 md:p-10 space-y-4 animate-pulse">
+        <div className="h-28 rounded-2xl bg-card border border-border" />
+        <div className="h-40 rounded-2xl bg-card border border-border" />
+        <div className="h-32 rounded-2xl bg-card border border-border" />
       </div>
     );
   }
 
   const completedProjectsCount = state.completedProjects.length;
 
-  async function signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    // Clear the locally-cached profile image too so a new user starts clean.
-    set({ profile: { ...p, profileImage: null } });
-    toast("Signed out");
-    navigate({ to: "/auth" });
+  async function handleSignOut() {
+    await signOut();
+    toast.success("Signed out");
+    navigate({ to: "/" });
   }
 
   return (
@@ -68,7 +63,7 @@ function ProfilePage() {
             <Trophy className="size-3.5" /> {totalXp} XP earned
           </div>
         </div>
-        <Button variant="outline" onClick={signOut} className="border-border">
+        <Button variant="outline" onClick={handleSignOut} className="border-border">
           <LogOut className="size-4 mr-2" /> Sign out
         </Button>
       </div>

@@ -1,14 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { lessons } from "@/lib/coach-data";
+import { lessons, getLessonQuiz } from "@/lib/coach-data";
 import { useCoach } from "@/lib/coach-store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Lightbox } from "@/components/coach/Lightbox";
-import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target, Trophy, RotateCcw, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/lessons/$id")({
   head: ({ params }) => ({
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/lessons/$id")({
 function LessonViewer() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const { state, set, completeLesson, isUnlocked } = useCoach();
+  const { state, set, completeLesson, passLessonQuiz, isUnlocked } = useCoach();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const isAuthed = state.profile.isAuthenticated;
 
@@ -54,9 +55,17 @@ function LessonViewer() {
   const setStep = (n: number) =>
     set((s) => ({ lessonStep: { ...s.lessonStep, [lesson.id]: Math.max(0, Math.min(lesson.steps.length - 1, n)) } }));
 
+  const quizQuestions = getLessonQuiz(lesson.id);
+  const passed = !!state.lessonQuizPassed[lesson.id];
+
   const onComplete = () => {
+    if (!passed) {
+      toast.error("Finish the lesson quiz with a passing score first.");
+      return;
+    }
+    const alreadyDone = state.completedLessons.includes(lesson.id);
     completeLesson(lesson.id);
-    toast.success(`+${lesson.xp} XP — ${lesson.title} complete!`);
+    if (!alreadyDone) toast.success(`+${lesson.xp} XP — ${lesson.title} complete!`);
     if (next) navigate({ to: "/lessons/$id", params: { id: next.id } });
     else navigate({ to: "/dashboard" });
   };
@@ -114,6 +123,15 @@ function LessonViewer() {
         </div>
       </div>
 
+      {quizQuestions.length > 0 && (
+        <LessonQuiz
+          lessonId={lesson.id}
+          questions={quizQuestions}
+          passed={passed}
+          onPass={() => passLessonQuiz(lesson.id)}
+        />
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2 mt-6">
         <div className="flex flex-wrap gap-2">
           {prev && (
@@ -127,8 +145,13 @@ function LessonViewer() {
             </Button>
           )}
         </div>
-        <Button onClick={onComplete} className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90">
-          <CheckCircle2 className="size-4 mr-1" /> {done ? "Mark complete again" : "Mark complete"}
+        <Button
+          onClick={onComplete}
+          disabled={quizQuestions.length > 0 && !passed}
+          className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
+          title={quizQuestions.length > 0 && !passed ? "Pass the lesson quiz to complete" : undefined}
+        >
+          <CheckCircle2 className="size-4 mr-1" /> {done ? "Mark complete again" : "Mark lesson complete"}
         </Button>
       </div>
       </GuestGate>
@@ -140,6 +163,129 @@ function LessonViewer() {
           caption={lesson.title}
           onClose={() => setLightboxOpen(false)}
         />
+      )}
+    </div>
+  );
+}
+
+type Q = ReturnType<typeof getLessonQuiz>[number];
+
+function LessonQuiz({
+  lessonId,
+  questions,
+  passed,
+  onPass,
+}: {
+  lessonId: string;
+  questions: Q[];
+  passed: boolean;
+  onPass: () => void;
+}) {
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [revealed, setRevealed] = useState<Record<number, boolean>>({});
+
+  const correctCount = questions.reduce(
+    (acc, q, i) => acc + (answers[i] === q.answer ? 1 : 0),
+    0,
+  );
+  const totalAnswered = Object.keys(revealed).length;
+  const passingScore = Math.ceil(questions.length * 0.7);
+  const allAnswered = totalAnswered === questions.length;
+  const justPassed = allAnswered && correctCount >= passingScore;
+
+  if (justPassed && !passed) onPass();
+
+  const pick = (i: number, choice: number) => {
+    if (revealed[i]) return;
+    setAnswers((a) => ({ ...a, [i]: choice }));
+    setRevealed((r) => ({ ...r, [i]: true }));
+  };
+
+  const retry = () => {
+    setAnswers({});
+    setRevealed({});
+  };
+
+  return (
+    <div className="rounded-2xl bg-card border border-border p-4 sm:p-6 mt-6" id={`quiz-${lessonId}`}>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-2 font-semibold">
+          <Trophy className="size-4 text-primary" /> Lesson quiz
+        </div>
+        <div className="flex items-center gap-2">
+          {passed && (
+            <Badge className="bg-primary/20 text-primary border-primary/30">
+              <CheckCircle2 className="size-3 mr-1" /> Passed
+            </Badge>
+          )}
+          <Badge variant="outline" className="border-border">
+            {correctCount}/{questions.length} correct
+          </Badge>
+          {(allAnswered || passed) && (
+            <Button variant="outline" size="sm" onClick={retry}>
+              <RotateCcw className="size-3.5 mr-1" /> Retry
+            </Button>
+          )}
+        </div>
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">
+        Score at least {passingScore}/{questions.length} to unlock lesson completion.
+      </p>
+      <div className="space-y-4">
+        {questions.map((q, i) => {
+          const ans = answers[i];
+          const isRevealed = !!revealed[i];
+          return (
+            <div key={i} className="rounded-xl border border-border bg-secondary/30 p-4">
+              <div className="font-medium text-sm">{i + 1}. {q.q}</div>
+              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {q.choices.map((c, ci) => {
+                  const picked = ans === ci;
+                  const isAnswer = q.answer === ci;
+                  return (
+                    <button
+                      key={ci}
+                      onClick={() => pick(i, ci)}
+                      disabled={isRevealed}
+                      className={cn(
+                        "text-left rounded-lg border px-3 py-2 text-sm transition-colors flex items-center justify-between gap-2",
+                        !isRevealed && "border-border hover:border-primary/40 hover:bg-secondary",
+                        isRevealed && isAnswer && "border-primary/40 bg-primary/10 text-primary",
+                        isRevealed && picked && !isAnswer && "border-destructive/40 bg-destructive/10 text-destructive",
+                      )}
+                    >
+                      <span>{c}</span>
+                      {isRevealed && isAnswer && <CheckCircle2 className="size-4" />}
+                      {isRevealed && picked && !isAnswer && <XCircle className="size-4" />}
+                    </button>
+                  );
+                })}
+              </div>
+              {isRevealed && (
+                <div className={cn(
+                  "mt-3 rounded-lg px-3 py-2 text-xs",
+                  ans === q.answer
+                    ? "bg-primary/10 text-primary border border-primary/20"
+                    : "bg-destructive/10 text-destructive border border-destructive/20",
+                )}>
+                  {ans === q.answer ? "Correct — " : "Not quite — "}{q.explanation}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {allAnswered && (
+        <div className={cn(
+          "mt-4 rounded-lg px-3 py-2 text-sm",
+          justPassed
+            ? "bg-primary/10 text-primary border border-primary/30"
+            : "bg-destructive/10 text-destructive border border-destructive/30",
+        )}>
+          {justPassed
+            ? `Nice work — you scored ${correctCount}/${questions.length}. You can now mark this lesson complete.`
+            : `You scored ${correctCount}/${questions.length}. Hit Retry and aim for ${passingScore}+.`}
+        </div>
       )}
     </div>
   );

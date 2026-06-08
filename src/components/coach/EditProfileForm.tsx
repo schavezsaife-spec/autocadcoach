@@ -26,7 +26,6 @@ export function EditProfileForm() {
       toast.error("First name and email are required");
       return;
     }
-    // TODO: persist these changes to Supabase profiles table.
     set({
       profile: {
         ...p,

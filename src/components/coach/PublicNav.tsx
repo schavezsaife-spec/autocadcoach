@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Compass, LayoutDashboard, LogIn } from "lucide-react";
+import { LayoutDashboard, LogIn } from "lucide-react";
 import { useCoach } from "@/lib/coach-store";
+import { Logo } from "./Logo";
 
 export function PublicNav() {
   const { state } = useCoach();
@@ -8,12 +9,7 @@ export function PublicNav() {
   return (
     <header className="sticky top-0 z-40 bg-background/80 backdrop-blur border-b border-border">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 h-14">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="size-8 rounded-lg bg-primary/15 text-primary grid place-items-center ring-1 ring-primary/30">
-            <Compass className="size-4" />
-          </div>
-          <span className="font-semibold tracking-tight">AutoCAD Coach</span>
-        </Link>
+        <Logo size="sm" />
         {isAuthed ? (
           <Link
             to="/dashboard"

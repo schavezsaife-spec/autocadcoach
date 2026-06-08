@@ -83,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "AutoCAD Coach — Learn AutoCAD by doing" },
       { name: "description", content: "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor." },
-      { name: "author", content: "Sofia Chavez Saife" },
+      { name: "author", content: "AutoCAD Coach" },
       { property: "og:title", content: "AutoCAD Coach — Learn AutoCAD by doing" },
       { property: "og:description", content: "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor." },
       { property: "og:type", content: "website" },
