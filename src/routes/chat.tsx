@@ -7,7 +7,8 @@ import { AlertTriangle, Compass, Send, User, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { troubleshooting } from "@/lib/coach-data";
-import { useAuthGuard } from "@/lib/use-auth-guard";
+import { GuestGate } from "@/components/coach/GuestGate";
+import { useCoach } from "@/lib/coach-store";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({ meta: [{ title: "AutoCoach — AutoCAD Coach" }] }),
@@ -24,17 +25,17 @@ const SUGGESTIONS = [
 ];
 
 function CoachPage() {
-  const authed = useAuthGuard();
-  if (!authed) return null;
+  const { state } = useCoach();
+  const isAuthed = state.profile.isAuthenticated;
   return (
-    <div className="max-w-3xl mx-auto p-6 md:p-10 flex flex-col h-[calc(100vh-3.5rem)] md:h-screen">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 flex flex-col h-[calc(100dvh-3.5rem)] md:h-[calc(100dvh-3.5rem)]">
       <header className="mb-4">
         <div className="flex items-center gap-3">
           <div className="size-10 rounded-xl bg-primary/15 text-primary grid place-items-center ring-1 ring-primary/30">
             <Compass className="size-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">AutoCoach</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">AutoCoach</h1>
             <p className="text-sm text-muted-foreground">Your AutoCAD tutor &amp; fix-it guide.</p>
           </div>
         </div>
@@ -46,7 +47,9 @@ function CoachPage() {
           <TabsTrigger value="troubleshoot"><Wrench className="size-4 mr-1.5" /> Troubleshoot</TabsTrigger>
         </TabsList>
         <TabsContent value="ask" className="flex-1 min-h-0 mt-4">
-          <AskAutoCoach />
+          <GuestGate isAuthenticated={isAuthed} message="Sign in to chat with AutoCoach and save your conversations.">
+            <AskAutoCoach />
+          </GuestGate>
         </TabsContent>
         <TabsContent value="troubleshoot" className="flex-1 min-h-0 mt-4 overflow-y-auto">
           <TroubleshootGrid />
