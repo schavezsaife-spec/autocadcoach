@@ -7,7 +7,8 @@ import { useCoach } from "@/lib/coach-store";
 import { supabase } from "@/lib/supabase";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import { AlertCircle, Compass, Eye, EyeOff, Loader2 } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Logo } from "@/components/coach/Logo";
 
 /**
  * Setup checklist for the developer:
@@ -150,12 +151,9 @@ function AuthPage() {
       />
 
       <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center justify-center gap-2 mb-6">
-          <div className="size-9 rounded-xl bg-primary/15 text-primary grid place-items-center ring-1 ring-primary/30">
-            <Compass className="size-5" />
-          </div>
-          <span className="font-semibold tracking-tight">AutoCAD Coach</span>
-        </Link>
+        <div className="flex items-center justify-center mb-6">
+          <Logo size="md" />
+        </div>
 
         <div className="rounded-2xl bg-card/80 backdrop-blur border border-border p-6 sm:p-8 shadow-[var(--shadow-glow)]">
           <h1 className="text-2xl font-bold tracking-tight">
@@ -209,7 +207,7 @@ function AuthPage() {
                     required
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="Sofia"
+                    placeholder="First name"
                     className="bg-secondary border-border"
                   />
                 </div>
@@ -219,7 +217,7 @@ function AuthPage() {
                     id="lastName"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Chavez"
+                    placeholder="Last name"
                     className="bg-secondary border-border"
                   />
                 </div>
@@ -238,7 +236,14 @@ function AuthPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                {mode === "signin" && (
+                  <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                    Forgot password?
+                  </Link>
+                )}
+              </div>
               <div className="relative">
                 <Input
                   id="password"
@@ -284,7 +289,7 @@ function AuthPage() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          Created by <span className="text-primary">Sofia Chavez Saife</span>
+          © {new Date().getFullYear()} AutoCAD Coach
         </p>
       </div>
     </div>

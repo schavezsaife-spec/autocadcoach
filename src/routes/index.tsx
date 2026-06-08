@@ -8,6 +8,7 @@ import {
 import { useCoach } from "@/lib/coach-store";
 import { lessons } from "@/lib/coach-data";
 import { cn } from "@/lib/utils";
+import { Logo, LogoMark } from "@/components/coach/Logo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -67,16 +68,11 @@ function PublicNavbar({ isAuthed }: { isAuthed: boolean }) {
       style={{ animationDuration: "400ms" }}
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 h-14">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="size-8 rounded-lg bg-primary/15 text-primary grid place-items-center ring-1 ring-primary/30">
-            <Compass className="size-4" />
-          </div>
-          <span className="font-semibold tracking-tight">AutoCAD Coach</span>
-        </Link>
+        <Logo size="sm" />
         <nav className="hidden md:flex items-center gap-1">
           <NavLink to="/lessons">Lessons</NavLink>
           <NavLink to="/projects">Projects</NavLink>
-          <NavLink to="/quiz">Quiz</NavLink>
+          <NavLink to="/chat">AI Coach</NavLink>
           <div className="mx-2 h-5 w-px bg-border" />
           {isAuthed ? (
             <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
@@ -105,7 +101,7 @@ function PublicNavbar({ isAuthed }: { isAuthed: boolean }) {
         <div className="md:hidden border-t border-border bg-background/95 backdrop-blur px-4 py-3 flex flex-col gap-1">
           <MobileLink to="/lessons" onClick={() => setMobileOpen(false)}>Lessons</MobileLink>
           <MobileLink to="/projects" onClick={() => setMobileOpen(false)}>Projects</MobileLink>
-          <MobileLink to="/quiz" onClick={() => setMobileOpen(false)}>Quiz</MobileLink>
+          <MobileLink to="/chat" onClick={() => setMobileOpen(false)}>AI Coach</MobileLink>
           {isAuthed ? (
             <MobileLink to="/dashboard" onClick={() => setMobileOpen(false)} highlight>Dashboard →</MobileLink>
           ) : (
@@ -356,13 +352,11 @@ function Footer() {
     <footer className="border-t border-border py-8 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground text-center sm:text-left">
         <div className="flex items-center gap-2">
-          <div className="size-7 rounded-md bg-primary/15 text-primary grid place-items-center">
-            <Compass className="size-3.5" />
-          </div>
+          <LogoMark size="sm" />
           <span className="font-semibold text-foreground">AutoCAD Coach</span>
           <span>— Learn AutoCAD by doing.</span>
         </div>
-        <div>Built by <span className="text-foreground">Sofia Chavez Saife</span></div>
+        <div>© {new Date().getFullYear()} AutoCAD Coach</div>
       </div>
     </footer>
   );
