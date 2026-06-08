@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle, RotateCcw, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useAuthGuard } from "@/lib/use-auth-guard";
+import { GuestGate } from "@/components/coach/GuestGate";
 
 export const Route = createFileRoute("/quiz")({
   head: () => ({ meta: [{ title: "Quiz — AutoCAD Coach" }] }),
@@ -14,9 +14,8 @@ export const Route = createFileRoute("/quiz")({
 });
 
 function QuizPage() {
-  const authed = useAuthGuard();
   const { state, set } = useCoach();
-  if (!authed) return null;
+  const isAuthed = state.profile.isAuthenticated;
   const answers = state.quizAnswers;
 
   const correctCount = quiz.reduce(
@@ -39,13 +38,13 @@ function QuizPage() {
   const reset = () => set({ quizAnswers: {}, quizXp: 0 });
 
   return (
-    <div className="max-w-3xl mx-auto p-6 md:p-10 space-y-6">
-      <header className="flex flex-wrap items-center justify-between gap-3">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-6">
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Knowledge Quiz</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Knowledge Quiz</h1>
           <p className="text-muted-foreground mt-1">Earn XP for every correct answer.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Badge className="bg-primary/20 text-primary border-primary/30">
             <Trophy className="size-3 mr-1" /> {state.quizXp} XP
           </Badge>
@@ -54,14 +53,15 @@ function QuizPage() {
         </div>
       </header>
 
+      <GuestGate isAuthenticated={isAuthed}>
       <div className="space-y-4">
         {quiz.map((q, i) => {
           const ans = answers[i];
           const answered = ans !== undefined;
           return (
-            <div key={i} className="rounded-2xl bg-card border border-border p-5">
+            <div key={i} className="rounded-2xl bg-card border border-border p-4 sm:p-5">
               <div className="font-semibold">{i + 1}. {q.q}</div>
-              <div className="mt-4 grid sm:grid-cols-2 gap-2">
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {q.choices.map((c, ci) => {
                   const isPicked = ans === ci;
                   const isAnswer = q.answer === ci;
@@ -88,6 +88,7 @@ function QuizPage() {
           );
         })}
       </div>
+      </GuestGate>
     </div>
   );
 }
