@@ -28,8 +28,6 @@ export function ProfileImageUploader({ image, firstName, lastName, onChange }: P
     }
     const reader = new FileReader();
     reader.onload = () => {
-      // TODO: upload to Supabase Storage / Firebase Storage here
-      // and replace the data URL with the public bucket URL.
       onChange(reader.result as string);
       toast.success("Profile photo updated");
     };
