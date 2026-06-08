@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Lightbox } from "@/components/coach/Lightbox";
 import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target } from "lucide-react";
 import { toast } from "sonner";
-import { useAuthGuard } from "@/lib/use-auth-guard";
+import { GuestGate } from "@/components/coach/GuestGate";
 
 export const Route = createFileRoute("/lessons/$id")({
   head: ({ params }) => ({
@@ -18,12 +18,11 @@ export const Route = createFileRoute("/lessons/$id")({
 });
 
 function LessonViewer() {
-  const authed = useAuthGuard();
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const { state, set, completeLesson, isUnlocked } = useCoach();
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  if (!authed) return null;
+  const isAuthed = state.profile.isAuthenticated;
 
   const lesson = lessons.find((l) => l.id === id);
   if (!lesson) {
@@ -63,16 +62,17 @@ function LessonViewer() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 md:p-10 space-y-6">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <Badge variant="outline" className="border-primary/30 text-primary">Day {lesson.day}</Badge>
         <Badge variant="outline" className="border-border">{lesson.tag}</Badge>
         <Badge variant="outline" className="border-border">{lesson.xp} XP</Badge>
         {done && <Badge className="bg-primary/20 text-primary border-primary/30"><CheckCircle2 className="size-3 mr-1" /> Completed</Badge>}
       </div>
-      <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{lesson.title}</h1>
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{lesson.title}</h1>
       <p className="text-muted-foreground">{lesson.description}</p>
 
+      <GuestGate isAuthenticated={isAuthed}>
       <button
         onClick={() => setLightboxOpen(true)}
         className="block w-full rounded-2xl overflow-hidden border border-border group"
@@ -81,41 +81,41 @@ function LessonViewer() {
         <img src={lesson.image} alt={`${lesson.title} reference`} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
       </button>
 
-      <div className="rounded-2xl bg-card border border-border p-5">
+      <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
         <div className="flex items-center gap-2 text-primary font-semibold"><Target className="size-4" /> Objective</div>
         <p className="mt-2 text-sm">{lesson.objective}</p>
       </div>
 
-      <div className="rounded-2xl bg-card border border-border p-5">
+      <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
         <div className="flex items-center justify-between mb-3">
           <div className="font-semibold">Step {step + 1} of {lesson.steps.length}</div>
           <div className="text-sm text-muted-foreground">{stepPct}%</div>
         </div>
         <Progress value={stepPct} className="h-1.5 mb-4" />
         <p className="text-base">{lesson.steps[step]}</p>
-        <div className="flex justify-between mt-5">
-          <Button variant="outline" onClick={() => setStep(step - 1)} disabled={step === 0}>
+        <div className="flex flex-col sm:flex-row justify-between gap-2 mt-5">
+          <Button variant="outline" onClick={() => setStep(step - 1)} disabled={step === 0} className="w-full sm:w-auto">
             <ArrowLeft className="size-4 mr-1" /> Previous
           </Button>
-          <Button onClick={() => setStep(step + 1)} disabled={step === lesson.steps.length - 1}>
+          <Button onClick={() => setStep(step + 1)} disabled={step === lesson.steps.length - 1} className="w-full sm:w-auto">
             Next <ArrowRight className="size-4 ml-1" />
           </Button>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="rounded-2xl bg-card border border-destructive/30 p-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <div className="rounded-2xl bg-card border border-destructive/30 p-4 sm:p-5">
           <div className="flex items-center gap-2 text-destructive font-semibold"><AlertCircle className="size-4" /> Common mistake</div>
           <p className="mt-2 text-sm">{lesson.mistake}</p>
         </div>
-        <div className="rounded-2xl bg-card border border-primary/30 p-5">
+        <div className="rounded-2xl bg-card border border-primary/30 p-4 sm:p-5">
           <div className="flex items-center gap-2 text-primary font-semibold"><Lightbulb className="size-4" /> Try this</div>
           <p className="mt-2 text-sm">{lesson.challenge}</p>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2 mt-6">
+        <div className="flex flex-wrap gap-2">
           {prev && (
             <Button asChild variant="outline">
               <Link to="/lessons/$id" params={{ id: prev.id }}><ArrowLeft className="size-4 mr-1" /> {prev.title}</Link>
@@ -127,10 +127,11 @@ function LessonViewer() {
             </Button>
           )}
         </div>
-        <Button onClick={onComplete} className="bg-primary text-primary-foreground hover:bg-primary/90">
+        <Button onClick={onComplete} className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90">
           <CheckCircle2 className="size-4 mr-1" /> {done ? "Mark complete again" : "Mark complete"}
         </Button>
       </div>
+      </GuestGate>
 
       {lightboxOpen && (
         <Lightbox
