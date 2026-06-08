@@ -1,18 +1,18 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard, BookOpen, Wrench, Trophy,
+  LayoutDashboard, BookOpen, Wrench,
   User, Compass, LogIn, Menu, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useCoach } from "@/lib/coach-store";
 import { ProfileAvatar } from "./ProfileAvatar";
+import { Logo, LogoMark } from "./Logo";
 
 const NAV = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/lessons", icon: BookOpen, label: "Lessons" },
   { to: "/projects", icon: Wrench, label: "Projects" },
-  { to: "/quiz", icon: Trophy, label: "Quiz" },
   { to: "/chat", icon: Compass, label: "AI Coach" },
   { to: "/profile", icon: User, label: "Profile" },
 ] as const;
@@ -92,12 +92,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           >
             <Menu className="size-5" />
           </button>
-          <div className="flex items-center gap-2">
-            <div className="size-8 rounded-lg bg-primary/20 text-primary grid place-items-center">
-              <Compass className="size-4" />
-            </div>
-            <span className="font-semibold tracking-tight">AutoCAD Coach</span>
-          </div>
+          <Logo size="sm" />
           <MobileAuthBadge />
         </header>
 
@@ -127,19 +122,11 @@ function SidebarInner({
           collapsed ? "justify-center px-2" : "justify-between px-4"
         )}
       >
-        <Link to="/" className="flex items-center gap-2 min-w-0">
-          <div className="size-9 shrink-0 rounded-xl bg-primary/15 text-primary grid place-items-center ring-1 ring-primary/30">
-            <Compass className="size-5" />
-          </div>
-          <span
-            className={cn(
-              "font-semibold tracking-tight text-sidebar-foreground truncate transition-opacity",
-              collapsed && "opacity-0 w-0 overflow-hidden"
-            )}
-          >
-            AutoCAD Coach
-          </span>
-        </Link>
+        {collapsed ? (
+          <Link to="/" aria-label="AutoCAD Coach home"><LogoMark size="md" /></Link>
+        ) : (
+          <Logo size="md" />
+        )}
         {!collapsed && (
           <button
             onClick={onToggle}
@@ -191,11 +178,6 @@ function SidebarInner({
       </nav>
 
       <UserFooter collapsed={collapsed} />
-      {!collapsed && (
-        <div className="p-3 border-t border-sidebar-border text-[11px] text-muted-foreground">
-          Created by <span className="text-primary font-medium">Sofia Chavez Saife</span>
-        </div>
-      )}
     </>
   );
 }
