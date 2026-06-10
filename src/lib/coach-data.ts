@@ -10,6 +10,620 @@ export type Lesson = {
   image: string;
   mistake: string;
   challenge: string;
+  rich?: RichLesson;
+};
+
+/**
+ * Rich, 11-section instructional content for foundational lessons.
+ * Optional — older lessons keep using the legacy fields above.
+ * Screenshot slots are *placeholders by design*: we describe exactly what
+ * the screenshot must show, with a link to the authoritative Autodesk
+ * help page. We never invent generic diagrams.
+ */
+export type RichLesson = {
+  commandName?: string;
+  learningObjective: string;
+  whatItIs: string;
+  whyWhen: string;
+  whereToFind: {
+    ribbon: string;
+    menu?: string;
+    commandLine: string;
+    alias?: string;
+  };
+  vocab: { term: string; definition: string }[];
+  beforeYouStart: string[];
+  detailedSteps: {
+    title: string;
+    instruction: string;
+    explanation: string;
+    screenshot: {
+      caption: string;
+      sourceUrl?: string;
+      imageUrl?: string;
+      annotations?: string[];
+    };
+  }[];
+  visualReference?: {
+    caption: string;
+    sourceUrl?: string;
+    imageUrl?: string;
+  };
+  commonMistakes: { mistake: string; fix: string }[];
+  troubleshooting: { problem: string; cause: string; fix: string }[];
+  practiceExercise: {
+    title: string;
+    steps: string[];
+    success: string;
+  };
+  proTips: string[];
+  relatedCommands: { name: string; alias?: string; what: string }[];
+};
+
+const AUTODESK = "https://help.autodesk.com/view/ACD/2024/ENU/";
+
+const richInterface: RichLesson = {
+  commandName: "Interface + Navigation",
+  learningObjective:
+    "By the end of this lesson you can open AutoCAD, identify every major area of the workspace, and pan/zoom around an empty drawing with confidence.",
+  whatItIs:
+    "The AutoCAD interface is the set of panels and bars surrounding your drawing area: the ribbon (top), the command line (bottom), the status bar (very bottom) and the drawing area itself. You don't draw anything yet — you only learn where you are.",
+  whyWhen:
+    "Every command you'll ever run lives in one of these areas. If you don't know where AutoCAD is listening, you'll click randomly and the program will feel hostile. Learn the map first, then the commands.",
+  whereToFind: {
+    ribbon: "Top of the window — the wide strip with tabs labelled Home, Insert, Annotate, etc.",
+    menu: "Application menu (the large red A in the top-left) for File / New / Open / Save.",
+    commandLine: "Docked at the bottom of the drawing area. Always shows what AutoCAD is waiting for.",
+    alias: "Press F2 to expand the command-line history at any time.",
+  },
+  vocab: [
+    { term: "Workspace", definition: "A preset arrangement of ribbon, panels and tools. Beginners use 'Drafting & Annotation'." },
+    { term: "Ribbon", definition: "The tabbed toolbar at the top. Each tab groups related commands into panels." },
+    { term: "Command line", definition: "A small text area at the bottom where you type commands and read prompts." },
+    { term: "Status bar", definition: "The thin bar of toggle icons at the very bottom (Grid, Snap, OSNAP, Ortho…)." },
+    { term: "Drawing area", definition: "The large dark space in the middle where geometry is drawn." },
+    { term: "Crosshairs", definition: "The cursor inside the drawing area, made of two long perpendicular lines." },
+    { term: "Pan", definition: "Sliding the view sideways without changing zoom level." },
+    { term: "Zoom", definition: "Moving the camera closer to or farther from the drawing." },
+  ],
+  beforeYouStart: [
+    "Launch AutoCAD and wait for the Start tab to appear.",
+    "Use a mouse with a working scroll wheel — pan and zoom rely on it.",
+    "Close any tutorial pop-ups so the workspace is clean.",
+  ],
+  detailedSteps: [
+    {
+      title: "Open a new drawing from the acad template",
+      instruction:
+        "On the Start tab, click 'Start Drawing'. If a template picker appears, choose 'acad.dwt'.",
+      explanation:
+        "acad.dwt is the imperial default template that ships with AutoCAD. Using a known template means lessons here behave exactly like the screenshots.",
+      screenshot: {
+        caption: "Start tab → Start Drawing button. Circle the 'Start Drawing' button.",
+        sourceUrl: AUTODESK + "?guid=GUID-1F22CBED-1678-4410-A153-21F5C6A02C70",
+      },
+    },
+    {
+      title: "Identify the four major regions of the screen",
+      instruction:
+        "Look at the window and silently name: ribbon (top), drawing area (center), command line (just below drawing), status bar (very bottom).",
+      explanation:
+        "Pointing at each region and naming it out loud builds spatial memory. You're not running any command yet — this is pure orientation.",
+      screenshot: {
+        caption: "Full AutoCAD window with arrows labelling: 1 Ribbon, 2 Drawing area, 3 Command line, 4 Status bar.",
+        sourceUrl: AUTODESK + "?guid=GUID-2010CF44-7CE3-405F-A5E1-78D60C8055A8",
+      },
+    },
+    {
+      title: "Move the view with the scroll wheel (PAN)",
+      instruction:
+        "Press and HOLD the scroll wheel (don't roll it), then drag the mouse. The drawing slides under the cursor.",
+      explanation:
+        "Holding the wheel triggers Realtime PAN. Releasing the wheel ends the pan. Your zoom level does not change.",
+      screenshot: {
+        caption: "Cursor turned into the 'hand' pan icon inside the drawing area. Add an arrow showing drag direction.",
+        sourceUrl: AUTODESK + "?guid=GUID-7B6D9C7A-9C18-4F9A-9D6A-5C7C7E2A85B2",
+      },
+    },
+    {
+      title: "Zoom in and out with the scroll wheel (ZOOM)",
+      instruction:
+        "Roll the wheel forward to zoom in toward the cursor. Roll it backward to zoom out.",
+      explanation:
+        "AutoCAD zooms toward the crosshair position, not the screen center. Where you point is where you go.",
+      screenshot: {
+        caption: "Two side-by-side captures: same drawing zoomed out (left) and zoomed in (right). Label the cursor location.",
+        sourceUrl: AUTODESK + "?guid=GUID-C0F5C7CB-7B0F-4F7B-9C13-6C2E2C9A3A8E",
+      },
+    },
+    {
+      title: "Frame everything with ZOOM EXTENTS",
+      instruction:
+        "Click inside the drawing area. Type Z, press Enter, type E, press Enter.",
+      explanation:
+        "ZOOM EXTENTS (Z → E) recentres and rescales the view so every object fits on screen. Memorise this — it's your 'I'm lost' button.",
+      screenshot: {
+        caption: "Command line showing the literal text: Command: Z  ZOOM  Specify corner… [All/Center/Dynamic/Extents/…]: E.",
+        sourceUrl: AUTODESK + "?guid=GUID-7B5A2A8C-5C2E-4D7C-9E5E-9A6E1C2E3D7B",
+      },
+    },
+  ],
+  visualReference: {
+    caption:
+      "Annotated AutoCAD 2024 workspace overview from Autodesk Help: ribbon, drawing area, command line, status bar.",
+    sourceUrl: AUTODESK + "?guid=GUID-2010CF44-7CE3-405F-A5E1-78D60C8055A8",
+  },
+  commonMistakes: [
+    { mistake: "Clicking ribbon icons at random hoping something happens.", fix: "Read the command line first — it tells you what AutoCAD is waiting for." },
+    { mistake: "Rolling the wheel and expecting to PAN.", fix: "Rolling = ZOOM. HOLDING the wheel + drag = PAN." },
+    { mistake: "Losing the drawing off-screen.", fix: "Type Z then E (ZOOM EXTENTS) to re-frame everything." },
+  ],
+  troubleshooting: [
+    { problem: "The crosshair won't move smoothly.", cause: "The cursor is outside the drawing area.", fix: "Click once inside the dark drawing area, then try again." },
+    { problem: "Scroll wheel does nothing.", cause: "MBUTTONPAN is off, or the wheel driver is misconfigured.", fix: "Type MBUTTONPAN, press Enter, set value to 1, press Enter." },
+    { problem: "Command line is missing.", cause: "It was accidentally closed.", fix: "Press Ctrl + 9 to toggle the command line back on." },
+  ],
+  practiceExercise: {
+    title: "Workspace tour in 60 seconds",
+    steps: [
+      "Open a new drawing from acad.dwt.",
+      "Point at and silently name: ribbon, drawing area, command line, status bar.",
+      "Hold the scroll wheel and pan to the top-right corner of the screen.",
+      "Roll the wheel back five clicks to zoom out.",
+      "Run ZOOM EXTENTS (Z → E) to re-centre.",
+    ],
+    success: "You can navigate to any part of an empty drawing and return to a centred view in under a minute.",
+  },
+  proTips: [
+    "Double-click the scroll wheel to run ZOOM EXTENTS without typing.",
+    "Press F2 to pop out the command-line history into a resizeable window — handy when prompts scroll too fast.",
+    "Press Esc twice to cancel any half-finished command and return to a clean prompt.",
+  ],
+  relatedCommands: [
+    { name: "ZOOM", alias: "Z", what: "Change how much of the drawing you see." },
+    { name: "PAN", alias: "P", what: "Slide the view without changing zoom." },
+    { name: "REGEN", alias: "RE", what: "Regenerate the drawing if curves appear jagged after zooming." },
+  ],
+};
+
+const richLine: RichLesson = {
+  commandName: "LINE",
+  learningObjective:
+    "By the end of this lesson you can run the LINE command and draw a precise horizontal segment using typed coordinates.",
+  whatItIs:
+    "LINE creates one or more straight line segments. Each click (or typed coordinate) places one endpoint; AutoCAD keeps prompting for the next point until you press Enter or Esc.",
+  whyWhen:
+    "LINE is the most common drawing command in AutoCAD. Use it whenever you need straight, single-segment geometry — boundaries, construction lines, sketches.",
+  whereToFind: {
+    ribbon: "Home tab → Draw panel → Line button (the diagonal segment icon).",
+    menu: "Draw menu → Line.",
+    commandLine: "Type LINE and press Enter.",
+    alias: "L (then Enter).",
+  },
+  vocab: [
+    { term: "Endpoint", definition: "Either tip of a line segment." },
+    { term: "Absolute coordinate", definition: "A point measured from the drawing origin 0,0. Typed as X,Y — for example 100,50." },
+    { term: "Relative coordinate", definition: "A point measured from the previous point. Typed with a leading @ — for example @100,0." },
+    { term: "Dynamic input", definition: "On-screen tooltip near the crosshair that lets you type distance + angle directly." },
+    { term: "Polar tracking", definition: "On-screen alignment guide that locks the cursor to set angles (0°, 90°, 45°…)." },
+  ],
+  beforeYouStart: [
+    "Start a fresh drawing from the acad.dwt template.",
+    "Press F12 once if dynamic input is off (the tooltip should appear next to the crosshair).",
+    "Make sure ORTHO mode is on — press F8 if needed (status bar icon highlights blue).",
+  ],
+  detailedSteps: [
+    {
+      title: "Start the LINE command",
+      instruction: "Type LINE, then press Enter. (Or type L, Enter.)",
+      explanation:
+        "The command line should now read 'LINE Specify first point:'. AutoCAD is now waiting for one click or one typed coordinate.",
+      screenshot: {
+        caption: "Command line showing: Command: LINE  Specify first point:",
+        sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+      },
+    },
+    {
+      title: "Pick the start point",
+      instruction:
+        "Click anywhere inside the drawing area. A 'rubber-band' segment now follows the cursor.",
+      explanation:
+        "The first click anchors the first endpoint. AutoCAD now prompts 'Specify next point or [Undo]:'.",
+      screenshot: {
+        caption: "Rubber-band line stretching from the picked start point to the current cursor position.",
+        sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+      },
+    },
+    {
+      title: "Type a relative coordinate for the second point",
+      instruction: "Type @100,0 and press Enter.",
+      explanation:
+        "@100,0 means 'go 100 units along X and 0 along Y from the previous point' — i.e. 100 units to the right. This is exactly the kind of typed precision that separates CAD from sketching.",
+      screenshot: {
+        caption: "Command line: Specify next point or [Undo]: @100,0  — and the new horizontal segment visible in the drawing.",
+        sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+      },
+    },
+    {
+      title: "End the LINE command",
+      instruction: "Press Enter once more (or press Esc).",
+      explanation:
+        "Pressing Enter on the next-point prompt ends the chain. The single horizontal segment stays in the drawing.",
+      screenshot: {
+        caption: "Drawing area with one horizontal 100-unit segment. Command line back to a clean 'Command:' prompt.",
+        sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+      },
+    },
+    {
+      title: "Save your work",
+      instruction: "Press Ctrl + S, choose a folder, name the file Lesson02-LINE.dwg, click Save.",
+      explanation:
+        "Saving early and often is non-negotiable in CAD. .dwg is AutoCAD's native format.",
+      screenshot: {
+        caption: "Save Drawing As dialog with the file name field filled in.",
+        sourceUrl: AUTODESK + "?guid=GUID-2EB1F3A5-9B4F-4B7F-9D54-1A5F8B3F0B9F",
+      },
+    },
+  ],
+  visualReference: {
+    caption: "LINE command reference — Autodesk Help page documenting prompts and options.",
+    sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+  },
+  commonMistakes: [
+    { mistake: "Forgetting to press Enter after typing a coordinate.", fix: "AutoCAD only commits a coordinate on Enter (or Spacebar). Always finish with Enter." },
+    { mistake: "Typing 100,0 instead of @100,0.", fix: "Without @, AutoCAD interprets it as an absolute point from 0,0 — not as a relative offset." },
+    { mistake: "Drawing in free-hand because ORTHO is off.", fix: "Press F8 to constrain the cursor to perfectly horizontal/vertical." },
+  ],
+  troubleshooting: [
+    { problem: "Nothing happens when I type LINE.", cause: "The drawing area doesn't have focus.", fix: "Click once inside the drawing area, then type LINE again." },
+    { problem: "My line came out diagonal.", cause: "ORTHO was off and you eyeballed the second point.", fix: "Undo with Ctrl + Z, press F8, redraw." },
+    { problem: "Pressing Enter draws a strange extra segment.", cause: "Enter at a fresh prompt repeats the last command.", fix: "Press Esc to cancel, then start LINE explicitly." },
+  ],
+  practiceExercise: {
+    title: "Draw a 200×100 rectangle using only LINE",
+    steps: [
+      "Type LINE, Enter. Click any start point.",
+      "Type @200,0 Enter.",
+      "Type @0,100 Enter.",
+      "Type @-200,0 Enter.",
+      "Type C Enter to close back to the start.",
+    ],
+    success: "You see a perfect 200×100 rectangle made of four LINE segments and the command line returns to 'Command:'.",
+  },
+  proTips: [
+    "Inside LINE, type U and Enter to undo just the last segment without leaving the command.",
+    "Inside LINE, type C and Enter to close the chain back to the very first point.",
+    "Spacebar acts like Enter for confirming commands and coordinates — faster than reaching for the Enter key.",
+  ],
+  relatedCommands: [
+    { name: "PLINE", alias: "PL", what: "Draw a connected polyline — segments behave as one object." },
+    { name: "XLINE", alias: "XL", what: "Draw an infinite construction line." },
+    { name: "ERASE", alias: "E", what: "Delete a segment you don't want." },
+  ],
+};
+
+const richCircle: RichLesson = {
+  commandName: "CIRCLE",
+  learningObjective:
+    "By the end of this lesson you can run the CIRCLE command and draw a circle of an exact radius around a chosen centre point.",
+  whatItIs:
+    "CIRCLE creates a single circular object. By default it asks for a centre point first, then a radius. Several alternative options exist (2-point, 3-point, tan-tan-radius) but the centre-radius flow is the foundation.",
+  whyWhen:
+    "Use CIRCLE for holes, wheels, fasteners, decorative arcs, and anywhere your design needs a closed round shape.",
+  whereToFind: {
+    ribbon: "Home tab → Draw panel → Circle dropdown → 'Center, Radius'.",
+    menu: "Draw menu → Circle → Center, Radius.",
+    commandLine: "Type CIRCLE and press Enter.",
+    alias: "C (then Enter).",
+  },
+  vocab: [
+    { term: "Centre point", definition: "The exact middle of the circle, equidistant from every point on the curve." },
+    { term: "Radius", definition: "The distance from the centre to the edge." },
+    { term: "Diameter", definition: "The distance across the circle through the centre. Diameter = 2 × radius." },
+    { term: "Quadrant", definition: "One of the four cardinal points on a circle (0°, 90°, 180°, 270°). OSNAP can snap to these." },
+  ],
+  beforeYouStart: [
+    "Open a new drawing from acad.dwt.",
+    "Confirm OSNAP is on (F3) so you can snap the centre to an existing point if needed.",
+    "Decide whether you want to specify a radius or a diameter — the lesson uses radius.",
+  ],
+  detailedSteps: [
+    {
+      title: "Start the CIRCLE command",
+      instruction: "Type CIRCLE, press Enter (or type C, Enter).",
+      explanation:
+        "The command line should now read 'CIRCLE Specify center point for circle or [3P/2P/Ttr (tan tan radius)]:'.",
+      screenshot: {
+        caption: "Command line showing: Command: CIRCLE  Specify center point for circle or [3P/2P/Ttr]:",
+        sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+      },
+    },
+    {
+      title: "Click the centre point",
+      instruction: "Click anywhere in the drawing area to place the centre.",
+      explanation:
+        "AutoCAD now prompts 'Specify radius of circle or [Diameter]:' and a preview circle follows the cursor.",
+      screenshot: {
+        caption: "Preview circle rubber-banding around the picked centre point, growing as the cursor moves.",
+        sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+      },
+    },
+    {
+      title: "Type the radius",
+      instruction: "Type 50 and press Enter.",
+      explanation:
+        "AutoCAD draws a circle with a radius of 50 drawing units around your centre point and exits the command.",
+      screenshot: {
+        caption: "Finished circle of radius 50, with the centre marker visible if PDMODE shows it.",
+        sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+      },
+    },
+    {
+      title: "Confirm the size with a quick check",
+      instruction: "Type LIST, press Enter, click the circle, press Enter.",
+      explanation:
+        "LIST prints the object's properties to the command-line history (press F2 to see them). You'll see RADIUS = 50.0000 and the centre coordinates.",
+      screenshot: {
+        caption: "F2 text window showing CIRCLE Layer, center point, radius, circumference and area.",
+        sourceUrl: AUTODESK + "?guid=GUID-9D7E2A91-7E2D-4B6F-9E2E-9C7A8F0E7E2D",
+      },
+    },
+  ],
+  visualReference: {
+    caption: "CIRCLE command reference — Autodesk Help page documenting all six creation methods.",
+    sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+  },
+  commonMistakes: [
+    { mistake: "Typing the diameter when AutoCAD is asking for the radius.", fix: "Either halve your value or, at the radius prompt, type D first, press Enter, then type the diameter." },
+    { mistake: "Picking a centre point with OSNAP off and getting a slightly misaligned circle.", fix: "Press F3 to enable OSNAP, then snap to an existing endpoint, midpoint or intersection." },
+    { mistake: "Clicking instead of typing the radius and getting a random size.", fix: "Always type a numeric radius — never trust the eyeball for engineering geometry." },
+  ],
+  troubleshooting: [
+    { problem: "The circle is huge or microscopic.", cause: "Your drawing zoom level made the typed radius look unexpected.", fix: "Run ZOOM EXTENTS (Z → E) to refit the view." },
+    { problem: "AutoCAD asks for a diameter, not a radius.", cause: "The last CIRCLE invocation switched the default to Diameter.", fix: "At the prompt type R and press Enter to switch back to radius." },
+    { problem: "Pressing Enter draws another circle.", cause: "Enter on a clean prompt repeats the last command.", fix: "Press Esc to clear, then start the next command deliberately." },
+  ],
+  practiceExercise: {
+    title: "Concentric circles",
+    steps: [
+      "Draw a circle of radius 50 at any point.",
+      "Run CIRCLE again. At the centre prompt, snap to the centre of the first circle (OSNAP → Center).",
+      "Type radius 30 and press Enter.",
+      "Repeat for radius 10.",
+    ],
+    success: "You see three perfectly concentric circles (10, 30, 50). LIST any one to confirm its radius.",
+  },
+  proTips: [
+    "At the radius prompt, type D and Enter to switch into Diameter mode for that one circle.",
+    "Inside CIRCLE, type 2P to draw a circle through two points (the two clicks become a diameter).",
+    "Use the Ttr option to draw a circle tangent to two existing objects with a given radius.",
+  ],
+  relatedCommands: [
+    { name: "ARC", alias: "A", what: "Draw a portion of a circle." },
+    { name: "ELLIPSE", alias: "EL", what: "Draw an oval defined by two axes." },
+    { name: "DONUT", alias: "DO", what: "Draw a filled ring (two concentric circles)." },
+  ],
+};
+
+const richRectangle: RichLesson = {
+  commandName: "RECTANGLE",
+  learningObjective:
+    "By the end of this lesson you can run the RECTANGLE command and draw a precisely sized rectangle as a single closed polyline.",
+  whatItIs:
+    "RECTANGLE (alias REC, command RECTANG) creates a closed rectangular polyline by asking for two opposite corners. Because the result is one polyline, you can fillet, hatch and offset it in a single click.",
+  whyWhen:
+    "Use RECTANGLE whenever you need a clean four-sided closed shape — walls, plates, title-block frames, viewports — without stitching four LINE segments together.",
+  whereToFind: {
+    ribbon: "Home tab → Draw panel → Rectangle button.",
+    menu: "Draw menu → Rectangle.",
+    commandLine: "Type RECTANG (or REC) and press Enter.",
+    alias: "REC (then Enter).",
+  },
+  vocab: [
+    { term: "Polyline", definition: "A single object made of connected line and/or arc segments." },
+    { term: "Closed shape", definition: "A shape whose end meets its start, with no gap. Required for HATCH, EXTRUDE, and area calculation." },
+    { term: "First corner", definition: "Any one corner of the rectangle — usually the bottom-left in drafting." },
+    { term: "Opposite corner", definition: "The diagonally opposite corner that defines width and height." },
+    { term: "Dimensions option", definition: "An option inside RECTANG that lets you type a length and width instead of picking the second corner." },
+  ],
+  beforeYouStart: [
+    "Start a fresh drawing from acad.dwt.",
+    "Press F3 to make sure OSNAP is on — handy if you'll snap the first corner to existing geometry.",
+    "Decide your rectangle's width and height. This lesson uses 200 × 100.",
+  ],
+  detailedSteps: [
+    {
+      title: "Start the RECTANGLE command",
+      instruction: "Type REC, press Enter.",
+      explanation:
+        "The command line should now read 'RECTANG Specify first corner point or [Chamfer/Elevation/Fillet/Thickness/Width]:'.",
+      screenshot: {
+        caption: "Command line showing the RECTANG first-corner prompt with the options in square brackets.",
+        sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+      },
+    },
+    {
+      title: "Pick the first corner",
+      instruction: "Click anywhere in the drawing area to place the first corner.",
+      explanation:
+        "AutoCAD now prompts 'Specify other corner point or [Area/Dimensions/Rotation]:' and a preview rectangle follows the cursor.",
+      screenshot: {
+        caption: "Preview rectangle stretching from the picked first corner to the cursor.",
+        sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+      },
+    },
+    {
+      title: "Type the second corner relative to the first",
+      instruction: "Type @200,100 and press Enter.",
+      explanation:
+        "@200,100 means 'go 200 units right and 100 units up from the first corner'. The rectangle finishes as a closed polyline in one command — no JOIN needed.",
+      screenshot: {
+        caption: "Command line: Specify other corner point: @200,100 — completed 200×100 rectangle in the drawing.",
+        sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+      },
+    },
+    {
+      title: "Verify it is one closed polyline",
+      instruction: "Hover over any edge — the entire rectangle should highlight together. Click it once to confirm.",
+      explanation:
+        "If only one edge highlights, you drew four separate LINE segments by mistake. RECTANGLE always produces a single polyline.",
+      screenshot: {
+        caption: "Whole rectangle highlighted in blue with four grips at the corners and four mid-edge grips.",
+        sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+      },
+    },
+  ],
+  visualReference: {
+    caption:
+      "RECTANG command reference — Autodesk Help page covering Chamfer, Fillet, Width, Area and Dimensions options.",
+    sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+  },
+  commonMistakes: [
+    { mistake: "Forgetting the @ symbol and getting a rectangle in the wrong place.", fix: "Always type @ before relative offsets, e.g. @200,100." },
+    { mistake: "Using LINE four times instead of REC.", fix: "Use REC so the result is a single closed polyline — much easier to fillet, hatch and offset." },
+    { mistake: "Picking corners with the mouse instead of typing dimensions.", fix: "Inside REC, type D, press Enter, then type length and width for exact sizing." },
+  ],
+  troubleshooting: [
+    { problem: "Edges are bevelled instead of square.", cause: "Chamfer option was set in a previous RECTANG and persisted.", fix: "Restart REC, type C, Enter, set both chamfer distances to 0, then continue." },
+    { problem: "Corners are rounded.", cause: "Fillet option was set previously.", fix: "Restart REC, type F, Enter, set fillet radius to 0." },
+    { problem: "Edges are unexpectedly thick.", cause: "Width option holds a non-zero value.", fix: "Restart REC, type W, Enter, set width back to 0." },
+  ],
+  practiceExercise: {
+    title: "Title-block frame",
+    steps: [
+      "Draw a 400 × 250 rectangle as the outer sheet boundary.",
+      "Run REC again. Snap the first corner to the bottom-left endpoint of the outer rectangle (OSNAP → Endpoint).",
+      "Type @400,40 and Enter to create a 400 × 40 title bar at the bottom.",
+    ],
+    success: "Two clean closed polylines: an outer sheet and a title bar stacked at the bottom-left, perfectly aligned.",
+  },
+  proTips: [
+    "Inside REC, type D for Dimensions to enter length and width as separate prompts.",
+    "Inside REC, type R for Rotation to draw the rectangle at any angle without rotating afterwards.",
+    "EXPLODE a rectangle to break it back into four LINE segments only when you genuinely need to edit one side independently.",
+  ],
+  relatedCommands: [
+    { name: "POLYGON", alias: "POL", what: "Draw a regular polygon (5, 6, 8 sides…) by centre and radius." },
+    { name: "PLINE", alias: "PL", what: "Draw an arbitrary connected polyline." },
+    { name: "OFFSET", alias: "O", what: "Make a parallel copy of the rectangle inside or outside." },
+  ],
+};
+
+const richTrim: RichLesson = {
+  commandName: "TRIM",
+  learningObjective:
+    "By the end of this lesson you can run the TRIM command and cleanly remove overshoots between intersecting objects.",
+  whatItIs:
+    "TRIM shortens an object so it ends precisely at a cutting edge — another object that crosses it. Anything you click between (or beyond, depending on mode) cutting edges is removed.",
+  whyWhen:
+    "Use TRIM whenever lines, arcs or circles run past where they should — a typical case is cleaning a tic-tac-toe grid down to a plus sign, or cutting a doorway out of a wall.",
+  whereToFind: {
+    ribbon: "Home tab → Modify panel → Trim button.",
+    menu: "Modify menu → Trim.",
+    commandLine: "Type TRIM and press Enter.",
+    alias: "TR (then Enter).",
+  },
+  vocab: [
+    { term: "Cutting edge", definition: "An object that defines where the trim happens. Any other object that crosses the segment you want to remove qualifies." },
+    { term: "Object to trim", definition: "The portion of geometry you click to remove. It must lie between cutting edges (Standard mode) or anywhere along the line (Quick mode)." },
+    { term: "Quick mode", definition: "The default in modern AutoCAD: every visible object acts as a cutting edge; you just click what you want gone." },
+    { term: "Standard mode", definition: "Classic behaviour: you first pick cutting edges, press Enter, then click segments to trim." },
+    { term: "EXTEND", definition: "The reverse of TRIM — lengthens an object to meet another." },
+  ],
+  beforeYouStart: [
+    "Open a fresh drawing and draw two LINEs that clearly cross each other.",
+    "Make sure OSNAP is on (F3) so future picks behave well.",
+    "Note which TRIM mode you're in. Default in AutoCAD 2024+ is Quick.",
+  ],
+  detailedSteps: [
+    {
+      title: "Set up two crossing lines",
+      instruction:
+        "Type LINE, Enter. Draw a horizontal line. Press Enter to finish. Run LINE again and draw a vertical line that crosses the first.",
+      explanation:
+        "TRIM needs two objects that intersect. With nothing to cut against, the command does nothing.",
+      screenshot: {
+        caption: "Two LINE segments forming a plus sign in the drawing area.",
+        sourceUrl: AUTODESK + "?guid=GUID-7C0F6B8C-5C2E-4F7B-9C13-6C2E2C9A3A8E",
+      },
+    },
+    {
+      title: "Start the TRIM command",
+      instruction: "Type TR, press Enter.",
+      explanation:
+        "In Quick mode the command line reads 'Select object to trim or shift-select to extend or [cuTting edges/Crossing/mOde/…]'. Every visible object is already acting as a cutting edge.",
+      screenshot: {
+        caption: "Command line showing the TRIM Quick-mode prompt.",
+        sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+      },
+    },
+    {
+      title: "Click the segment(s) you want to remove",
+      instruction: "Click the part of the horizontal line that sticks out past the vertical line. Repeat on the other side.",
+      explanation:
+        "Each click removes the segment between the nearest cutting edges. The remaining geometry stays.",
+      screenshot: {
+        caption: "Cursor hovering over an overshoot with the segment turning grey to indicate it will be removed.",
+        sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+      },
+    },
+    {
+      title: "End the command",
+      instruction: "Press Enter or Esc.",
+      explanation:
+        "TRIM stays active so you can keep clicking. Press Enter (or Esc) to finish.",
+      screenshot: {
+        caption: "Cleaned-up plus sign with no overshoots. Command line back to 'Command:'.",
+        sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+      },
+    },
+    {
+      title: "Switch to Standard mode if needed",
+      instruction:
+        "Inside TRIM, type O (for mOde), Enter, then S (Standard), Enter.",
+      explanation:
+        "Standard mode is the legacy flow: pick cutting edges first, press Enter, then click segments. Useful when you have many overlapping objects and want explicit control.",
+      screenshot: {
+        caption: "Command line transition: TRIM → Enter trim mode option [Quick/Standard] <Quick>: S.",
+        sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+      },
+    },
+  ],
+  visualReference: {
+    caption:
+      "TRIM command reference — Autodesk Help page covering Quick vs Standard mode and the Edge/Project options.",
+    sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+  },
+  commonMistakes: [
+    { mistake: "In Standard mode, pressing Enter only once and getting no result.", fix: "Press Enter TWICE — the second Enter selects every visible object as a cutting edge." },
+    { mistake: "Clicking a segment that has no cutting edge crossing it.", fix: "Make sure another object actually crosses the segment, or use EXTEND if you wanted to lengthen instead." },
+    { mistake: "Trimming the wrong side.", fix: "Press Ctrl + Z to undo just the last trim without leaving the command, then click the correct piece." },
+  ],
+  troubleshooting: [
+    { problem: "Nothing happens when I click.", cause: "Your cursor is not on a trimmable segment, or there is no cutting edge.", fix: "Hover until the segment previews grey, or add an intersecting object first." },
+    { problem: "TRIM removed too much / a whole line vanished.", cause: "There were no cutting edges between the start and end of the line.", fix: "Press Ctrl + Z inside the command to undo, then draw the cutting object first." },
+    { problem: "I am in the wrong mode and want classic behaviour.", cause: "AutoCAD remembers the last mode used.", fix: "Inside TRIM type O, Enter, S, Enter to switch to Standard." },
+  ],
+  practiceExercise: {
+    title: "Tic-tac-toe → Plus sign",
+    steps: [
+      "Draw four LINEs that form a # (tic-tac-toe) shape.",
+      "Run TRIM (TR, Enter).",
+      "Click each of the eight overshoot segments around the central square.",
+      "Press Enter to finish.",
+    ],
+    success: "Only the central plus sign remains — every overshoot is gone, no gaps, no stray lines.",
+  },
+  proTips: [
+    "Hold Shift while clicking inside TRIM to EXTEND instead of trim — one command, two behaviours.",
+    "Use the Fence option (type F inside TRIM) to draw a line that trims every object it crosses in one drag.",
+    "Use the Crossing option (type C) to box-select many segments to trim at once.",
+  ],
+  relatedCommands: [
+    { name: "EXTEND", alias: "EX", what: "Lengthen an object to meet another — the inverse of TRIM." },
+    { name: "ERASE", alias: "E", what: "Delete an entire object outright." },
+    { name: "BREAK", alias: "BR", what: "Split an object at one or two specified points." },
+  ],
 };
 
 export const lessons: Lesson[] = [
