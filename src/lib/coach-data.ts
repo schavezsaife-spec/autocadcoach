@@ -961,13 +961,25 @@ export const lessonQuizzes: Record<string, LessonQuizQ[]> = {
     { q: "Which key combination zooms to all geometry in the drawing?", choices: ["Z then E", "Z then A", "F2", "Ctrl + 0"], answer: 0, xp: 10, explanation: "ZOOM EXTENTS (Z then E) frames every visible object in the drawing." },
     { q: "Where do you read what AutoCAD expects you to do next?", choices: ["The ribbon", "The status bar", "The command line", "The title bar"], answer: 2, xp: 10, explanation: "The command line is your map — it tells you exactly what input AutoCAD is waiting for." },
   ],
-  "line-circle": [
-    { q: "How do you confirm a typed coordinate in AutoCAD?", choices: ["Space then Tab", "Press Enter", "Click again", "Press Esc"], answer: 1, xp: 10, explanation: "AutoCAD only accepts a typed coordinate after you press Enter (or Spacebar)." },
-    { q: "After CIRCLE, what does AutoCAD ask for first?", choices: ["Radius", "Center point", "Diameter", "A layer"], answer: 1, xp: 10, explanation: "CIRCLE always asks for the center point first, then the radius (or diameter)." },
+  line: [
+    { q: "How do you confirm a typed coordinate in AutoCAD?", choices: ["Space then Tab", "Press Enter", "Click again", "Press Esc"], answer: 1, xp: 10, explanation: "AutoCAD commits a typed coordinate on Enter (or Spacebar)." },
+    { q: "What does @100,0 mean as the next point inside LINE?", choices: ["Absolute point 100,0 from origin", "100 units right of the previous point", "Radius 100, angle 0", "Diameter 100"], answer: 1, xp: 10, explanation: "The @ prefix makes the coordinate relative to the previous point." },
+    { q: "Which option ends LINE by closing the chain back to the first point?", choices: ["E", "U", "C", "X"], answer: 2, xp: 10, explanation: "Inside LINE, typing C and pressing Enter closes the chain back to the very first point." },
+  ],
+  circle: [
+    { q: "After CIRCLE, what does AutoCAD ask for first?", choices: ["Radius", "Center point", "Diameter", "A layer"], answer: 1, xp: 10, explanation: "CIRCLE asks for the centre point first, then the radius or diameter." },
+    { q: "At the radius prompt, how do you switch to typing a diameter instead?", choices: ["Type X then Enter", "Type D then Enter", "Press Esc", "Press Tab"], answer: 1, xp: 10, explanation: "Type D and press Enter to switch that one circle to Diameter mode." },
+    { q: "Which option draws a circle through two clicks that form a diameter?", choices: ["2P", "3P", "Ttr", "C"], answer: 0, xp: 10, explanation: "Inside CIRCLE, the 2P option uses two picked points as the endpoints of a diameter." },
+  ],
+  rectangle: [
+    { q: "REC asks for which two inputs?", choices: ["Centre and radius", "Two opposite corners", "Three corners", "A length only"], answer: 1, xp: 10, explanation: "RECTANG is defined by two diagonally opposite corners." },
+    { q: "What does the result of REC behave as?", choices: ["Four separate lines", "A single closed polyline", "An infinite construction line", "A block"], answer: 1, xp: 10, explanation: "RECTANG produces a single closed polyline — handy for HATCH, FILLET and OFFSET." },
+    { q: "Inside REC, which option lets you type length and width separately?", choices: ["A (Area)", "D (Dimensions)", "R (Rotation)", "F (Fillet)"], answer: 1, xp: 10, explanation: "The Dimensions option prompts for length then width instead of the second corner." },
   ],
   trim: [
-    { q: "How many times do you press Enter to select 'all' as cutting edges?", choices: ["Once", "Twice", "Three times", "Hold Shift+Enter"], answer: 1, xp: 10, explanation: "Type TR then press Enter twice — the second Enter selects every visible object as cutting edges." },
-    { q: "After choosing cutting edges, what do you do?", choices: ["Type a distance", "Click the segments to remove", "Press F8", "Pick a layer"], answer: 1, xp: 10, explanation: "Click the actual segments you want gone. They must lie between cutting edges." },
+    { q: "In Standard mode, how many times do you press Enter to select 'all' as cutting edges?", choices: ["Once", "Twice", "Three times", "Hold Shift+Enter"], answer: 1, xp: 10, explanation: "In Standard TRIM, type TR then press Enter twice — the second Enter selects every visible object as cutting edges." },
+    { q: "In Quick mode (default in modern AutoCAD), what acts as a cutting edge?", choices: ["Nothing — you must pick edges", "Only objects on the current layer", "Every visible object", "Only locked objects"], answer: 2, xp: 10, explanation: "Quick mode treats every visible object as a cutting edge automatically — you just click what to remove." },
+    { q: "Holding Shift while clicking inside TRIM does what?", choices: ["Deletes the object entirely", "Switches to EXTEND for that pick", "Cancels the command", "Selects a layer"], answer: 1, xp: 10, explanation: "Shift-click inside TRIM extends instead of trims, so you don't need to switch commands." },
   ],
   "move-copy": [
     { q: "What is the keyboard alias for COPY?", choices: ["C", "CO", "CP", "MV"], answer: 1, xp: 10, explanation: "CO is the standard AutoCAD alias for COPY. C is reserved for CIRCLE." },
