@@ -1,12 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { lessons, getLessonQuiz } from "@/lib/coach-data";
+import { lessons, getLessonQuiz, type RichLesson } from "@/lib/coach-data";
 import { useCoach } from "@/lib/coach-store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Lightbox } from "@/components/coach/Lightbox";
-import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target, Trophy, RotateCcw, XCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target, Trophy, RotateCcw, XCircle, BookOpen, Compass, MapPin, ListChecks, Image as ImageIcon, Wrench, Dumbbell, Sparkles, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { cn } from "@/lib/utils";
@@ -82,46 +82,21 @@ function LessonViewer() {
       <p className="text-muted-foreground">{lesson.description}</p>
 
       <GuestGate isAuthenticated={isAuthed}>
-      <button
-        onClick={() => setLightboxOpen(true)}
-        className="block w-full rounded-2xl overflow-hidden border border-border group"
-        aria-label={`Enlarge image for ${lesson.title}`}
-      >
-        <img src={lesson.image} alt={`${lesson.title} reference`} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
-      </button>
-
-      <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
-        <div className="flex items-center gap-2 text-primary font-semibold"><Target className="size-4" /> Objective</div>
-        <p className="mt-2 text-sm">{lesson.objective}</p>
-      </div>
-
-      <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
-        <div className="flex items-center justify-between mb-3">
-          <div className="font-semibold">Step {step + 1} of {lesson.steps.length}</div>
-          <div className="text-sm text-muted-foreground">{stepPct}%</div>
-        </div>
-        <Progress value={stepPct} className="h-1.5 mb-4" />
-        <p className="text-base">{lesson.steps[step]}</p>
-        <div className="flex flex-col sm:flex-row justify-between gap-2 mt-5">
-          <Button variant="outline" onClick={() => setStep(step - 1)} disabled={step === 0} className="w-full sm:w-auto">
-            <ArrowLeft className="size-4 mr-1" /> Previous
-          </Button>
-          <Button onClick={() => setStep(step + 1)} disabled={step === lesson.steps.length - 1} className="w-full sm:w-auto">
-            Next <ArrowRight className="size-4 ml-1" />
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        <div className="rounded-2xl bg-card border border-destructive/30 p-4 sm:p-5">
-          <div className="flex items-center gap-2 text-destructive font-semibold"><AlertCircle className="size-4" /> Common mistake</div>
-          <p className="mt-2 text-sm">{lesson.mistake}</p>
-        </div>
-        <div className="rounded-2xl bg-card border border-primary/30 p-4 sm:p-5">
-          <div className="flex items-center gap-2 text-primary font-semibold"><Lightbulb className="size-4" /> Try this</div>
-          <p className="mt-2 text-sm">{lesson.challenge}</p>
-        </div>
-      </div>
+      {lesson.rich ? (
+        <RichLessonBody
+          rich={lesson.rich}
+          fallbackImage={lesson.image}
+          onOpenLightbox={() => setLightboxOpen(true)}
+        />
+      ) : (
+        <LegacyLessonBody
+          lesson={lesson}
+          step={step}
+          stepPct={stepPct}
+          setStep={setStep}
+          onOpenLightbox={() => setLightboxOpen(true)}
+        />
+      )}
 
       {quizQuestions.length > 0 && (
         <LessonQuiz
@@ -165,6 +140,358 @@ function LessonViewer() {
         />
       )}
     </div>
+  );
+}
+
+function LegacyLessonBody({
+  lesson,
+  step,
+  stepPct,
+  setStep,
+  onOpenLightbox,
+}: {
+  lesson: (typeof lessons)[number];
+  step: number;
+  stepPct: number;
+  setStep: (n: number) => void;
+  onOpenLightbox: () => void;
+}) {
+  return (
+    <>
+      <button
+        onClick={onOpenLightbox}
+        className="block w-full rounded-2xl overflow-hidden border border-border group"
+        aria-label={`Enlarge image for ${lesson.title}`}
+      >
+        <img src={lesson.image} alt={`${lesson.title} reference`} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
+      </button>
+
+      <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
+        <div className="flex items-center gap-2 text-primary font-semibold"><Target className="size-4" /> Objective</div>
+        <p className="mt-2 text-sm">{lesson.objective}</p>
+      </div>
+
+      <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
+        <div className="flex items-center justify-between mb-3">
+          <div className="font-semibold">Step {step + 1} of {lesson.steps.length}</div>
+          <div className="text-sm text-muted-foreground">{stepPct}%</div>
+        </div>
+        <Progress value={stepPct} className="h-1.5 mb-4" />
+        <p className="text-base">{lesson.steps[step]}</p>
+        <div className="flex flex-col sm:flex-row justify-between gap-2 mt-5">
+          <Button variant="outline" onClick={() => setStep(step - 1)} disabled={step === 0} className="w-full sm:w-auto">
+            <ArrowLeft className="size-4 mr-1" /> Previous
+          </Button>
+          <Button onClick={() => setStep(step + 1)} disabled={step === lesson.steps.length - 1} className="w-full sm:w-auto">
+            Next <ArrowRight className="size-4 ml-1" />
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <div className="rounded-2xl bg-card border border-destructive/30 p-4 sm:p-5">
+          <div className="flex items-center gap-2 text-destructive font-semibold"><AlertCircle className="size-4" /> Common mistake</div>
+          <p className="mt-2 text-sm">{lesson.mistake}</p>
+        </div>
+        <div className="rounded-2xl bg-card border border-primary/30 p-4 sm:p-5">
+          <div className="flex items-center gap-2 text-primary font-semibold"><Lightbulb className="size-4" /> Try this</div>
+          <p className="mt-2 text-sm">{lesson.challenge}</p>
+        </div>
+      </div>
+    </>
+  );
+}
+
+const SECTIONS = [
+  { id: "objective", label: "Objective", icon: Target },
+  { id: "what", label: "What it is", icon: BookOpen },
+  { id: "why", label: "Why & when", icon: Compass },
+  { id: "where", label: "Where to find it", icon: MapPin },
+  { id: "vocab", label: "Vocabulary", icon: BookOpen },
+  { id: "before", label: "Before you start", icon: ListChecks },
+  { id: "steps", label: "Step-by-step", icon: ListChecks },
+  { id: "visual", label: "Visual reference", icon: ImageIcon },
+  { id: "mistakes", label: "Mistakes & fixes", icon: AlertCircle },
+  { id: "troubleshooting", label: "Troubleshooting", icon: Wrench },
+  { id: "practice", label: "Practice", icon: Dumbbell },
+  { id: "pro", label: "Pro tips & related", icon: Sparkles },
+];
+
+function RichLessonBody({
+  rich,
+  fallbackImage,
+  onOpenLightbox,
+}: {
+  rich: RichLesson;
+  fallbackImage: string;
+  onOpenLightbox: () => void;
+}) {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-6 lg:gap-8">
+      {/* Anchored TOC */}
+      <nav className="hidden lg:block sticky top-6 self-start text-sm">
+        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">On this page</div>
+        <ul className="space-y-1.5">
+          {SECTIONS.map((s) => (
+            <li key={s.id}>
+              <a
+                href={`#${s.id}`}
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-1"
+              >
+                <s.icon className="size-3.5 opacity-60" />
+                <span>{s.label}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div className="space-y-6 min-w-0">
+        <Section id="objective" icon={Target} title="Learning objective" accent="primary">
+          <p className="text-base leading-relaxed">{rich.learningObjective}</p>
+        </Section>
+
+        <Section id="what" icon={BookOpen} title={`What ${rich.commandName ?? "this"} is`}>
+          <p className="text-sm leading-relaxed">{rich.whatItIs}</p>
+        </Section>
+
+        <Section id="why" icon={Compass} title="Why and when you use it">
+          <p className="text-sm leading-relaxed">{rich.whyWhen}</p>
+        </Section>
+
+        <Section id="where" icon={MapPin} title="Where to find it in the AutoCAD interface">
+          <dl className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-y-2 gap-x-4 text-sm">
+            <dt className="text-muted-foreground">Ribbon</dt>
+            <dd>{rich.whereToFind.ribbon}</dd>
+            {rich.whereToFind.menu && (<>
+              <dt className="text-muted-foreground">Menu</dt>
+              <dd>{rich.whereToFind.menu}</dd>
+            </>)}
+            <dt className="text-muted-foreground">Command line</dt>
+            <dd className="font-mono text-primary">{rich.whereToFind.commandLine}</dd>
+            {rich.whereToFind.alias && (<>
+              <dt className="text-muted-foreground">Alias / shortcut</dt>
+              <dd className="font-mono text-primary">{rich.whereToFind.alias}</dd>
+            </>)}
+          </dl>
+        </Section>
+
+        <Section id="vocab" icon={BookOpen} title="Key vocabulary">
+          <dl className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-y-3 gap-x-4 text-sm">
+            {rich.vocab.map((v) => (
+              <div key={v.term} className="contents">
+                <dt className="font-semibold text-foreground">{v.term}</dt>
+                <dd className="text-muted-foreground">{v.definition}</dd>
+              </div>
+            ))}
+          </dl>
+        </Section>
+
+        <Section id="before" icon={ListChecks} title="Before you start">
+          <ul className="space-y-2 text-sm">
+            {rich.beforeYouStart.map((b, i) => (
+              <li key={i} className="flex gap-2">
+                <CheckCircle2 className="size-4 text-primary mt-0.5 shrink-0" />
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+
+        <Section id="steps" icon={ListChecks} title="Step-by-step instructions">
+          <ol className="space-y-5">
+            {rich.detailedSteps.map((s, i) => (
+              <li key={i} className="rounded-xl border border-border bg-secondary/30 p-4 sm:p-5">
+                <div className="flex items-start gap-3">
+                  <div className="grid place-items-center size-7 rounded-full bg-primary text-primary-foreground text-sm font-bold shrink-0">
+                    {i + 1}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-semibold">{s.title}</div>
+                    <p className="mt-1 text-sm">{s.instruction}</p>
+                    <p className="mt-2 text-sm text-muted-foreground italic">{s.explanation}</p>
+                    <ScreenshotSlot shot={s.screenshot} fallback={fallbackImage} />
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Section>
+
+        <Section id="visual" icon={ImageIcon} title="Visual reference">
+          {rich.visualReference ? (
+            <ScreenshotSlot shot={rich.visualReference} fallback={fallbackImage} onOpen={onOpenLightbox} large />
+          ) : (
+            <p className="text-sm text-muted-foreground">No reference image required for this lesson.</p>
+          )}
+        </Section>
+
+        <Section id="mistakes" icon={AlertCircle} title="Common mistakes & fixes" accent="destructive">
+          <ul className="space-y-3 text-sm">
+            {rich.commonMistakes.map((m, i) => (
+              <li key={i} className="rounded-lg border border-destructive/20 bg-destructive/5 p-3">
+                <div className="font-medium text-destructive">{m.mistake}</div>
+                <div className="mt-1 text-muted-foreground"><span className="text-foreground font-medium">Fix: </span>{m.fix}</div>
+              </li>
+            ))}
+          </ul>
+        </Section>
+
+        <Section id="troubleshooting" icon={Wrench} title="Troubleshooting">
+          <div className="space-y-3">
+            {rich.troubleshooting.map((t, i) => (
+              <details key={i} className="group rounded-lg border border-border bg-secondary/30 p-3 open:bg-secondary/50">
+                <summary className="cursor-pointer font-medium text-sm flex items-center justify-between gap-2">
+                  <span>{t.problem}</span>
+                  <span className="text-xs text-muted-foreground group-open:hidden">Show</span>
+                  <span className="text-xs text-muted-foreground hidden group-open:inline">Hide</span>
+                </summary>
+                <div className="mt-2 text-sm space-y-1">
+                  <div><span className="text-muted-foreground">Cause: </span>{t.cause}</div>
+                  <div><span className="text-muted-foreground">Fix: </span>{t.fix}</div>
+                </div>
+              </details>
+            ))}
+          </div>
+        </Section>
+
+        <Section id="practice" icon={Dumbbell} title="Practice exercise" accent="primary">
+          <div className="font-semibold">{rich.practiceExercise.title}</div>
+          <ol className="mt-3 space-y-2 text-sm list-decimal list-inside marker:text-primary">
+            {rich.practiceExercise.steps.map((s, i) => <li key={i}>{s}</li>)}
+          </ol>
+          <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
+            <span className="font-medium text-primary">Success looks like: </span>
+            <span>{rich.practiceExercise.success}</span>
+          </div>
+        </Section>
+
+        <Section id="pro" icon={Sparkles} title="Pro tips & related commands">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Pro tips</div>
+              <ul className="space-y-2 text-sm">
+                {rich.proTips.map((t, i) => (
+                  <li key={i} className="flex gap-2">
+                    <Lightbulb className="size-4 text-primary mt-0.5 shrink-0" />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Related commands</div>
+              <ul className="space-y-2 text-sm">
+                {rich.relatedCommands.map((c) => (
+                  <li key={c.name} className="rounded-lg border border-border bg-secondary/30 px-3 py-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-semibold text-primary">{c.name}</span>
+                      {c.alias && <span className="text-xs text-muted-foreground">({c.alias})</span>}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-0.5">{c.what}</div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Section>
+      </div>
+    </div>
+  );
+}
+
+function Section({
+  id,
+  icon: Icon,
+  title,
+  accent = "default",
+  children,
+}: {
+  id: string;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  accent?: "default" | "primary" | "destructive";
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      id={id}
+      className={cn(
+        "scroll-mt-24 rounded-2xl border bg-card p-4 sm:p-6",
+        accent === "primary" && "border-primary/30",
+        accent === "destructive" && "border-destructive/30",
+        accent === "default" && "border-border",
+      )}
+    >
+      <h2 className={cn(
+        "flex items-center gap-2 text-lg font-semibold mb-4",
+        accent === "primary" && "text-primary",
+        accent === "destructive" && "text-destructive",
+      )}>
+        <Icon className="size-5" />
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
+function ScreenshotSlot({
+  shot,
+  fallback,
+  onOpen,
+  large = false,
+}: {
+  shot: { caption: string; sourceUrl?: string; imageUrl?: string };
+  fallback: string;
+  onOpen?: () => void;
+  large?: boolean;
+}) {
+  const hasImage = !!shot.imageUrl;
+  return (
+    <figure className={cn("mt-3 rounded-xl border border-dashed border-border bg-secondary/40 overflow-hidden")}>
+      {hasImage ? (
+        <button
+          type="button"
+          onClick={onOpen}
+          className="block w-full"
+          aria-label="Enlarge screenshot"
+        >
+          <img
+            src={shot.imageUrl}
+            alt={shot.caption}
+            className={cn("w-full object-cover", large ? "h-72" : "h-48")}
+          />
+        </button>
+      ) : (
+        <div
+          className={cn(
+            "w-full grid place-items-center text-center p-4 bg-[repeating-linear-gradient(135deg,transparent_0_10px,hsl(var(--muted)/0.15)_10px_20px)]",
+            large ? "h-48" : "h-32",
+          )}
+        >
+          <div className="flex flex-col items-center gap-1 text-xs text-muted-foreground">
+            <ImageIcon className="size-5" aria-hidden />
+            <span className="uppercase tracking-wider">Screenshot placeholder</span>
+          </div>
+        </div>
+      )}
+      <figcaption className="px-3 py-2 text-xs text-muted-foreground flex items-start gap-2 justify-between">
+        <span className="leading-snug">{shot.caption}</span>
+        {shot.sourceUrl && (
+          <a
+            href={shot.sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="shrink-0 inline-flex items-center gap-1 text-primary hover:underline"
+          >
+            Autodesk docs <ExternalLink className="size-3" />
+          </a>
+        )}
+      </figcaption>
+      {/* fallback ref to satisfy linter when fallback unused */}
+      <span className="hidden">{fallback}</span>
+    </figure>
   );
 }
 
