@@ -640,37 +640,70 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1581090700227-1e8e0c0a4e1a?w=1200",
     mistake: "Clicking random ribbon icons. Focus on the command line — it's your map.",
     challenge: "Pan and zoom to four different corners of an empty drawing in under 30 seconds.",
+    rich: richInterface,
   },
   {
-    id: "line-circle", day: 2, title: "LINE + CIRCLE", tag: "Drawing", xp: 60,
-    description: "Draw your first precise geometry.",
-    objective: "Use LINE and CIRCLE with typed coordinates.",
+    id: "line", day: 2, title: "LINE", tag: "Drawing", xp: 60,
+    description: "Draw your first precise straight segment with typed coordinates.",
+    objective: "Use the LINE command with a typed relative coordinate.",
     steps: [
       "Type LINE, press Enter. Click a start point.",
-      "Type 100,0 and press Enter to draw a 100 unit horizontal line.",
-      "Press Esc. Type CIRCLE, click a center, type 50 for radius.",
-      "Save your file as Lesson02.dwg.",
+      "Type @100,0 and press Enter to draw a 100-unit horizontal line.",
+      "Press Enter once more to end the LINE command.",
+      "Save your file as Lesson02-LINE.dwg.",
     ],
     image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200",
-    mistake: "Forgetting to press Enter after typing coordinates.",
-    challenge: "Draw a square 200x200 using only LINE and typed coords.",
+    mistake: "Forgetting the @ before relative coordinates.",
+    challenge: "Draw a 200×100 rectangle using only LINE and the C (close) option.",
+    rich: richLine,
   },
   {
-    id: "trim", day: 3, title: "TRIM", tag: "Editing", xp: 60,
+    id: "circle", day: 3, title: "CIRCLE", tag: "Drawing", xp: 60,
+    description: "Draw a precise circle by centre and radius.",
+    objective: "Use the CIRCLE command with a typed radius.",
+    steps: [
+      "Type CIRCLE (or C), press Enter.",
+      "Click a centre point in the drawing area.",
+      "Type 50 and press Enter for the radius.",
+      "Run LIST and click the circle to verify radius = 50.",
+    ],
+    image: "https://images.unsplash.com/photo-1551033406-611cf9a28f67?w=1200",
+    mistake: "Eyeballing the radius with a click instead of typing a number.",
+    challenge: "Draw three concentric circles of radius 10, 30 and 50.",
+    rich: richCircle,
+  },
+  {
+    id: "rectangle", day: 4, title: "RECTANGLE", tag: "Drawing", xp: 60,
+    description: "Draw a closed four-sided polyline in a single command.",
+    objective: "Use the RECTANGLE command with a typed relative second corner.",
+    steps: [
+      "Type REC, press Enter.",
+      "Click a first corner.",
+      "Type @200,100 and press Enter for the opposite corner.",
+      "Click any edge to confirm the result is one closed polyline.",
+    ],
+    image: "https://images.unsplash.com/photo-1487014679447-9f8336841d58?w=1200",
+    mistake: "Drawing four LINE segments when REC would have made a single closed polyline.",
+    challenge: "Build a 400×250 frame with a 400×40 title bar snapped to its bottom-left.",
+    rich: richRectangle,
+  },
+  {
+    id: "trim", day: 5, title: "TRIM", tag: "Editing", xp: 60,
     description: "Clean up your geometry like a pro.",
-    objective: "Use TRIM to remove unwanted line segments.",
+    objective: "Use TRIM to remove overshoots between intersecting objects.",
     steps: [
       "Draw two crossing lines.",
-      "Type TR and press Enter twice to select everything as cutting edges.",
-      "Click the segments you want to remove.",
-      "Press Esc when done.",
+      "Type TR and press Enter.",
+      "Click the segment(s) you want to remove.",
+      "Press Enter or Esc when finished.",
     ],
     image: "https://images.unsplash.com/photo-1545972154-9bb223aac798?w=1200",
-    mistake: "Pressing Enter only once — TRIM expects cutting edges first.",
+    mistake: "In Standard mode, pressing Enter only once — Standard TRIM expects cutting edges first, so press Enter twice.",
     challenge: "Draw a tic-tac-toe grid and TRIM it down to a plus sign.",
+    rich: richTrim,
   },
   {
-    id: "move-copy", day: 4, title: "MOVE + COPY", tag: "Editing", xp: 60,
+    id: "move-copy", day: 6, title: "MOVE + COPY", tag: "Editing", xp: 60,
     description: "Reposition and duplicate objects.",
     objective: "Use MOVE (M) and COPY (CO) with base points.",
     steps: [
@@ -683,7 +716,7 @@ export const lessons: Lesson[] = [
     challenge: "Copy a circle 5 times in a horizontal row, 100 units apart.",
   },
   {
-    id: "osnap", day: 5, title: "Precision with OSNAP", tag: "Precision", xp: 70,
+    id: "osnap", day: 7, title: "Precision with OSNAP", tag: "Precision", xp: 70,
     description: "Snap to exact geometry every time.",
     objective: "Enable OSNAP for endpoints, midpoints, centers.",
     steps: [
@@ -697,7 +730,7 @@ export const lessons: Lesson[] = [
     challenge: "Draw a triangle with vertices snapped to three existing circle centers.",
   },
   {
-    id: "layers", day: 6, title: "Layers Basics", tag: "Organization", xp: 70,
+    id: "layers", day: 8, title: "Layers Basics", tag: "Organization", xp: 70,
     description: "Organize your drawing by layers.",
     objective: "Create layers with colors and assign objects to them.",
     steps: [
@@ -710,7 +743,7 @@ export const lessons: Lesson[] = [
     challenge: "Move 3 existing objects each to a different new layer.",
   },
   {
-    id: "dim-text", day: 7, title: "Dimensions + Text", tag: "Annotation", xp: 70,
+    id: "dim-text", day: 9, title: "Dimensions + Text", tag: "Annotation", xp: 70,
     description: "Annotate your drawing professionally.",
     objective: "Use DIM and TEXT to label drawings.",
     steps: [
@@ -723,7 +756,7 @@ export const lessons: Lesson[] = [
     challenge: "Fully dimension a 100x200 rectangle with a title block.",
   },
   {
-    id: "hatch", day: 8, title: "HATCH", tag: "Fill", xp: 60,
+    id: "hatch", day: 10, title: "HATCH", tag: "Fill", xp: 60,
     description: "Fill closed areas with patterns.",
     objective: "Use HATCH to fill enclosed regions.",
     steps: [
@@ -737,7 +770,7 @@ export const lessons: Lesson[] = [
     challenge: "Hatch a rectangle with ANSI31 at 45 degrees.",
   },
   {
-    id: "blocks", day: 9, title: "BLOCKS", tag: "Reusability", xp: 80,
+    id: "blocks", day: 11, title: "BLOCKS", tag: "Reusability", xp: 80,
     description: "Reuse geometry as a single object.",
     objective: "Create and insert BLOCKs.",
     steps: [
@@ -751,7 +784,7 @@ export const lessons: Lesson[] = [
     challenge: "Make a chair block and insert it 4 times around a table.",
   },
   {
-    id: "join", day: 10, title: "JOIN", tag: "Editing", xp: 60,
+    id: "join", day: 12, title: "JOIN", tag: "Editing", xp: 60,
     description: "Combine separate segments into one polyline.",
     objective: "Use JOIN (J) to merge connected lines.",
     steps: [
@@ -764,7 +797,7 @@ export const lessons: Lesson[] = [
     challenge: "Draw 4 lines that form a square and JOIN them into one polyline.",
   },
   {
-    id: "extrude", day: 11, title: "EXTRUDE", tag: "3D", xp: 90,
+    id: "extrude", day: 13, title: "EXTRUDE", tag: "3D", xp: 90,
     description: "Push 2D shapes into 3D solids.",
     objective: "Use EXTRUDE on a closed polyline.",
     steps: [
@@ -779,20 +812,20 @@ export const lessons: Lesson[] = [
     challenge: "Extrude a hexagon to 100 units tall.",
   },
   {
-    id: "polyline-rect", day: 12, title: "POLYLINE + RECTANGLE", tag: "Drawing", xp: 60,
-    description: "Draw connected geometry as one object.",
-    objective: "Use PL and REC for clean shapes.",
+    id: "polyline-rect", day: 14, title: "POLYLINE Deep-Dive", tag: "Drawing", xp: 60,
+    description: "Draw connected geometry as one object using PLINE options.",
+    objective: "Use PL with the Arc, Close and Width options.",
     steps: [
       "Type PL, press Enter, click points to draw.",
       "Type C to close back to start.",
-      "Type REC, click two corners for a rectangle.",
+      "Try the A (Arc) option mid-polyline to add a curved segment.",
     ],
     image: "https://images.unsplash.com/photo-1551033406-611cf9a28f67?w=1200",
-    mistake: "Using LINE when you need a single closed shape — pick PL or REC.",
+    mistake: "Using LINE when you need a single closed shape — pick PLINE instead.",
     challenge: "Draw an L-shape with POLYLINE and close it.",
   },
   {
-    id: "offset-mirror", day: 13, title: "OFFSET + MIRROR", tag: "Editing", xp: 70,
+    id: "offset-mirror", day: 15, title: "OFFSET + MIRROR", tag: "Editing", xp: 70,
     description: "Duplicate parallel or reflected copies.",
     objective: "Use OFFSET (O) and MIRROR (MI).",
     steps: [
@@ -805,7 +838,7 @@ export const lessons: Lesson[] = [
     challenge: "Mirror half a butterfly to make a full symmetrical one.",
   },
   {
-    id: "fillet-chamfer", day: 14, title: "FILLET + CHAMFER", tag: "Editing", xp: 70,
+    id: "fillet-chamfer", day: 16, title: "FILLET + CHAMFER", tag: "Editing", xp: 70,
     description: "Round or bevel corners.",
     objective: "Use FILLET (F) and CHAMFER (CHA).",
     steps: [
@@ -818,7 +851,7 @@ export const lessons: Lesson[] = [
     challenge: "Fillet all 4 corners of a rectangle with radius 15.",
   },
   {
-    id: "array-review", day: 15, title: "ARRAY + Dimensions Review", tag: "Review", xp: 100,
+    id: "array-review", day: 17, title: "ARRAY + Dimensions Review", tag: "Review", xp: 100,
     description: "Master ARRAY and review dimensioning.",
     objective: "Use ARRAY (AR) and check your dimension style.",
     steps: [
