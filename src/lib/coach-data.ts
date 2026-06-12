@@ -11,6 +11,13 @@ export type Lesson = {
   mistake: string;
   challenge: string;
   rich?: RichLesson;
+  media?: {
+    hero?: string;
+    action?: { src: string; caption: string };
+    before?: { src: string; caption: string };
+    after?: { src: string; caption: string };
+    error?: { src: string; caption: string };
+  };
 };
 
 /**
