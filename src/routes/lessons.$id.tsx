@@ -494,6 +494,37 @@ function ScreenshotSlot({
   onOpen?: () => void;
   large?: boolean;
 }) {
+  return ScreenshotSlotImpl({ shot, fallback, uploadedUrl, onOpen, large });
+}
+
+function BeforeAfter({ label, src }: { label: string; src?: string }) {
+  return (
+    <figure className="rounded-xl border border-border overflow-hidden bg-secondary/30">
+      <div className="aspect-video grid place-items-center bg-black/40">
+        {src ? (
+          <img src={src} alt={`${label} — annotated AutoCAD screenshot`} className="w-full h-full object-contain" />
+        ) : (
+          <span className="text-xs uppercase tracking-wider text-muted-foreground">Not uploaded</span>
+        )}
+      </div>
+      <figcaption className="px-3 py-2 text-xs text-muted-foreground">{label}</figcaption>
+    </figure>
+  );
+}
+
+function ScreenshotSlotImpl({
+  shot,
+  fallback,
+  uploadedUrl,
+  onOpen,
+  large = false,
+}: {
+  shot: { caption: string; sourceUrl?: string; imageUrl?: string };
+  fallback: string;
+  uploadedUrl?: string;
+  onOpen?: () => void;
+  large?: boolean;
+}) {
   const imageSrc = uploadedUrl ?? shot.imageUrl;
   const hasImage = !!imageSrc;
   return (
