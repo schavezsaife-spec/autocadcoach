@@ -166,6 +166,8 @@ function LegacyLessonBody({
   setStep: (n: number) => void;
   onOpenLightbox: () => void;
 }) {
+  const media = lesson.media;
+  const heroSrc = media?.hero ?? lesson.image;
   return (
     <>
       <button
@@ -173,13 +175,20 @@ function LegacyLessonBody({
         className="block w-full rounded-2xl overflow-hidden border border-border group"
         aria-label={`Enlarge image for ${lesson.title}`}
       >
-        <img src={lesson.image} alt={`${lesson.title} reference`} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
+        <img src={heroSrc} alt={`${lesson.title} reference`} className="w-full h-64 object-contain bg-secondary/40 group-hover:scale-[1.02] transition-transform" />
       </button>
 
       <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
         <div className="flex items-center gap-2 text-primary font-semibold"><Target className="size-4" /> Objective</div>
         <p className="mt-2 text-sm">{lesson.objective}</p>
       </div>
+
+      {media?.action && (
+        <figure className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
+          <img src={media.action.src} alt={media.action.caption} className="w-full max-h-80 object-contain rounded-lg bg-secondary/40" />
+          <figcaption className="text-xs text-muted-foreground mt-2">{media.action.caption}</figcaption>
+        </figure>
+      )}
 
       <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
         <div className="flex items-center justify-between mb-3">
@@ -198,10 +207,36 @@ function LegacyLessonBody({
         </div>
       </div>
 
+      {(media?.before || media?.after) && (
+        <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
+          <div className="font-semibold mb-3">Before vs After</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {media.before && (
+              <figure>
+                <img src={media.before.src} alt={media.before.caption} className="w-full rounded-lg bg-secondary/40 object-contain max-h-64" />
+                <figcaption className="text-xs text-muted-foreground mt-2">{media.before.caption}</figcaption>
+              </figure>
+            )}
+            {media.after && (
+              <figure>
+                <img src={media.after.src} alt={media.after.caption} className="w-full rounded-lg bg-secondary/40 object-contain max-h-64" />
+                <figcaption className="text-xs text-muted-foreground mt-2">{media.after.caption}</figcaption>
+              </figure>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         <div className="rounded-2xl bg-card border border-destructive/30 p-4 sm:p-5">
           <div className="flex items-center gap-2 text-destructive font-semibold"><AlertCircle className="size-4" /> Common mistake</div>
           <p className="mt-2 text-sm">{lesson.mistake}</p>
+          {media?.error && (
+            <figure className="mt-3">
+              <img src={media.error.src} alt={media.error.caption} className="w-full rounded-lg bg-secondary/40 object-contain max-h-56" />
+              <figcaption className="text-xs text-muted-foreground mt-2">{media.error.caption}</figcaption>
+            </figure>
+          )}
         </div>
         <div className="rounded-2xl bg-card border border-primary/30 p-4 sm:p-5">
           <div className="flex items-center gap-2 text-primary font-semibold"><Lightbulb className="size-4" /> Try this</div>
