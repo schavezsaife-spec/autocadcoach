@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
+import { z } from "zod";
 import { lessons } from "@/lib/coach-data";
 import {
   useLessonImages,
@@ -17,6 +18,7 @@ import { GuestGate } from "@/components/coach/GuestGate";
 
 export const Route = createFileRoute("/lesson-editor")({
   head: () => ({ meta: [{ title: "Lesson image editor — AutoCAD Coach" }] }),
+  validateSearch: z.object({ lesson: z.string().optional() }),
   component: LessonEditor,
 });
 
@@ -30,7 +32,11 @@ type Slot = {
 function LessonEditor() {
   const { state } = useCoach();
   const isAuthed = state.profile.isAuthenticated;
-  const [lessonId, setLessonId] = useState<string>(lessons[0]?.id ?? "");
+  const search = Route.useSearch();
+  const initial = search.lesson && lessons.some((l) => l.id === search.lesson)
+    ? search.lesson
+    : lessons[0]?.id ?? "";
+  const [lessonId, setLessonId] = useState<string>(initial);
   const lesson = lessons.find((l) => l.id === lessonId);
   const images = useLessonImages(lessonId);
 
