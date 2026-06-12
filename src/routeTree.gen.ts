@@ -13,6 +13,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LessonsRouteImport } from './routes/lessons'
+import { Route as LessonEditorRouteImport } from './routes/lesson-editor'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ChatRouteImport } from './routes/chat'
@@ -40,6 +41,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const LessonsRoute = LessonsRouteImport.update({
   id: '/lessons',
   path: '/lessons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LessonEditorRoute = LessonEditorRouteImport.update({
+  id: '/lesson-editor',
+  path: '/lesson-editor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/lesson-editor': typeof LessonEditorRoute
   '/lessons': typeof LessonsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/lesson-editor': typeof LessonEditorRoute
   '/lessons': typeof LessonsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/lesson-editor': typeof LessonEditorRoute
   '/lessons': typeof LessonsRouteWithChildren
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/forgot-password'
+    | '/lesson-editor'
     | '/lessons'
     | '/profile'
     | '/projects'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/forgot-password'
+    | '/lesson-editor'
     | '/lessons'
     | '/profile'
     | '/projects'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/forgot-password'
+    | '/lesson-editor'
     | '/lessons'
     | '/profile'
     | '/projects'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   DashboardRoute: typeof DashboardRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LessonEditorRoute: typeof LessonEditorRoute
   LessonsRoute: typeof LessonsRouteWithChildren
   ProfileRoute: typeof ProfileRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       path: '/lessons'
       fullPath: '/lessons'
       preLoaderRoute: typeof LessonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lesson-editor': {
+      id: '/lesson-editor'
+      path: '/lesson-editor'
+      fullPath: '/lesson-editor'
+      preLoaderRoute: typeof LessonEditorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -302,6 +322,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRoute,
   DashboardRoute: DashboardRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  LessonEditorRoute: LessonEditorRoute,
   LessonsRoute: LessonsRouteWithChildren,
   ProfileRoute: ProfileRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
@@ -311,3 +332,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
