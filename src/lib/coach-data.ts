@@ -1,3 +1,10 @@
+import extrudeAction from "@/assets/extrude_action.png.asset.json";
+import extrudeBefore from "@/assets/extrude_before.png.asset.json";
+import extrudeAfter from "@/assets/extrude_after.png.asset.json";
+import joinAction from "@/assets/join_before.png.asset.json";
+import joinAfter from "@/assets/join_after.png.asset.json";
+import joinError from "@/assets/join_error.png.asset.json";
+
 export type Lesson = {
   id: string;
   day: number;
