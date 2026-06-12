@@ -86,7 +86,7 @@ function LessonViewer() {
       <GuestGate isAuthenticated={isAuthed}>
       <div className="flex">
         <Button asChild variant="outline" size="sm" className="ml-auto">
-          <Link to="/lesson-editor" search={{ lesson: lesson.id }}>
+          <Link to="/lesson-editor" search={{ lesson: lesson.id }} >
             <Pencil className="size-3.5 mr-1" /> Edit images
           </Link>
         </Button>
