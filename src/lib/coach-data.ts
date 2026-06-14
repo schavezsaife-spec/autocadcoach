@@ -116,6 +116,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Start tab → Start Drawing button. Circle the 'Start Drawing' button.",
         sourceUrl: AUTODESK + "?guid=GUID-1F22CBED-1678-4410-A153-21F5C6A02C70",
+        imageUrl: SLICE.interface_start_screen,
       },
     },
     {
@@ -127,6 +128,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Full AutoCAD window with arrows labelling: 1 Ribbon, 2 Drawing area, 3 Command line, 4 Status bar.",
         sourceUrl: AUTODESK + "?guid=GUID-2010CF44-7CE3-405F-A5E1-78D60C8055A8",
+        imageUrl: SLICE.interface_regions,
       },
     },
     {
@@ -138,6 +140,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Cursor turned into the 'hand' pan icon inside the drawing area. Add an arrow showing drag direction.",
         sourceUrl: AUTODESK + "?guid=GUID-7B6D9C7A-9C18-4F9A-9D6A-5C7C7E2A85B2",
+        imageUrl: SLICE.pan,
       },
     },
     {
@@ -149,6 +152,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Two side-by-side captures: same drawing zoomed out (left) and zoomed in (right). Label the cursor location.",
         sourceUrl: AUTODESK + "?guid=GUID-C0F5C7CB-7B0F-4F7B-9C13-6C2E2C9A3A8E",
+        imageUrl: SLICE.zoom_window,
       },
     },
     {
@@ -160,6 +164,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Command line showing the literal text: Command: Z  ZOOM  Specify corner… [All/Center/Dynamic/Extents/…]: E.",
         sourceUrl: AUTODESK + "?guid=GUID-7B5A2A8C-5C2E-4D7C-9E5E-9A6E1C2E3D7B",
+        imageUrl: SLICE.zoom_extents,
       },
     },
   ],
@@ -167,6 +172,7 @@ const richInterface: RichLesson = {
     caption:
       "Annotated AutoCAD 2024 workspace overview from Autodesk Help: ribbon, drawing area, command line, status bar.",
     sourceUrl: AUTODESK + "?guid=GUID-2010CF44-7CE3-405F-A5E1-78D60C8055A8",
+    imageUrl: SLICE.interface_workspace_overview,
   },
   commonMistakes: [
     { mistake: "Clicking ribbon icons at random hoping something happens.", fix: "Read the command line first — it tells you what AutoCAD is waiting for." },
