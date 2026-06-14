@@ -362,6 +362,7 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "Command line showing: Command: CIRCLE  Specify center point for circle or [3P/2P/Ttr]:",
         sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+        imageUrl: SLICE.circle_before,
       },
     },
     {
@@ -372,6 +373,7 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "Preview circle rubber-banding around the picked centre point, growing as the cursor moves.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+        imageUrl: SLICE.circle_action,
       },
     },
     {
@@ -382,6 +384,7 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "Finished circle of radius 50, with the centre marker visible if PDMODE shows it.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+        imageUrl: SLICE.circle_after,
       },
     },
     {
@@ -392,12 +395,14 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "F2 text window showing CIRCLE Layer, center point, radius, circumference and area.",
         sourceUrl: AUTODESK + "?guid=GUID-9D7E2A91-7E2D-4B6F-9E2E-9C7A8F0E7E2D",
+        imageUrl: SLICE.interface_command_line,
       },
     },
   ],
   visualReference: {
     caption: "CIRCLE command reference — Autodesk Help page documenting all six creation methods.",
     sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+    imageUrl: SLICE.circle_after,
   },
   commonMistakes: [
     { mistake: "Typing the diameter when AutoCAD is asking for the radius.", fix: "Either halve your value or, at the radius prompt, type D first, press Enter, then type the diameter." },
