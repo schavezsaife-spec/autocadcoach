@@ -185,10 +185,9 @@ function LegacyLessonBody({
       </div>
 
       {media?.action && (
-        <figure className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
-          <img src={media.action.src} alt={media.action.caption} className="w-full max-h-80 object-contain rounded-lg bg-secondary/40" />
-          <figcaption className="text-xs text-muted-foreground mt-2">{media.action.caption}</figcaption>
-        </figure>
+        <div className="mt-6">
+          <ScreenshotCard src={media.action.src} alt={media.action.caption} caption={media.action.caption} />
+        </div>
       )}
 
       <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
@@ -213,16 +212,10 @@ function LegacyLessonBody({
           <div className="font-semibold mb-3">Before vs After</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {media.before && (
-              <figure>
-                <img src={media.before.src} alt={media.before.caption} className="w-full rounded-lg bg-secondary/40 object-contain max-h-64" />
-                <figcaption className="text-xs text-muted-foreground mt-2">{media.before.caption}</figcaption>
-              </figure>
+              <ScreenshotCard src={media.before.src} alt={media.before.caption} caption={media.before.caption} />
             )}
             {media.after && (
-              <figure>
-                <img src={media.after.src} alt={media.after.caption} className="w-full rounded-lg bg-secondary/40 object-contain max-h-64" />
-                <figcaption className="text-xs text-muted-foreground mt-2">{media.after.caption}</figcaption>
-              </figure>
+              <ScreenshotCard src={media.after.src} alt={media.after.caption} caption={media.after.caption} />
             )}
           </div>
         </div>
@@ -233,10 +226,9 @@ function LegacyLessonBody({
           <div className="flex items-center gap-2 text-destructive font-semibold"><AlertCircle className="size-4" /> Common mistake</div>
           <p className="mt-2 text-sm">{lesson.mistake}</p>
           {media?.error && (
-            <figure className="mt-3">
-              <img src={media.error.src} alt={media.error.caption} className="w-full rounded-lg bg-secondary/40 object-contain max-h-56" />
-              <figcaption className="text-xs text-muted-foreground mt-2">{media.error.caption}</figcaption>
-            </figure>
+            <div className="mt-3">
+              <ScreenshotCard src={media.error.src} alt={media.error.caption} caption={media.error.caption} />
+            </div>
           )}
         </div>
         <div className="rounded-2xl bg-card border border-primary/30 p-4 sm:p-5">
