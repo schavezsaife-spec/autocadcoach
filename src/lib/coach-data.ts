@@ -581,6 +581,7 @@ const richTrim: RichLesson = {
       screenshot: {
         caption: "Two LINE segments forming a plus sign in the drawing area.",
         sourceUrl: AUTODESK + "?guid=GUID-7C0F6B8C-5C2E-4F7B-9C13-6C2E2C9A3A8E",
+        imageUrl: SLICE.trim_before,
       },
     },
     {
@@ -591,6 +592,7 @@ const richTrim: RichLesson = {
       screenshot: {
         caption: "Command line showing the TRIM Quick-mode prompt.",
         sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+        imageUrl: SLICE.trim_before,
       },
     },
     {
@@ -601,6 +603,7 @@ const richTrim: RichLesson = {
       screenshot: {
         caption: "Cursor hovering over an overshoot with the segment turning grey to indicate it will be removed.",
         sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+        imageUrl: SLICE.extend_before,
       },
     },
     {
@@ -611,6 +614,7 @@ const richTrim: RichLesson = {
       screenshot: {
         caption: "Cleaned-up plus sign with no overshoots. Command line back to 'Command:'.",
         sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+        imageUrl: SLICE.extend_after,
       },
     },
     {
@@ -629,6 +633,7 @@ const richTrim: RichLesson = {
     caption:
       "TRIM command reference — Autodesk Help page covering Quick vs Standard mode and the Edge/Project options.",
     sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+    imageUrl: SLICE.trim_before,
   },
   commonMistakes: [
     { mistake: "In Standard mode, pressing Enter only once and getting no result.", fix: "Press Enter TWICE — the second Enter selects every visible object as a cutting edge." },
