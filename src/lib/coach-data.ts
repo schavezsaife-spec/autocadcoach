@@ -242,6 +242,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Command line showing: Command: LINE  Specify first point:",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+        imageUrl: SLICE.line_action,
       },
     },
     {
@@ -253,6 +254,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Rubber-band line stretching from the picked start point to the current cursor position.",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+        imageUrl: SLICE.line_action,
       },
     },
     {
@@ -263,6 +265,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Command line: Specify next point or [Undo]: @100,0  — and the new horizontal segment visible in the drawing.",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+        imageUrl: SLICE.line_after,
       },
     },
     {
@@ -273,6 +276,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Drawing area with one horizontal 100-unit segment. Command line back to a clean 'Command:' prompt.",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+        imageUrl: SLICE.line_after,
       },
     },
     {
@@ -289,6 +293,7 @@ const richLine: RichLesson = {
   visualReference: {
     caption: "LINE command reference — Autodesk Help page documenting prompts and options.",
     sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+    imageUrl: SLICE.line_after,
   },
   commonMistakes: [
     { mistake: "Forgetting to press Enter after typing a coordinate.", fix: "AutoCAD only commits a coordinate on Enter (or Spacebar). Always finish with Enter." },
