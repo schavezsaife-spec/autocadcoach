@@ -471,6 +471,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Command line showing the RECTANG first-corner prompt with the options in square brackets.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+        imageUrl: SLICE.rectangle_action,
       },
     },
     {
@@ -481,6 +482,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Preview rectangle stretching from the picked first corner to the cursor.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+        imageUrl: SLICE.rectangle_action,
       },
     },
     {
@@ -491,6 +493,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Command line: Specify other corner point: @200,100 — completed 200×100 rectangle in the drawing.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+        imageUrl: SLICE.rectangle_after,
       },
     },
     {
@@ -501,6 +504,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Whole rectangle highlighted in blue with four grips at the corners and four mid-edge grips.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+        imageUrl: SLICE.rectangle_after,
       },
     },
   ],
@@ -508,6 +512,7 @@ const richRectangle: RichLesson = {
     caption:
       "RECTANG command reference — Autodesk Help page covering Chamfer, Fillet, Width, Area and Dimensions options.",
     sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+    imageUrl: SLICE.rectangle_after,
   },
   commonMistakes: [
     { mistake: "Forgetting the @ symbol and getting a rectangle in the wrong place.", fix: "Always type @ before relative offsets, e.g. @200,100." },
