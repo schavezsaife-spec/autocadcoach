@@ -337,16 +337,13 @@ function RichLessonBody({
             ))}
           </ul>
           {uploaded.beforeYouStart && (
-            <figure className="mt-4 rounded-xl border border-border overflow-hidden">
-              <img
+            <div className="mt-4">
+              <ScreenshotCard
                 src={uploaded.beforeYouStart}
                 alt="Before you start — annotated AutoCAD screenshot"
-                className="w-full max-h-80 object-contain bg-black/40"
+                caption="Annotated workspace before you start."
               />
-              <figcaption className="px-3 py-2 text-xs text-muted-foreground">
-                Annotated workspace before you start.
-              </figcaption>
-            </figure>
+            </div>
           )}
         </Section>
 
