@@ -4,6 +4,7 @@ import extrudeAfter from "@/assets/extrude_after.png.asset.json";
 import joinAction from "@/assets/join_before.png.asset.json";
 import joinAfter from "@/assets/join_after.png.asset.json";
 import joinError from "@/assets/join_error.png.asset.json";
+import { SLICE } from "@/lib/lesson-slices";
 
 export type Lesson = {
   id: string;
