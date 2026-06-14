@@ -549,7 +549,6 @@ function ScreenshotSlot({
 }
 
 function BeforeAfter({ label, src }: { label: string; src?: string }) {
-function BeforeAfter({ label, src }: { label: string; src?: string }) {
   return (
     <ScreenshotCard
       src={src}
