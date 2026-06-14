@@ -4,6 +4,7 @@ import extrudeAfter from "@/assets/extrude_after.png.asset.json";
 import joinAction from "@/assets/join_before.png.asset.json";
 import joinAfter from "@/assets/join_after.png.asset.json";
 import joinError from "@/assets/join_error.png.asset.json";
+import { SLICE } from "@/lib/lesson-slices";
 
 export type Lesson = {
   id: string;
@@ -115,6 +116,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Start tab → Start Drawing button. Circle the 'Start Drawing' button.",
         sourceUrl: AUTODESK + "?guid=GUID-1F22CBED-1678-4410-A153-21F5C6A02C70",
+        imageUrl: SLICE.interface_start_screen,
       },
     },
     {
@@ -126,6 +128,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Full AutoCAD window with arrows labelling: 1 Ribbon, 2 Drawing area, 3 Command line, 4 Status bar.",
         sourceUrl: AUTODESK + "?guid=GUID-2010CF44-7CE3-405F-A5E1-78D60C8055A8",
+        imageUrl: SLICE.interface_regions,
       },
     },
     {
@@ -137,6 +140,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Cursor turned into the 'hand' pan icon inside the drawing area. Add an arrow showing drag direction.",
         sourceUrl: AUTODESK + "?guid=GUID-7B6D9C7A-9C18-4F9A-9D6A-5C7C7E2A85B2",
+        imageUrl: SLICE.pan,
       },
     },
     {
@@ -148,6 +152,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Two side-by-side captures: same drawing zoomed out (left) and zoomed in (right). Label the cursor location.",
         sourceUrl: AUTODESK + "?guid=GUID-C0F5C7CB-7B0F-4F7B-9C13-6C2E2C9A3A8E",
+        imageUrl: SLICE.zoom_window,
       },
     },
     {
@@ -159,6 +164,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Command line showing the literal text: Command: Z  ZOOM  Specify corner… [All/Center/Dynamic/Extents/…]: E.",
         sourceUrl: AUTODESK + "?guid=GUID-7B5A2A8C-5C2E-4D7C-9E5E-9A6E1C2E3D7B",
+        imageUrl: SLICE.zoom_extents,
       },
     },
   ],
@@ -166,6 +172,7 @@ const richInterface: RichLesson = {
     caption:
       "Annotated AutoCAD 2024 workspace overview from Autodesk Help: ribbon, drawing area, command line, status bar.",
     sourceUrl: AUTODESK + "?guid=GUID-2010CF44-7CE3-405F-A5E1-78D60C8055A8",
+    imageUrl: SLICE.interface_workspace_overview,
   },
   commonMistakes: [
     { mistake: "Clicking ribbon icons at random hoping something happens.", fix: "Read the command line first — it tells you what AutoCAD is waiting for." },
@@ -235,6 +242,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Command line showing: Command: LINE  Specify first point:",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+        imageUrl: SLICE.line_action,
       },
     },
     {
@@ -246,6 +254,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Rubber-band line stretching from the picked start point to the current cursor position.",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+        imageUrl: SLICE.line_action,
       },
     },
     {
@@ -256,6 +265,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Command line: Specify next point or [Undo]: @100,0  — and the new horizontal segment visible in the drawing.",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+        imageUrl: SLICE.line_after,
       },
     },
     {
@@ -266,6 +276,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Drawing area with one horizontal 100-unit segment. Command line back to a clean 'Command:' prompt.",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+        imageUrl: SLICE.line_after,
       },
     },
     {
@@ -282,6 +293,7 @@ const richLine: RichLesson = {
   visualReference: {
     caption: "LINE command reference — Autodesk Help page documenting prompts and options.",
     sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
+    imageUrl: SLICE.line_after,
   },
   commonMistakes: [
     { mistake: "Forgetting to press Enter after typing a coordinate.", fix: "AutoCAD only commits a coordinate on Enter (or Spacebar). Always finish with Enter." },
@@ -350,6 +362,7 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "Command line showing: Command: CIRCLE  Specify center point for circle or [3P/2P/Ttr]:",
         sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+        imageUrl: SLICE.circle_before,
       },
     },
     {
@@ -360,6 +373,7 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "Preview circle rubber-banding around the picked centre point, growing as the cursor moves.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+        imageUrl: SLICE.circle_action,
       },
     },
     {
@@ -370,6 +384,7 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "Finished circle of radius 50, with the centre marker visible if PDMODE shows it.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+        imageUrl: SLICE.circle_after,
       },
     },
     {
@@ -380,12 +395,14 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "F2 text window showing CIRCLE Layer, center point, radius, circumference and area.",
         sourceUrl: AUTODESK + "?guid=GUID-9D7E2A91-7E2D-4B6F-9E2E-9C7A8F0E7E2D",
+        imageUrl: SLICE.interface_command_line,
       },
     },
   ],
   visualReference: {
     caption: "CIRCLE command reference — Autodesk Help page documenting all six creation methods.",
     sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
+    imageUrl: SLICE.circle_after,
   },
   commonMistakes: [
     { mistake: "Typing the diameter when AutoCAD is asking for the radius.", fix: "Either halve your value or, at the radius prompt, type D first, press Enter, then type the diameter." },
@@ -454,6 +471,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Command line showing the RECTANG first-corner prompt with the options in square brackets.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+        imageUrl: SLICE.rectangle_action,
       },
     },
     {
@@ -464,6 +482,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Preview rectangle stretching from the picked first corner to the cursor.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+        imageUrl: SLICE.rectangle_action,
       },
     },
     {
@@ -474,6 +493,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Command line: Specify other corner point: @200,100 — completed 200×100 rectangle in the drawing.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+        imageUrl: SLICE.rectangle_after,
       },
     },
     {
@@ -484,6 +504,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Whole rectangle highlighted in blue with four grips at the corners and four mid-edge grips.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+        imageUrl: SLICE.rectangle_after,
       },
     },
   ],
@@ -491,6 +512,7 @@ const richRectangle: RichLesson = {
     caption:
       "RECTANG command reference — Autodesk Help page covering Chamfer, Fillet, Width, Area and Dimensions options.",
     sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
+    imageUrl: SLICE.rectangle_after,
   },
   commonMistakes: [
     { mistake: "Forgetting the @ symbol and getting a rectangle in the wrong place.", fix: "Always type @ before relative offsets, e.g. @200,100." },
@@ -559,6 +581,7 @@ const richTrim: RichLesson = {
       screenshot: {
         caption: "Two LINE segments forming a plus sign in the drawing area.",
         sourceUrl: AUTODESK + "?guid=GUID-7C0F6B8C-5C2E-4F7B-9C13-6C2E2C9A3A8E",
+        imageUrl: SLICE.trim_before,
       },
     },
     {
@@ -569,6 +592,7 @@ const richTrim: RichLesson = {
       screenshot: {
         caption: "Command line showing the TRIM Quick-mode prompt.",
         sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+        imageUrl: SLICE.trim_before,
       },
     },
     {
@@ -579,6 +603,7 @@ const richTrim: RichLesson = {
       screenshot: {
         caption: "Cursor hovering over an overshoot with the segment turning grey to indicate it will be removed.",
         sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+        imageUrl: SLICE.extend_before,
       },
     },
     {
@@ -589,6 +614,7 @@ const richTrim: RichLesson = {
       screenshot: {
         caption: "Cleaned-up plus sign with no overshoots. Command line back to 'Command:'.",
         sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+        imageUrl: SLICE.extend_after,
       },
     },
     {
@@ -607,6 +633,7 @@ const richTrim: RichLesson = {
     caption:
       "TRIM command reference — Autodesk Help page covering Quick vs Standard mode and the Edge/Project options.",
     sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
+    imageUrl: SLICE.trim_before,
   },
   commonMistakes: [
     { mistake: "In Standard mode, pressing Enter only once and getting no result.", fix: "Press Enter TWICE — the second Enter selects every visible object as a cutting edge." },

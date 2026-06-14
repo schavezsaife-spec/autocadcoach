@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Lightbox } from "@/components/coach/Lightbox";
-import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target, Trophy, RotateCcw, XCircle, BookOpen, Compass, MapPin, ListChecks, Image as ImageIcon, Wrench, Dumbbell, Sparkles, ExternalLink, Pencil } from "lucide-react";
+import { ScreenshotCard } from "@/components/coach/ScreenshotCard";
+import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target, Trophy, RotateCcw, XCircle, BookOpen, Compass, MapPin, ListChecks, Image as ImageIcon, Wrench, Dumbbell, Sparkles, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { cn } from "@/lib/utils";
@@ -184,10 +185,9 @@ function LegacyLessonBody({
       </div>
 
       {media?.action && (
-        <figure className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
-          <img src={media.action.src} alt={media.action.caption} className="w-full max-h-80 object-contain rounded-lg bg-secondary/40" />
-          <figcaption className="text-xs text-muted-foreground mt-2">{media.action.caption}</figcaption>
-        </figure>
+        <div className="mt-6">
+          <ScreenshotCard src={media.action.src} alt={media.action.caption} caption={media.action.caption} />
+        </div>
       )}
 
       <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
@@ -212,16 +212,10 @@ function LegacyLessonBody({
           <div className="font-semibold mb-3">Before vs After</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {media.before && (
-              <figure>
-                <img src={media.before.src} alt={media.before.caption} className="w-full rounded-lg bg-secondary/40 object-contain max-h-64" />
-                <figcaption className="text-xs text-muted-foreground mt-2">{media.before.caption}</figcaption>
-              </figure>
+              <ScreenshotCard src={media.before.src} alt={media.before.caption} caption={media.before.caption} />
             )}
             {media.after && (
-              <figure>
-                <img src={media.after.src} alt={media.after.caption} className="w-full rounded-lg bg-secondary/40 object-contain max-h-64" />
-                <figcaption className="text-xs text-muted-foreground mt-2">{media.after.caption}</figcaption>
-              </figure>
+              <ScreenshotCard src={media.after.src} alt={media.after.caption} caption={media.after.caption} />
             )}
           </div>
         </div>
@@ -232,10 +226,9 @@ function LegacyLessonBody({
           <div className="flex items-center gap-2 text-destructive font-semibold"><AlertCircle className="size-4" /> Common mistake</div>
           <p className="mt-2 text-sm">{lesson.mistake}</p>
           {media?.error && (
-            <figure className="mt-3">
-              <img src={media.error.src} alt={media.error.caption} className="w-full rounded-lg bg-secondary/40 object-contain max-h-56" />
-              <figcaption className="text-xs text-muted-foreground mt-2">{media.error.caption}</figcaption>
-            </figure>
+            <div className="mt-3">
+              <ScreenshotCard src={media.error.src} alt={media.error.caption} caption={media.error.caption} />
+            </div>
           )}
         </div>
         <div className="rounded-2xl bg-card border border-primary/30 p-4 sm:p-5">
@@ -344,16 +337,13 @@ function RichLessonBody({
             ))}
           </ul>
           {uploaded.beforeYouStart && (
-            <figure className="mt-4 rounded-xl border border-border overflow-hidden">
-              <img
+            <div className="mt-4">
+              <ScreenshotCard
                 src={uploaded.beforeYouStart}
                 alt="Before you start — annotated AutoCAD screenshot"
-                className="w-full max-h-80 object-contain bg-black/40"
+                caption="Annotated workspace before you start."
               />
-              <figcaption className="px-3 py-2 text-xs text-muted-foreground">
-                Annotated workspace before you start.
-              </figcaption>
-            </figure>
+            </div>
           )}
         </Section>
 
@@ -529,83 +519,31 @@ function ScreenshotSlot({
   onOpen?: () => void;
   large?: boolean;
 }) {
-  return ScreenshotSlotImpl({ shot, fallback, uploadedUrl, onOpen, large });
+  const src = uploadedUrl ?? shot.imageUrl;
+  // `fallback`, `onOpen`, `large` are intentionally unused — ScreenshotCard
+  // owns its own lightbox and sizes itself to the available card width.
+  void fallback;
+  void onOpen;
+  void large;
+  return (
+    <div className="mt-3">
+      <ScreenshotCard
+        src={src}
+        alt={shot.caption}
+        caption={shot.caption}
+        sourceUrl={shot.sourceUrl}
+      />
+    </div>
+  );
 }
 
 function BeforeAfter({ label, src }: { label: string; src?: string }) {
   return (
-    <figure className="rounded-xl border border-border overflow-hidden bg-secondary/30">
-      <div className="aspect-video grid place-items-center bg-black/40">
-        {src ? (
-          <img src={src} alt={`${label} — annotated AutoCAD screenshot`} className="w-full h-full object-contain" />
-        ) : (
-          <span className="text-xs uppercase tracking-wider text-muted-foreground">Not uploaded</span>
-        )}
-      </div>
-      <figcaption className="px-3 py-2 text-xs text-muted-foreground">{label}</figcaption>
-    </figure>
-  );
-}
-
-function ScreenshotSlotImpl({
-  shot,
-  fallback,
-  uploadedUrl,
-  onOpen,
-  large = false,
-}: {
-  shot: { caption: string; sourceUrl?: string; imageUrl?: string };
-  fallback: string;
-  uploadedUrl?: string;
-  onOpen?: () => void;
-  large?: boolean;
-}) {
-  const imageSrc = uploadedUrl ?? shot.imageUrl;
-  const hasImage = !!imageSrc;
-  return (
-    <figure className={cn("mt-3 rounded-xl border border-dashed border-border bg-secondary/40 overflow-hidden")}>
-      {hasImage ? (
-        <button
-          type="button"
-          onClick={onOpen}
-          className="block w-full"
-          aria-label="Enlarge screenshot"
-        >
-          <img
-            src={imageSrc}
-            alt={shot.caption}
-            className={cn("w-full bg-black/40", large ? "max-h-96 object-contain" : "max-h-72 object-contain")}
-          />
-        </button>
-      ) : (
-        <div
-          className={cn(
-            "w-full grid place-items-center text-center p-4 bg-[repeating-linear-gradient(135deg,transparent_0_10px,hsl(var(--muted)/0.15)_10px_20px)]",
-            large ? "h-48" : "h-32",
-          )}
-        >
-          <div className="flex flex-col items-center gap-1 text-xs text-muted-foreground">
-            <ImageIcon className="size-5" aria-hidden />
-            <span className="uppercase tracking-wider">Screenshot placeholder</span>
-          </div>
-        </div>
-      )}
-      <figcaption className="px-3 py-2 text-xs text-muted-foreground flex items-start gap-2 justify-between">
-        <span className="leading-snug">{shot.caption}</span>
-        {shot.sourceUrl && (
-          <a
-            href={shot.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="shrink-0 inline-flex items-center gap-1 text-primary hover:underline"
-          >
-            Autodesk docs <ExternalLink className="size-3" />
-          </a>
-        )}
-      </figcaption>
-      {/* fallback ref to satisfy linter when fallback unused */}
-      <span className="hidden">{fallback}</span>
-    </figure>
+    <ScreenshotCard
+      src={src}
+      alt={`${label} — annotated AutoCAD screenshot`}
+      caption={label}
+    />
   );
 }
 
