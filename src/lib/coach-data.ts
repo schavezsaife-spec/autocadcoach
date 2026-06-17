@@ -4,6 +4,7 @@ import extrudeAfter from "@/assets/extrude_after.png.asset.json";
 import joinAction from "@/assets/join_before.png.asset.json";
 import joinAfter from "@/assets/join_after.png.asset.json";
 import joinError from "@/assets/join_error.png.asset.json";
+import interfaceStep1 from "@/assets/interface_step1_start_drawing.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 
 export type Lesson = {
@@ -116,7 +117,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Start tab → Start Drawing button. Circle the 'Start Drawing' button.",
         sourceUrl: AUTODESK + "?guid=GUID-1F22CBED-1678-4410-A153-21F5C6A02C70",
-        imageUrl: SLICE.interface_start_screen,
+        imageUrl: interfaceStep1.url,
       },
     },
     {
