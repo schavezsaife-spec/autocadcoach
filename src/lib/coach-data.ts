@@ -12,6 +12,7 @@ import interfaceStep5ZoomExtents from "@/assets/interface_step5_zoom_extents.png
 import interfaceStep6VisualReference from "@/assets/interface_step6_visual_reference.png.asset.json";
 import lineStep1StartCommand from "@/assets/line_step1_start_command.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
+import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
 import lineStep4EndCommand from "@/assets/line_step4_end_command.png.asset.json";
 import lineStep5SaveWork from "@/assets/line_step5_save_work.png.asset.json";
@@ -264,7 +265,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Rubber-band line stretching from the picked start point to the current cursor position.",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
-        imageUrl: lineStep1StartCommand.url,
+        imageUrl: lineStep2PickStartPoint.url,
       },
     },
     {
