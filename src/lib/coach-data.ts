@@ -156,7 +156,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Two side-by-side captures: same drawing zoomed out (left) and zoomed in (right). Label the cursor location.",
         sourceUrl: AUTODESK + "?guid=GUID-C0F5C7CB-7B0F-4F7B-9C13-6C2E2C9A3A8E",
-        imageUrl: SLICE.zoom_window,
+        imageUrl: interfaceStep4Zoom.url,
       },
     },
     {
