@@ -1,0 +1,16 @@
+# AutoCAD Coach
+
+> A beginner-friendly, gamified platform for learning AutoCAD step by step with guided lessons, hands-on projects, quizzes, and an AI tutor.
+
+AutoCAD Coach turns engineering software into a step-by-step learning game. Users progress through sequential lessons that cover commands from basic drawing (LINE, CIRCLE, ARC) to advanced modeling (EXTRUDE, UNION, JOIN). Each lesson includes annotated screenshots, before-and-after visuals, common mistakes, troubleshooting guides, vocabulary, and step-by-step instructions. Learners earn XP, complete real CAD projects, and can ask an AI tutor (AutoCoach) for help when stuck.
+
+## Pages
+
+- [Home](/): Overview of the platform, features, and call-to-action to start learning.
+- [Lessons](/lessons): The full lesson path — sequential, day-by-day AutoCAD curriculum with XP and progress tracking.
+- [Projects](/projects): Hands-on CAD builds of varying difficulty where learners apply what they practiced in lessons.
+- [AutoCoach](/chat): AI tutor and interactive troubleshooting guide for AutoCAD commands and errors.
+
+## Optional
+
+- [Lesson — Interface + Navigation](/lessons/interface-navigation): Learn the AutoCAD interface, four major screen regions, and basic navigation.
