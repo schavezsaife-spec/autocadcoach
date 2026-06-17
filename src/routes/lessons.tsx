@@ -51,10 +51,7 @@ function LessonList() {
   const isAuthed = state.profile.isAuthenticated;
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-      <header className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Lesson Path</h1>
-        <p className="text-muted-foreground mt-1">Complete each lesson to unlock the next.</p>
-      </header>
+      <p className="mb-6 text-sm text-muted-foreground">Complete each lesson to unlock the next.</p>
       <GuestGate isAuthenticated={isAuthed}>
       <ol className="relative space-y-4 before:absolute before:left-5 sm:before:left-6 before:top-0 before:bottom-0 before:w-px before:bg-border">
         {lessons.map((l) => {

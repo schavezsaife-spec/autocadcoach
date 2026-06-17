@@ -41,18 +41,8 @@ function CoachPage() {
   const { state } = useCoach();
   const isAuthed = state.profile.isAuthenticated;
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 flex flex-col h-[calc(100dvh-4rem)] md:h-[calc(100dvh-3.5rem)]">
-      <header className="mb-4">
-        <div className="flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-primary/15 text-primary grid place-items-center ring-1 ring-primary/30">
-            <Compass className="size-5" />
-          </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">AutoCoach</h1>
-            <p className="text-sm text-muted-foreground">Your AutoCAD tutor &amp; fix-it guide.</p>
-          </div>
-        </div>
-      </header>
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 flex flex-col h-[calc(100dvh-3rem)] md:h-[calc(100dvh-3.5rem)]">
+      <p className="mb-3 text-sm text-muted-foreground">Ask anything about AutoCAD — commands, errors, workflows.</p>
 
       <Tabs defaultValue="ask" className="flex-1 flex flex-col min-h-0">
         <TabsList className="self-start">
