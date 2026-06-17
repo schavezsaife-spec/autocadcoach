@@ -66,17 +66,47 @@ const ALL_COMMANDS = [
 ];
 
 const PAGE_CSS = `
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInScale { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes glowPulse { 0%,100% { box-shadow: 0 0 24px hsl(var(--primary) / 0.30); } 50% { box-shadow: 0 0 40px hsl(var(--primary) / 0.55); } }
-.fade-up { animation: fadeInUp 700ms ease-out both; }
+@keyframes glowPulse { 0%,100% { box-shadow: 0 0 24px oklch(0.82 0.14 210 / 0.30); } 50% { box-shadow: 0 0 48px oklch(0.82 0.14 210 / 0.60); } }
+@keyframes orb1 { 0%,100% { transform: translate(0,0) scale(1); opacity: 0.18; } 50% { transform: translate(40px, -30px) scale(1.15); opacity: 0.28; } }
+@keyframes orb2 { 0%,100% { transform: translate(0,0) scale(1); opacity: 0.15; } 50% { transform: translate(-30px, 40px) scale(1.1); opacity: 0.25; } }
+@keyframes orb3 { 0%,100% { transform: translate(0,0) scale(1); opacity: 0.12; } 50% { transform: translate(20px, 20px) scale(1.2); opacity: 0.22; } }
+@keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+@keyframes badgePop { 0% { opacity: 0; transform: scale(0.8) translateY(8px); } 60% { transform: scale(1.05) translateY(-2px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes commandFloat { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-4px); } }
+.fade-up { animation: fadeInUp 800ms cubic-bezier(0.22,1,0.36,1) both; }
+.fade-down { animation: fadeInDown 600ms cubic-bezier(0.22,1,0.36,1) both; }
+.fade-scale { animation: fadeInScale 700ms cubic-bezier(0.22,1,0.36,1) both; }
 .marquee-track { animation: marquee 30s linear infinite; }
 .spin-slow { animation: spinSlow 6s linear infinite; }
 .glow-pulse { animation: glowPulse 2.8s ease-in-out infinite; }
-.cta-arrow { transition: transform 200ms ease; }
-.cta-btn:hover .cta-arrow { transform: translateX(4px); }
+.orb-1 { animation: orb1 8s ease-in-out infinite; }
+.orb-2 { animation: orb2 10s ease-in-out infinite; }
+.orb-3 { animation: orb3 12s ease-in-out infinite; }
+.badge-pop { animation: badgePop 600ms cubic-bezier(0.34,1.56,0.64,1) both; }
+.shimmer-text {
+  background: linear-gradient(90deg, oklch(0.97 0.01 240) 0%, oklch(0.82 0.14 210) 40%, oklch(0.65 0.18 220) 60%, oklch(0.97 0.01 240) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+  animation-delay: 1.5s;
+}
+.cmd-chip:nth-child(1) { animation: commandFloat 3s ease-in-out infinite; animation-delay: 0s; }
+.cmd-chip:nth-child(2) { animation: commandFloat 3s ease-in-out infinite; animation-delay: 0.3s; }
+.cmd-chip:nth-child(3) { animation: commandFloat 3s ease-in-out infinite; animation-delay: 0.6s; }
+.cmd-chip:nth-child(4) { animation: commandFloat 3s ease-in-out infinite; animation-delay: 0.9s; }
+.cmd-chip:nth-child(5) { animation: commandFloat 3s ease-in-out infinite; animation-delay: 1.2s; }
+.cmd-chip:nth-child(6) { animation: commandFloat 3s ease-in-out infinite; animation-delay: 1.5s; }
+.cmd-chip:nth-child(7) { animation: commandFloat 3s ease-in-out infinite; animation-delay: 1.8s; }
+.cmd-chip:nth-child(8) { animation: commandFloat 3s ease-in-out infinite; animation-delay: 2.1s; }
+.cta-arrow { transition: transform 220ms cubic-bezier(0.34,1.56,0.64,1); }
+.cta-btn:hover .cta-arrow { transform: translateX(6px); }
 `;
 
 function Index() {
