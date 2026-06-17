@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,10 +29,12 @@ export const Route = createFileRoute("/chat")({
 type Msg = { role: "user" | "assistant"; content: string };
 
 const SUGGESTIONS = [
-  "Why is TRIM not working?",
-  "How do I use JOIN?",
-  "Why won't EXTRUDE work?",
-  "What are layers for?",
+  "How do I use TRIM?",
+  "What is OFFSET used for?",
+  "Why won't my EXTRUDE work?",
+  "How do layers work?",
+  "What's the difference between LINE and PLINE?",
+  "How do I mirror an object?",
 ];
 
 function CoachPage() {
@@ -120,17 +123,39 @@ function AskAutoCoach() {
               {m.role === "assistant" ? <Compass className="size-4" /> : <User className="size-4" />}
             </div>
             <div className={cn(
-              "rounded-2xl px-4 py-2.5 text-sm max-w-[80%] whitespace-pre-wrap",
+              "rounded-2xl px-4 py-3 text-sm max-w-[80%]",
               m.role === "assistant" ? "bg-secondary text-foreground" : "bg-primary text-primary-foreground"
             )}>
-              {m.content}
+              {m.role === "assistant" ? (
+                <div className="prose prose-sm prose-invert max-w-none
+                  [&>p]:mb-2 [&>p:last-child]:mb-0
+                  [&>ol]:mb-2 [&>ol]:pl-4 [&>ol>li]:mb-1
+                  [&>ul]:mb-2 [&>ul]:pl-4 [&>ul>li]:mb-1
+                  [&>h3]:text-sm [&>h3]:font-semibold [&>h3]:mt-3 [&>h3]:mb-1 [&>h3:first-child]:mt-0
+                  [&>pre]:bg-background/60 [&>pre]:rounded-lg [&>pre]:p-3 [&>pre]:text-xs [&>pre]:overflow-x-auto [&>pre]:mb-2
+                  [&>blockquote]:border-l-2 [&>blockquote]:border-primary/50 [&>blockquote]:pl-3 [&>blockquote]:text-muted-foreground [&>blockquote]:italic [&>blockquote]:mb-2
+                  [&_code]:bg-background/60 [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-primary [&_code]:text-xs [&_code]:font-mono
+                  [&_strong]:text-foreground [&_strong]:font-semibold
+                ">
+                  <ReactMarkdown>{m.content}</ReactMarkdown>
+                </div>
+              ) : (
+                <span className="whitespace-pre-wrap">{m.content}</span>
+              )}
             </div>
           </div>
         ))}
         {loading && (
           <div className="flex gap-3">
             <div className="size-8 rounded-full bg-primary/15 text-primary grid place-items-center"><Compass className="size-4" /></div>
-            <div className="rounded-2xl px-4 py-2.5 text-sm bg-secondary text-muted-foreground">AutoCoach is thinking…</div>
+            <div className="rounded-2xl px-4 py-3 text-sm bg-secondary text-muted-foreground flex items-center gap-2">
+              <span className="inline-flex gap-1">
+                <span className="size-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="size-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="size-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "300ms" }} />
+              </span>
+              AutoCoach is thinking…
+            </div>
           </div>
         )}
       </div>
