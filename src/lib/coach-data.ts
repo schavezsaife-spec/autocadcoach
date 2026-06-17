@@ -12,6 +12,7 @@ import interfaceStep5ZoomExtents from "@/assets/interface_step5_zoom_extents.png
 import interfaceStep6VisualReference from "@/assets/interface_step6_visual_reference.png.asset.json";
 import lineStep1StartCommand from "@/assets/line_step1_start_command.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
+import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
 
 export type Lesson = {
   id: string;
@@ -272,7 +273,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Command line: Specify next point or [Undo]: @100,0  — and the new horizontal segment visible in the drawing.",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
-        imageUrl: SLICE.line_after,
+        imageUrl: lineStep3RelativeCoordinate.url,
       },
     },
     {
