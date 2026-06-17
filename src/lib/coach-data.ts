@@ -5,6 +5,7 @@ import joinAction from "@/assets/join_before.png.asset.json";
 import joinAfter from "@/assets/join_after.png.asset.json";
 import joinError from "@/assets/join_error.png.asset.json";
 import interfaceStep1 from "@/assets/interface_step1_start_drawing.png.asset.json";
+import interfaceStep2 from "@/assets/interface_step2_four_regions.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 
 export type Lesson = {
@@ -129,7 +130,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Full AutoCAD window with arrows labelling: 1 Ribbon, 2 Drawing area, 3 Command line, 4 Status bar.",
         sourceUrl: AUTODESK + "?guid=GUID-2010CF44-7CE3-405F-A5E1-78D60C8055A8",
-        imageUrl: SLICE.interface_regions,
+        imageUrl: interfaceStep2.url,
       },
     },
     {
