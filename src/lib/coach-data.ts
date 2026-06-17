@@ -285,7 +285,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Drawing area with one horizontal 100-unit segment. Command line back to a clean 'Command:' prompt.",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
-        imageUrl: SLICE.line_after,
+        imageUrl: lineStep4EndCommand.url,
       },
     },
     {
