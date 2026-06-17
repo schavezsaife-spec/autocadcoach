@@ -66,7 +66,28 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Logo size="md" />
         </div>
 
-        <main className="flex-1 min-w-0 overflow-y-auto">{children}</main>
+        <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">{children}</main>
+
+        {/* Mobile bottom nav */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-sidebar border-t border-sidebar-border flex items-center justify-around h-16 px-2">
+          {NAV.map(({ to, label, icon: Icon }) => {
+            const active = pathname === to || pathname.startsWith(to + "/");
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors text-xs font-medium",
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className={cn("size-5", active && "drop-shadow-[0_0_6px_currentColor]")} />
+                <span>{label}</span>
+              </Link>
+            );
+          })}
+          <MobileAuthBadge />
+        </nav>
       </div>
     </div>
   );
