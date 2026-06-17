@@ -297,6 +297,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Save Drawing As dialog with the file name field filled in.",
         sourceUrl: AUTODESK + "?guid=GUID-2EB1F3A5-9B4F-4B7F-9D54-1A5F8B3F0B9F",
+        imageUrl: lineStep5SaveWork.url,
       },
     },
   ],
