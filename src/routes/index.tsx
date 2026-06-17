@@ -484,6 +484,7 @@ function Footer({ legal }: { legal: ReturnType<typeof useLegal> }) {
             <button onClick={() => legal.show("privacy")} className="hover:text-foreground">Privacy</button>
             <button onClick={() => legal.show("terms")} className="hover:text-foreground">Terms</button>
             <button onClick={() => legal.show("cookies")} className="hover:text-foreground">Cookies</button>
+            <Link to="/trust" className="hover:text-foreground">Trust</Link>
           </div>
         </div>
       </div>
