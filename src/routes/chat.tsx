@@ -156,6 +156,7 @@ function AskAutoCoach() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask AutoCoach…"
+          aria-label="Ask AutoCoach"
           className="bg-card border-border"
           disabled={loading}
         />

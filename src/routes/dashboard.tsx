@@ -64,6 +64,7 @@ function DashboardPage() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search lessons…"
+              aria-label="Search lessons"
               className="pl-9 bg-card border-border"
             />
           </div>
