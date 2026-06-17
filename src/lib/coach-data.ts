@@ -11,6 +11,7 @@ import interfaceStep4Zoom from "@/assets/interface_step4_zoom.png.asset.json";
 import interfaceStep5ZoomExtents from "@/assets/interface_step5_zoom_extents.png.asset.json";
 import interfaceStep6VisualReference from "@/assets/interface_step6_visual_reference.png.asset.json";
 import lineStep1StartCommand from "@/assets/line_step1_start_command.png.asset.json";
+import circleStep1StartCommand from "@/assets/circle_step1_start_command.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -375,7 +376,7 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "Command line showing: Command: CIRCLE  Specify center point for circle or [3P/2P/Ttr]:",
         sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
-        imageUrl: SLICE.circle_before,
+        imageUrl: circleStep1StartCommand.url,
       },
     },
     {
