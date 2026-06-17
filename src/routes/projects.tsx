@@ -7,7 +7,15 @@ import { GuestGate } from "@/components/coach/GuestGate";
 
 export const Route = createFileRoute("/projects")({
   head: () => ({
-    meta: [{ title: "Projects — AutoCAD Coach" }],
+    meta: [
+      { title: "Projects — AutoCAD Coach" },
+      { name: "description", content: "Hands-on AutoCAD projects — keychains, wheels, and more — to apply the commands you've learned." },
+      { property: "og:title", content: "Projects — AutoCAD Coach" },
+      { property: "og:description", content: "Hands-on AutoCAD projects — keychains, wheels, and more — to apply the commands you've learned." },
+      { property: "og:url", content: "https://autocadcoach.lovable.app/projects" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/projects" }],
     scripts: [
       {
         type: "application/ld+json",
