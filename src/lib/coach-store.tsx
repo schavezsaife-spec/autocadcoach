@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { lessons } from "./coach-data";
 import { supabase } from "./supabase";
 import type { User } from "@supabase/supabase-js";
@@ -63,6 +63,10 @@ export function CoachProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<CoachState>(DEFAULT);
   const [hydrated, setHydrated] = useState(false);
 
+  // Hydrate from localStorage synchronously on mount.
+  // setHydrated(true) fires immediately — no waiting for Supabase.
+  // This means pages render from the localStorage snapshot instantly,
+  // and auth state updates asynchronously without a skeleton flash.
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
@@ -71,20 +75,22 @@ export function CoachProvider({ children }: { children: ReactNode }) {
     setHydrated(true);
   }, []);
 
+  // Persist to localStorage whenever state changes (after hydration).
   useEffect(() => {
     if (hydrated) {
-      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {}
+      try {
+        localStorage.setItem(KEY, JSON.stringify(state));
+      } catch {}
     }
   }, [state, hydrated]);
 
   // Sync auth state from Supabase as the source of truth for
   // isAuthenticated / email / firstName / lastName / authProvider.
-  // XP, completed lessons, and the profile image stay in localStorage.
+  // XP, completed lessons, and profile image stay in localStorage.
   useEffect(() => {
     function applyUser(user: User | null) {
       setState((s) => {
         if (!user) {
-          // Fully clear all personal state when no Supabase session exists.
           if (
             !s.profile.isAuthenticated &&
             !s.profile.profileImage &&
@@ -118,8 +124,7 @@ export function CoachProvider({ children }: { children: ReactNode }) {
           ((meta.name as string)?.split(" ").slice(1).join(" ") ?? "") ||
           s.profile.lastName ||
           "";
-        const provider =
-          (user.app_metadata?.provider as Profile["authProvider"]) ?? "email";
+        const provider = (user.app_metadata?.provider as Profile["authProvider"]) ?? "email";
         return {
           ...s,
           profile: {
@@ -141,47 +146,52 @@ export function CoachProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  const set: Ctx["set"] = (u) =>
-    setState((s) => ({ ...s, ...(typeof u === "function" ? u(s) : u) }));
+  const set: Ctx["set"] = (u) => setState((s) => ({ ...s, ...(typeof u === "function" ? u(s) : u) }));
 
   const completeLesson = (id: string) =>
-    setState((s) =>
-      s.completedLessons.includes(id) ? s : { ...s, completedLessons: [...s.completedLessons, id] }
-    );
+    setState((s) => (s.completedLessons.includes(id) ? s : { ...s, completedLessons: [...s.completedLessons, id] }));
 
   const passLessonQuiz = (id: string) =>
-    setState((s) =>
-      s.lessonQuizPassed[id] ? s : { ...s, lessonQuizPassed: { ...s.lessonQuizPassed, [id]: true } }
-    );
+    setState((s) => (s.lessonQuizPassed[id] ? s : { ...s, lessonQuizPassed: { ...s.lessonQuizPassed, [id]: true } }));
 
   const completeProject = (id: string) =>
-    setState((s) =>
-      s.completedProjects.includes(id) ? s : { ...s, completedProjects: [...s.completedProjects, id] }
-    );
+    setState((s) => (s.completedProjects.includes(id) ? s : { ...s, completedProjects: [...s.completedProjects, id] }));
 
   const resetProject = (id: string) =>
     setState((s) => ({ ...s, completedProjects: s.completedProjects.filter((p) => p !== id) }));
 
-  const isUnlocked = (id: string) => {
-    const idx = lessons.findIndex((l) => l.id === id);
-    if (idx <= 0) return true;
-    return state.completedLessons.includes(lessons[idx - 1].id);
-  };
+  // Memoized — only recomputes when completedLessons changes, not on every render
+  const isUnlocked = useMemo(
+    () => (id: string) => {
+      const idx = lessons.findIndex((l) => l.id === id);
+      if (idx <= 0) return true;
+      return state.completedLessons.includes(lessons[idx - 1].id);
+    },
+    [state.completedLessons],
+  );
 
-  const totalXp =
-    state.completedLessons.reduce(
-      (sum, id) => sum + (lessons.find((l) => l.id === id)?.xp ?? 0),
-      0
-    );
+  // Memoized — expensive reduce over lesson array
+  const totalXp = useMemo(
+    () => state.completedLessons.reduce((sum, id) => sum + (lessons.find((l) => l.id === id)?.xp ?? 0), 0),
+    [state.completedLessons],
+  );
 
-  const progressPct = Math.round((state.completedLessons.length / lessons.length) * 100);
+  // Memoized — simple but avoids recalc on unrelated state changes
+  const progressPct = useMemo(
+    () => Math.round((state.completedLessons.length / lessons.length) * 100),
+    [state.completedLessons.length],
+  );
 
   async function signOut() {
-    // Sign out from Supabase first so the onAuthStateChange listener also fires.
-    try { await supabase.auth.signOut(); } catch {}
-    // Wipe everything locally — no traces of the previous user.
-    try { localStorage.removeItem(KEY); } catch {}
-    try { sessionStorage.clear(); } catch {}
+    try {
+      await supabase.auth.signOut();
+    } catch {}
+    try {
+      localStorage.removeItem(KEY);
+    } catch {}
+    try {
+      sessionStorage.clear();
+    } catch {}
     setState({ ...DEFAULT });
   }
 
