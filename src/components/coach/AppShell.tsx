@@ -124,29 +124,29 @@ function SidebarInner({
         )}
       >
         {collapsed ? (
-          <Link to="/" aria-label="AutoCAD Coach home"><LogoMark size="md" /></Link>
+          <>
+            <Link to="/" aria-label="AutoCAD Coach home"><LogoMark size="md" /></Link>
+            <button
+              onClick={onToggle}
+              aria-label="Expand sidebar"
+              className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
+            >
+              <PanelLeftOpen className="size-4" />
+            </button>
+          </>
         ) : (
-          <Logo size="md" />
-        )}
-        {!collapsed && (
-          <button
-            onClick={onToggle}
-            aria-label={mobile ? "Close menu" : "Collapse sidebar"}
-            className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-          >
-            <PanelLeftClose className="size-4" />
-          </button>
+          <>
+            <Logo size="md" />
+            <button
+              onClick={onToggle}
+              aria-label={mobile ? "Close menu" : "Collapse sidebar"}
+              className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
+            >
+              <PanelLeftClose className="size-4" />
+            </button>
+          </>
         )}
       </div>
-      {collapsed && !mobile && (
-        <button
-          onClick={onToggle}
-          aria-label="Expand sidebar"
-          className="mx-auto mt-2 rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-        >
-          <PanelLeftOpen className="size-4" />
-        </button>
-      )}
 
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
         {NAV.map(({ to, label, icon: Icon }) => {
