@@ -11,6 +11,7 @@ import interfaceStep4Zoom from "@/assets/interface_step4_zoom.png.asset.json";
 import interfaceStep5ZoomExtents from "@/assets/interface_step5_zoom_extents.png.asset.json";
 import interfaceStep6VisualReference from "@/assets/interface_step6_visual_reference.png.asset.json";
 import lineStep1StartCommand from "@/assets/line_step1_start_command.png.asset.json";
+import circleStep1StartCommand from "@/assets/circle_step1_start_command.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
