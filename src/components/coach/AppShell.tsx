@@ -8,7 +8,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useCoach } from "@/lib/coach-store";
 import { ProfileAvatar } from "./ProfileAvatar";
-import { Logo, LogoMark } from "./Logo";
+import { Logo } from "./Logo";
 
 const NAV = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -49,11 +49,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   return (
-    <div className="min-h-screen flex w-full bg-background text-foreground">
+    <div className="h-screen flex w-full bg-background text-foreground overflow-hidden">
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden md:flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-200 overflow-hidden",
+          "hidden md:flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-200 overflow-hidden h-screen",
           open ? "w-64" : "w-16"
         )}
       >
@@ -83,7 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Mobile top bar */}
         <header className="md:hidden sticky top-0 z-40 flex items-center justify-between bg-sidebar border-b border-sidebar-border px-4 h-14">
           <button
@@ -97,7 +97,12 @@ export function AppShell({ children }: { children: ReactNode }) {
           <MobileAuthBadge />
         </header>
 
-        <main className="flex-1 min-w-0 overflow-auto">{children}</main>
+        {/* Desktop top bar */}
+        <div className="hidden md:flex items-center h-14 px-6 border-b border-border bg-background shrink-0">
+          <Logo size="md" />
+        </div>
+
+        <main className="flex-1 min-w-0 overflow-y-auto">{children}</main>
       </div>
     </div>
   );
@@ -116,37 +121,18 @@ function SidebarInner({
 }) {
   return (
     <>
-      {/* Brand + toggle */}
-      <div
-        className={cn(
-          "flex items-center border-b border-sidebar-border h-16",
-          collapsed ? "justify-center px-2" : "justify-between px-4"
-        )}
+      {/* Toggle strip */}
+      <button
+        onClick={onToggle}
+        aria-label="Toggle sidebar"
+        className="w-full flex items-center justify-center h-14 border-b border-sidebar-border hover:bg-sidebar-accent transition-colors cursor-pointer shrink-0"
       >
         {collapsed ? (
-          <>
-            <Link to="/" aria-label="AutoCAD Coach home"><LogoMark size="md" /></Link>
-            <button
-              onClick={onToggle}
-              aria-label="Expand sidebar"
-              className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-            >
-              <PanelLeftOpen className="size-4" />
-            </button>
-          </>
+          <PanelLeftOpen className="size-4 text-muted-foreground" />
         ) : (
-          <>
-            <Logo size="md" />
-            <button
-              onClick={onToggle}
-              aria-label={mobile ? "Close menu" : "Collapse sidebar"}
-              className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-            >
-              <PanelLeftClose className="size-4" />
-            </button>
-          </>
+          <PanelLeftClose className="size-4 text-muted-foreground" />
         )}
-      </div>
+      </button>
 
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
         {NAV.map(({ to, label, icon: Icon }) => {
