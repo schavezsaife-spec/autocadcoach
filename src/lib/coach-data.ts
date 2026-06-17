@@ -10,6 +10,7 @@ import interfaceStep3Pan from "@/assets/interface_step3_pan.png.asset.json";
 import interfaceStep4Zoom from "@/assets/interface_step4_zoom.png.asset.json";
 import interfaceStep5ZoomExtents from "@/assets/interface_step5_zoom_extents.png.asset.json";
 import interfaceStep6VisualReference from "@/assets/interface_step6_visual_reference.png.asset.json";
+import lineStep1StartCommand from "@/assets/line_step1_start_command.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 
 export type Lesson = {
@@ -248,7 +249,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Command line showing: Command: LINE  Specify first point:",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
-        imageUrl: SLICE.line_action,
+        imageUrl: lineStep1StartCommand.url,
       },
     },
     {
