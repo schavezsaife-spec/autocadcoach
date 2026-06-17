@@ -143,7 +143,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Cursor turned into the 'hand' pan icon inside the drawing area. Add an arrow showing drag direction.",
         sourceUrl: AUTODESK + "?guid=GUID-7B6D9C7A-9C18-4F9A-9D6A-5C7C7E2A85B2",
-        imageUrl: SLICE.pan,
+        imageUrl: interfaceStep3Pan.url,
       },
     },
     {
