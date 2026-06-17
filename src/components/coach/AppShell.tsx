@@ -17,13 +17,15 @@ const NAV = [
   { to: "/chat", icon: Compass, label: "AI Coach" },
 ] as const;
 
-const PAGE_LABELS: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/lessons": "Lessons",
-  "/projects": "Projects",
-  "/chat": "AI Coach",
-  "/profile": "Profile",
-};
+function getPageLabel(pathname: string): string {
+  if (pathname === "/dashboard") return "Dashboard";
+  if (pathname.startsWith("/lessons")) return "Lessons";
+  if (pathname.startsWith("/projects")) return "Projects";
+  if (pathname === "/chat") return "AI Coach";
+  if (pathname === "/profile") return "Profile";
+  if (pathname === "/lesson-editor") return "Lesson Editor";
+  return "";
+}
 
 const STORAGE_KEY = "sidebar_open";
 
@@ -72,9 +74,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         {/* Desktop top bar */}
         <div className="hidden md:flex items-center justify-between h-14 px-6 border-b border-border bg-background shrink-0">
           <Logo size="md" />
-          {PAGE_LABELS[pathname] && (
+          {getPageLabel(pathname) && (
             <span className="text-sm font-medium text-muted-foreground">
-              {PAGE_LABELS[pathname]}
+              {getPageLabel(pathname)}
             </span>
           )}
         </div>
@@ -110,12 +112,10 @@ function SidebarInner({
   collapsed,
   pathname,
   onToggle,
-  mobile,
 }: {
   collapsed: boolean;
   pathname: string;
   onToggle: () => void;
-  mobile?: boolean;
 }) {
   return (
     <>

@@ -145,7 +145,7 @@ function AppRouter() {
 
   return (
     <>
-      {/* AppShell is always mounted — prevents remount flash on navigation */}
+      {/* AppShell stays mounted always — prevents remount flash on navigation */}
       <div className={isPublic ? "hidden" : "contents"}>
         <AppShell>
           {!isPublic && <Outlet />}
