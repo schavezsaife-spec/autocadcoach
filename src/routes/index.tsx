@@ -218,8 +218,9 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
   const primaryTo = isAuthed ? "/lessons/$id" : "/auth";
   return (
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center px-4 sm:px-6 overflow-hidden">
-      {/* Background layers */}
+      {/* Background gradient */}
       <div className="absolute inset-0 -z-30" style={{ background: "var(--gradient-hero)" }} aria-hidden />
+      {/* Dot grid */}
       <div
         className="absolute inset-0 -z-20 opacity-[0.08]"
         style={{
@@ -228,30 +229,44 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
         }}
         aria-hidden
       />
-      <div className="absolute -top-32 -left-32 size-[420px] rounded-full bg-cyan-500 blur-[120px] opacity-20 animate-pulse" aria-hidden />
-      <div className="absolute -bottom-32 -right-32 size-[460px] rounded-full bg-indigo-500 blur-[120px] opacity-20 animate-pulse" style={{ animationDelay: "1.5s" }} aria-hidden />
-      <div className="absolute top-1/2 right-1/4 size-[280px] rounded-full bg-violet-500 blur-[120px] opacity-20 animate-pulse" style={{ animationDelay: "3s" }} aria-hidden />
+      {/* Animated orbs — more dynamic movement */}
+      <div className="orb-1 absolute -top-32 -left-32 size-[420px] rounded-full bg-cyan-500 blur-[120px] -z-20" aria-hidden />
+      <div className="orb-2 absolute -bottom-32 -right-32 size-[460px] rounded-full bg-indigo-500 blur-[120px] -z-20" aria-hidden />
+      <div className="orb-3 absolute top-1/2 right-1/4 size-[280px] rounded-full bg-violet-500 blur-[120px] -z-20" aria-hidden />
+      {/* Subtle grid lines */}
+      <div
+        className="absolute inset-0 -z-20 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
+          backgroundSize: "80px 80px",
+        }}
+        aria-hidden
+      />
 
       <div className="relative max-w-3xl mx-auto py-20 md:py-24 w-full">
-        <div className="fade-up inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-sm text-primary" style={{ animationDelay: "200ms" }}>
+        {/* Badge */}
+        <div className="badge-pop inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-sm text-primary" style={{ animationDelay: "200ms" }}>
           <Sparkles className="size-3.5 spin-slow" /> Beginner-friendly CAD learning
         </div>
+        {/* Headline */}
         <h1 className="mt-6 text-5xl md:text-7xl font-black tracking-tighter leading-[1.05]">
           <span className="fade-up block" style={{ animationDelay: "400ms" }}>Master AutoCAD</span>
-          <span className="fade-up block text-primary" style={{ animationDelay: "600ms" }}>
+          <span className="fade-up shimmer-text block" style={{ animationDelay: "600ms" }}>
             from zero to fluent.
           </span>
         </h1>
+        {/* Subheading */}
         <p className="fade-up mt-6 max-w-xl mx-auto text-lg text-muted-foreground" style={{ animationDelay: "800ms" }}>
           AutoCAD Coach turns engineering software into a step-by-step game. Lessons, projects, quizzes,
           and an AI tutor — all in one place.
         </p>
 
-        {/* Command strip */}
+        {/* Floating command chips */}
         <div className="fade-up mt-8 overflow-x-auto" style={{ animationDelay: "900ms" }}>
           <div className="flex gap-2 justify-start md:justify-center min-w-max px-1">
             {HERO_COMMANDS.map((c) => (
-              <span key={c} className="font-mono text-xs rounded-md bg-card border border-border px-2.5 py-1 text-primary/80">
+              <span key={c} className="cmd-chip font-mono text-xs rounded-md bg-card border border-border px-2.5 py-1 text-primary/80">
                 {c}
               </span>
             ))}
