@@ -169,7 +169,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Command line showing the literal text: Command: Z  ZOOM  Specify corner… [All/Center/Dynamic/Extents/…]: E.",
         sourceUrl: AUTODESK + "?guid=GUID-7B5A2A8C-5C2E-4D7C-9E5E-9A6E1C2E3D7B",
-        imageUrl: SLICE.zoom_extents,
+        imageUrl: interfaceStep5ZoomExtents.url,
       },
     },
   ],
