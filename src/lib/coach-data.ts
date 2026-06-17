@@ -13,6 +13,7 @@ import interfaceStep6VisualReference from "@/assets/interface_step6_visual_refer
 import lineStep1StartCommand from "@/assets/line_step1_start_command.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
+import lineStep4EndCommand from "@/assets/line_step4_end_command.png.asset.json";
 
 export type Lesson = {
   id: string;
