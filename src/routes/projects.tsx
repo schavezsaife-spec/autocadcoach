@@ -50,10 +50,7 @@ function ProjectList() {
   const isAuthed = state.profile.isAuthenticated;
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-      <header className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Projects</h1>
-        <p className="text-muted-foreground mt-1">Apply what you've learned with hands-on builds.</p>
-      </header>
+      <p className="mb-6 text-sm text-muted-foreground">Apply what you've learned with hands-on builds.</p>
       <GuestGate isAuthenticated={isAuthed}>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
         {projects.map((p) => {
