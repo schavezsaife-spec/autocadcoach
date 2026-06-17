@@ -14,6 +14,7 @@ import lineStep1StartCommand from "@/assets/line_step1_start_command.png.asset.j
 import circleStep1StartCommand from "@/assets/circle_step1_start_command.png.asset.json";
 import circleStep2ClickCentre from "@/assets/circle_step2_click_centre.png.asset.json";
 import circleStep3TypeRadius from "@/assets/circle_step3_type_radius.png.asset.json";
+import circleStep4ConfirmSize from "@/assets/circle_step4_confirm_size.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
