@@ -1,9 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import {
-  LayoutDashboard, BookOpen, Wrench,
-  Compass, LogIn, PanelLeftClose, PanelLeftOpen,
-  LogOut,
-} from "lucide-react";
+import { LayoutDashboard, BookOpen, Wrench, Compass, LogIn, PanelLeftClose, PanelLeftOpen, LogOut } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useCoach } from "@/lib/coach-store";
@@ -34,7 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(true);
   const [mounted, setMounted] = useState(false);
 
-  // Hydrate from localStorage / detect mobile on mount.
+  // Hydrate sidebar state from localStorage, default to closed on mobile
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -47,10 +43,12 @@ export function AppShell({ children }: { children: ReactNode }) {
     setMounted(true);
   }, []);
 
-  // Persist preference.
+  // Persist sidebar preference
   useEffect(() => {
     if (!mounted) return;
-    try { localStorage.setItem(STORAGE_KEY, String(open)); } catch {}
+    try {
+      localStorage.setItem(STORAGE_KEY, String(open));
+    } catch {}
   }, [open, mounted]);
 
   return (
@@ -59,29 +57,25 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside
         className={cn(
           "hidden md:flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-200 overflow-hidden h-screen",
-          open ? "w-64" : "w-16"
+          open ? "w-64" : "w-16",
         )}
       >
-        <SidebarInner
-          collapsed={!open}
-          pathname={pathname}
-          onToggle={() => setOpen((v) => !v)}
-        />
+        <SidebarInner collapsed={!open} pathname={pathname} onToggle={() => setOpen((v) => !v)} />
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-
         {/* Desktop top bar */}
         <div className="hidden md:flex items-center justify-between h-14 px-6 border-b border-border bg-background shrink-0">
           <Logo size="md" />
           {getPageLabel(pathname) && (
-            <span className="text-sm font-medium text-muted-foreground">
-              {getPageLabel(pathname)}
-            </span>
+            <span className="text-sm font-medium text-muted-foreground">{getPageLabel(pathname)}</span>
           )}
         </div>
 
-        <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">{children}</main>
+        {/* Page content — fade-in on every navigation */}
+        <main key={pathname} className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0 animate-in fade-in duration-150">
+          {children}
+        </main>
 
         {/* Mobile bottom nav */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-sidebar border-t border-sidebar-border flex items-center justify-around h-16 px-2">
@@ -93,7 +87,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 to={to}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors text-xs font-medium",
-                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Icon className={cn("size-5", active && "drop-shadow-[0_0_6px_currentColor]")} />
@@ -132,16 +126,11 @@ function SidebarInner({
                 collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2.5",
                 active
                   ? "bg-primary/15 text-primary ring-1 ring-primary/30"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent",
               )}
             >
               <Icon className="size-4 shrink-0" />
-              <span
-                className={cn(
-                  "truncate transition-opacity",
-                  collapsed && "opacity-0 w-0 overflow-hidden"
-                )}
-              >
+              <span className={cn("truncate transition-opacity", collapsed && "opacity-0 w-0 overflow-hidden")}>
                 {label}
               </span>
             </Link>
@@ -149,13 +138,14 @@ function SidebarInner({
         })}
       </nav>
 
+      {/* Collapse / expand toggle */}
       <button
         onClick={onToggle}
         aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         className={cn(
           "flex items-center gap-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors mx-2 mb-1",
-          collapsed ? "justify-center h-10 w-10 mx-auto p-0" : "px-3 py-2 w-[calc(100%-1rem)]"
+          collapsed ? "justify-center h-10 w-10 mx-auto p-0" : "px-3 py-2 w-[calc(100%-1rem)]",
         )}
       >
         {collapsed ? (
@@ -191,7 +181,7 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
           title={collapsed ? "Sign in" : undefined}
           className={cn(
             "flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90",
-            collapsed ? "h-10 w-10 mx-auto" : "px-3 py-2.5"
+            collapsed ? "h-10 w-10 mx-auto" : "px-3 py-2.5",
           )}
         >
           <LogIn className="size-4 shrink-0" />
@@ -208,15 +198,10 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
         title={collapsed ? `${p.firstName} ${p.lastName}`.trim() || "Profile" : undefined}
         className={cn(
           "flex items-center hover:bg-sidebar-accent transition-colors rounded-lg",
-          collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 p-2.5"
+          collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 p-2.5",
         )}
       >
-        <ProfileAvatar
-          image={p.profileImage}
-          firstName={p.firstName}
-          lastName={p.lastName}
-          size="sm"
-        />
+        <ProfileAvatar image={p.profileImage} firstName={p.firstName} lastName={p.lastName} size="sm" />
         {!collapsed && (
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium text-sidebar-foreground truncate">
@@ -231,7 +216,7 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
         title={collapsed ? "Log out" : undefined}
         className={cn(
           "flex items-center text-muted-foreground hover:text-destructive transition-colors rounded-lg",
-          collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2.5 text-sm w-full"
+          collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2.5 text-sm w-full",
         )}
       >
         <LogOut className="size-4 shrink-0" />
