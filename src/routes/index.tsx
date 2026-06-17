@@ -432,14 +432,56 @@ function FinalCTA({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId:
 
 function Footer() {
   return (
-    <footer className="border-t border-border py-8 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground text-center sm:text-left">
-        <div className="flex items-center gap-2">
-          <LogoMark size="sm" />
-          <span className="font-semibold text-foreground">AutoCAD Coach</span>
-          <span>— Learn AutoCAD by doing.</span>
+    <footer className="border-t border-border py-12 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Brand */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <LogoMark size="sm" />
+              <span className="font-semibold">AutoCAD Coach</span>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Beginner-friendly AutoCAD learning — lessons, projects, quizzes, and an AI tutor.
+            </p>
+          </div>
+
+          {/* Links */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold">Product</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link to="/lessons" className="hover:text-foreground">Lessons</Link></li>
+              <li><Link to="/projects" className="hover:text-foreground">Projects</Link></li>
+              <li><Link to="/chat" className="hover:text-foreground">AI Coach</Link></li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold">Account</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link to="/auth" className="hover:text-foreground">Sign in</Link></li>
+              <li><Link to="/dashboard" className="hover:text-foreground">Dashboard</Link></li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold">Legal</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-foreground">Terms of Service</Link></li>
+              <li><Link to="/cookies" className="hover:text-foreground">Cookie Policy</Link></li>
+            </ul>
+          </div>
         </div>
-        <div>© {new Date().getFullYear()} AutoCAD Coach</div>
+
+        <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+          <div>© {new Date().getFullYear()} AutoCAD Coach. All rights reserved.</div>
+          <div className="flex items-center gap-4">
+            <Link to="/privacy" className="hover:text-foreground">Privacy</Link>
+            <Link to="/terms" className="hover:text-foreground">Terms</Link>
+            <Link to="/cookies" className="hover:text-foreground">Cookies</Link>
+          </div>
+        </div>
       </div>
     </footer>
   );
