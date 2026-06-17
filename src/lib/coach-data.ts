@@ -420,7 +420,7 @@ const richCircle: RichLesson = {
   visualReference: {
     caption: "CIRCLE command reference — Autodesk Help page documenting all six creation methods.",
     sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
-    imageUrl: SLICE.circle_after,
+    imageUrl: circleStep5VisualReference.url,
   },
   commonMistakes: [
     { mistake: "Typing the diameter when AutoCAD is asking for the radius.", fix: "Either halve your value or, at the radius prompt, type D first, press Enter, then type the diameter." },
