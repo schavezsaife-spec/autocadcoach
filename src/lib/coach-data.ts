@@ -12,6 +12,7 @@ import interfaceStep5ZoomExtents from "@/assets/interface_step5_zoom_extents.png
 import interfaceStep6VisualReference from "@/assets/interface_step6_visual_reference.png.asset.json";
 import lineStep1StartCommand from "@/assets/line_step1_start_command.png.asset.json";
 import circleStep1StartCommand from "@/assets/circle_step1_start_command.png.asset.json";
+import circleStep2ClickCentre from "@/assets/circle_step2_click_centre.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -387,7 +388,7 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "Preview circle rubber-banding around the picked centre point, growing as the cursor moves.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
-        imageUrl: SLICE.circle_action,
+        imageUrl: circleStep2ClickCentre.url,
       },
     },
     {
