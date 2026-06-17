@@ -59,38 +59,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         />
       </aside>
 
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-50">
-          <div
-            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-            aria-hidden
-          />
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
-            <SidebarInner
-              collapsed={false}
-              pathname={pathname}
-              onToggle={() => setMobileOpen(false)}
-              mobile
-            />
-          </aside>
-        </div>
-      )}
-
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Mobile top bar */}
-        <header className="md:hidden sticky top-0 z-40 flex items-center justify-between bg-sidebar border-b border-sidebar-border px-4 h-14">
-          <button
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
-            className="rounded-md p-2 hover:bg-sidebar-accent"
-          >
-            <Menu className="size-5" />
-          </button>
-          <Logo size="sm" />
-          <MobileAuthBadge />
-        </header>
 
         {/* Desktop top bar */}
         <div className="hidden md:flex items-center h-14 px-6 border-b border-border bg-background shrink-0">
