@@ -121,37 +121,18 @@ function SidebarInner({
 }) {
   return (
     <>
-      {/* Brand + toggle */}
-      <div
-        className={cn(
-          "flex items-center border-b border-sidebar-border h-16",
-          collapsed ? "justify-center px-2" : "justify-between px-4"
-        )}
+      {/* Toggle strip */}
+      <button
+        onClick={onToggle}
+        aria-label="Toggle sidebar"
+        className="w-full flex items-center justify-center h-14 border-b border-sidebar-border hover:bg-sidebar-accent transition-colors cursor-pointer shrink-0"
       >
         {collapsed ? (
-          <>
-            <Link to="/" aria-label="AutoCAD Coach home"><LogoMark size="md" /></Link>
-            <button
-              onClick={onToggle}
-              aria-label="Expand sidebar"
-              className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-            >
-              <PanelLeftOpen className="size-4" />
-            </button>
-          </>
+          <PanelLeftOpen className="size-4 text-muted-foreground" />
         ) : (
-          <>
-            <Logo size="md" />
-            <button
-              onClick={onToggle}
-              aria-label={mobile ? "Close menu" : "Collapse sidebar"}
-              className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-            >
-              <PanelLeftClose className="size-4" />
-            </button>
-          </>
+          <PanelLeftClose className="size-4 text-muted-foreground" />
         )}
-      </div>
+      </button>
 
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
         {NAV.map(({ to, label, icon: Icon }) => {
