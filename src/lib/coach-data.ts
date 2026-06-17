@@ -265,7 +265,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Rubber-band line stretching from the picked start point to the current cursor position.",
         sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
-        imageUrl: lineStep1StartCommand.url,
+        imageUrl: lineStep2PickStartPoint.url,
       },
     },
     {
