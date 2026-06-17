@@ -6,6 +6,7 @@ import joinAfter from "@/assets/join_after.png.asset.json";
 import joinError from "@/assets/join_error.png.asset.json";
 import interfaceStep1 from "@/assets/interface_step1_start_drawing.png.asset.json";
 import interfaceStep2 from "@/assets/interface_step2_four_regions.png.asset.json";
+import interfaceStep3Pan from "@/assets/interface_step3_pan.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 
 export type Lesson = {
@@ -142,7 +143,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Cursor turned into the 'hand' pan icon inside the drawing area. Add an arrow showing drag direction.",
         sourceUrl: AUTODESK + "?guid=GUID-7B6D9C7A-9C18-4F9A-9D6A-5C7C7E2A85B2",
-        imageUrl: SLICE.pan,
+        imageUrl: interfaceStep3Pan.url,
       },
     },
     {
