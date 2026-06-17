@@ -8,6 +8,7 @@ import interfaceStep1 from "@/assets/interface_step1_start_drawing.png.asset.jso
 import interfaceStep2 from "@/assets/interface_step2_four_regions.png.asset.json";
 import interfaceStep3Pan from "@/assets/interface_step3_pan.png.asset.json";
 import interfaceStep4Zoom from "@/assets/interface_step4_zoom.png.asset.json";
+import interfaceStep5ZoomExtents from "@/assets/interface_step5_zoom_extents.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 
 export type Lesson = {
@@ -168,7 +169,7 @@ const richInterface: RichLesson = {
       screenshot: {
         caption: "Command line showing the literal text: Command: Z  ZOOM  Specify corner… [All/Center/Dynamic/Extents/…]: E.",
         sourceUrl: AUTODESK + "?guid=GUID-7B5A2A8C-5C2E-4D7C-9E5E-9A6E1C2E3D7B",
-        imageUrl: SLICE.zoom_extents,
+        imageUrl: interfaceStep5ZoomExtents.url,
       },
     },
   ],
