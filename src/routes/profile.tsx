@@ -1,13 +1,14 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { useCoach } from "@/lib/coach-store";
 import { lessons, projects } from "@/lib/coach-data";
-import { Trophy, Flame, BookOpen, Wrench, Target, CheckCircle2, Camera, Trash2 } from "lucide-react";
+import { Trophy, Flame, BookOpen, Wrench, Target, CheckCircle2, Camera, Trash2, AlertTriangle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProfileAvatar } from "@/components/coach/ProfileAvatar";
 import { EditProfileForm } from "@/components/coach/EditProfileForm";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -26,10 +27,13 @@ export const Route = createFileRoute("/profile")({
 const MAX_BYTES = 2 * 1024 * 1024; // 2MB
 
 function ProfilePage() {
-  const { state, set, totalXp, progressPct, hydrated } = useCoach();
+  const { state, set, totalXp, progressPct, hydrated, signOut } = useCoach();
   const navigate = useNavigate();
   const p = state.profile;
   const inputRef = useRef<HTMLInputElement>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (hydrated && !p.isAuthenticated) {
@@ -71,6 +75,23 @@ function ProfilePage() {
   function handleRemovePhoto() {
     set({ profile: { ...p, profileImage: null } });
     toast("Photo removed");
+  }
+
+  async function handleDeleteAccount() {
+    if (deleteInput !== "DELETE") return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase.rpc("delete_account");
+      if (error) throw error;
+      await signOut();
+      toast.success("Your account has been deleted.");
+      navigate({ to: "/" });
+    } catch {
+      toast.error("Could not delete account. Please contact support@autocadcoach.lovable.app.");
+      setDeleting(false);
+      setShowDeleteModal(false);
+      setDeleteInput("");
+    }
   }
 
   return (
@@ -192,6 +213,92 @@ function ProfilePage() {
           </div>
         )}
       </div>
+
+      {/* Danger zone */}
+      <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-destructive">Delete account</div>
+          <p className="text-sm text-muted-foreground mt-1">
+            Permanently delete your account and all associated data. This cannot be undone.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowDeleteModal(true)}
+          className="shrink-0 inline-flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground px-4 py-2 text-sm font-medium transition-colors"
+        >
+          <Trash2 className="size-4" />
+          Delete account
+        </button>
+      </div>
+
+      {/* Delete account confirmation modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-xl space-y-5">
+            <div className="flex items-start gap-3">
+              <div className="size-10 shrink-0 rounded-full bg-destructive/15 text-destructive grid place-items-center">
+                <AlertTriangle className="size-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg font-semibold">Delete your account?</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  This action is permanent and cannot be reversed.
+                </p>
+              </div>
+            </div>
+
+            <ul className="text-sm text-muted-foreground space-y-1.5">
+              <li>• Your profile and account will be permanently deleted</li>
+              <li>• All learning progress and XP will be lost</li>
+              <li>• You will be signed out immediately</li>
+            </ul>
+
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Type DELETE to confirm
+              </label>
+              <input
+                type="text"
+                value={deleteInput}
+                onChange={(e) => setDeleteInput(e.target.value)}
+                placeholder="Type DELETE here"
+                className="w-full rounded-lg bg-background border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-destructive/50 focus:border-destructive"
+                autoComplete="off"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => { setShowDeleteModal(false); setDeleteInput(""); }}
+                disabled={deleting}
+                className="flex-1 rounded-lg border border-border bg-card hover:bg-accent px-4 py-2 text-sm font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={deleting || deleteInput !== "DELETE"}
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed px-4 py-2 text-sm font-medium transition-colors"
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Deleting…
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="size-4" />
+                    Delete my account
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
