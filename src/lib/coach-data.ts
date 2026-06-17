@@ -412,7 +412,7 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "F2 text window showing CIRCLE Layer, center point, radius, circumference and area.",
         sourceUrl: AUTODESK + "?guid=GUID-9D7E2A91-7E2D-4B6F-9E2E-9C7A8F0E7E2D",
-        imageUrl: SLICE.interface_command_line,
+        imageUrl: circleStep4ConfirmSize.url,
       },
     },
   ],
