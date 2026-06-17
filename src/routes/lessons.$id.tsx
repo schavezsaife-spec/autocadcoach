@@ -14,9 +14,53 @@ import { GuestGate } from "@/components/coach/GuestGate";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/lessons/$id")({
-  head: ({ params }) => ({
-    meta: [{ title: `${lessons.find((l) => l.id === params.id)?.title ?? "Lesson"} — AutoCAD Coach` }],
-  }),
+  head: ({ params }) => {
+    const lesson = lessons.find((l) => l.id === params.id);
+    const url = `https://autocadcoach.lovable.app/lessons/${params.id}`;
+    const title = lesson ? `${lesson.title} — AutoCAD Coach` : "Lesson — AutoCAD Coach";
+    const description = lesson?.description ?? "AutoCAD lesson on AutoCAD Coach.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "article" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: lesson
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "LearningResource",
+                name: lesson.title,
+                headline: lesson.title,
+                description: lesson.description,
+                url,
+                inLanguage: "en",
+                educationalLevel: "Beginner",
+                learningResourceType: "Lesson",
+                teaches: lesson.tag,
+                about: "AutoCAD",
+                isPartOf: {
+                  "@type": "Course",
+                  name: "AutoCAD Coach",
+                  url: "https://autocadcoach.lovable.app/lessons",
+                },
+                provider: {
+                  "@type": "Organization",
+                  name: "AutoCAD Coach",
+                  url: "https://autocadcoach.lovable.app",
+                },
+              }),
+            },
+          ]
+        : [],
+    };
+  },
   component: LessonViewer,
 });
 

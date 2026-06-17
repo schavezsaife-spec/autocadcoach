@@ -16,6 +16,37 @@ export const Route = createFileRoute("/")({
       { title: "AutoCAD Coach — Learn AutoCAD step by step" },
       { name: "description", content: "Beginner-friendly, gamified AutoCAD lessons, projects, quizzes, and an AI tutor." },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "AutoCAD Coach",
+          url: "https://autocadcoach.lovable.app",
+          description:
+            "Beginner-friendly, gamified AutoCAD lessons, projects, quizzes, and an AI tutor.",
+          inLanguage: "en",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://autocadcoach.lovable.app/lessons?q={search_term_string}",
+            "query-input": "required name=search_term_string",
+          },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "AutoCAD Coach",
+          url: "https://autocadcoach.lovable.app",
+          logo: "https://autocadcoach.lovable.app/favicon.ico",
+          description:
+            "Learn AutoCAD step by step with guided lessons, hands-on projects, quizzes, and an AI tutor.",
+        }),
+      },
+    ],
   }),
   component: Index,
 });

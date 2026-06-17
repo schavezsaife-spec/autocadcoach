@@ -10,9 +10,50 @@ import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
 
 export const Route = createFileRoute("/projects/$id")({
-  head: ({ params }) => ({
-    meta: [{ title: `${projects.find((p) => p.id === params.id)?.title ?? "Project"} — AutoCAD Coach` }],
-  }),
+  head: ({ params }) => {
+    const project = projects.find((p) => p.id === params.id);
+    const url = `https://autocadcoach.lovable.app/projects/${params.id}`;
+    const title = project ? `${project.title} — AutoCAD Coach` : "Project — AutoCAD Coach";
+    const description = project?.description ?? "AutoCAD project on AutoCAD Coach.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "article" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: project
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "HowTo",
+                name: project.title,
+                description: project.description,
+                url,
+                inLanguage: "en",
+                totalTime: project.time,
+                image: project.image,
+                tool: [
+                  { "@type": "HowToTool", name: "AutoCAD" },
+                  ...project.skills.map((s) => ({ "@type": "HowToTool", name: s })),
+                ],
+                step: project.steps.map((s, i) => ({
+                  "@type": "HowToStep",
+                  position: i + 1,
+                  name: `Step ${i + 1}`,
+                  text: s,
+                })),
+              }),
+            },
+          ]
+        : [],
+    };
+  },
   component: ProjectViewer,
 });
 
