@@ -9,6 +9,7 @@ import { useCoach } from "@/lib/coach-store";
 import { lessons } from "@/lib/coach-data";
 import { cn } from "@/lib/utils";
 import { Logo, LogoMark } from "@/components/coach/Logo";
+import { LegalModal, useLegal } from "@/components/coach/LegalModal";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -113,6 +114,7 @@ function Index() {
   const { state } = useCoach();
   const isAuthed = state.profile.isAuthenticated;
   const nextLesson = lessons.find((l) => !state.completedLessons.includes(l.id)) ?? lessons[0];
+  const legal = useLegal();
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -123,7 +125,8 @@ function Index() {
       <HowItWorks />
       <CommandMarquee />
       <FinalCTA isAuthed={isAuthed} nextLessonId={nextLesson.id} />
-      <Footer />
+      <Footer legal={legal} />
+      <LegalModal open={legal.open} onClose={legal.close} />
     </div>
   );
 }
@@ -430,7 +433,7 @@ function FinalCTA({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId:
   );
 }
 
-function Footer() {
+function Footer({ legal }: { legal: ReturnType<typeof useLegal> }) {
   return (
     <footer className="border-t border-border py-12 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
@@ -467,9 +470,10 @@ function Footer() {
           <div className="space-y-3">
             <h3 className="text-sm font-semibold">Legal</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-foreground">Terms of Service</Link></li>
-              <li><Link to="/cookies" className="hover:text-foreground">Cookie Policy</Link></li>
+              <li><button onClick={() => legal.show("privacy")} className="hover:text-foreground text-left">Privacy Policy</button></li>
+              <li><button onClick={() => legal.show("terms")} className="hover:text-foreground text-left">Terms of Service</button></li>
+              <li><button onClick={() => legal.show("cookies")} className="hover:text-foreground text-left">Cookie Policy</button></li>
+              <li><button onClick={() => legal.show("trust")} className="hover:text-foreground text-left">Trust & Security</button></li>
             </ul>
           </div>
         </div>
@@ -477,9 +481,9 @@ function Footer() {
         <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <div>© {new Date().getFullYear()} AutoCAD Coach. All rights reserved.</div>
           <div className="flex items-center gap-4">
-            <Link to="/privacy" className="hover:text-foreground">Privacy</Link>
-            <Link to="/terms" className="hover:text-foreground">Terms</Link>
-            <Link to="/cookies" className="hover:text-foreground">Cookies</Link>
+            <button onClick={() => legal.show("privacy")} className="hover:text-foreground">Privacy</button>
+            <button onClick={() => legal.show("terms")} className="hover:text-foreground">Terms</button>
+            <button onClick={() => legal.show("cookies")} className="hover:text-foreground">Cookies</button>
           </div>
         </div>
       </div>
