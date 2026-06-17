@@ -56,7 +56,7 @@ function LessonList() {
         <p className="text-muted-foreground mt-1">Complete each lesson to unlock the next.</p>
       </header>
       <GuestGate isAuthenticated={isAuthed}>
-      <ol className="relative space-y-3 before:absolute before:left-4 sm:before:left-6 before:top-0 before:bottom-0 before:w-px before:bg-border">
+      <ol className="relative space-y-4 before:absolute before:left-5 sm:before:left-6 before:top-0 before:bottom-0 before:w-px before:bg-border">
         {lessons.map((l) => {
           const done = state.completedLessons.includes(l.id);
           const unlocked = isUnlocked(l.id);
@@ -75,12 +75,12 @@ function LessonList() {
             </>
           );
           return (
-            <li key={l.id} className="relative pl-12 sm:pl-16">
+            <li key={l.id} className="relative pl-14 sm:pl-16">
               <div className={cn(
-                "absolute left-2 top-3 size-9 rounded-full grid place-items-center ring-4 ring-background",
-                done ? "bg-primary text-primary-foreground" : unlocked ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                "absolute left-1 top-4 size-10 rounded-full grid place-items-center ring-4 ring-background shadow-md",
+                done ? "bg-primary text-primary-foreground shadow-primary/30" : unlocked ? "bg-primary/15 text-primary ring-primary/20" : "bg-muted text-muted-foreground"
               )}>
-                {done ? <CheckCircle2 className="size-4" /> : unlocked ? <Sparkles className="size-4" /> : <Lock className="size-4" />}
+                {done ? <CheckCircle2 className="size-5" /> : unlocked ? <Sparkles className="size-5" /> : <Lock className="size-5" />}
               </div>
               {unlocked ? (
                 <Link to="/lessons/$id" params={{ id: l.id }} className={cardCls}>{inner}</Link>
