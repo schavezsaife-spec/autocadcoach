@@ -126,11 +126,18 @@ function ProfilePage() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string | number }) {
+function StatCard({ label, value, icon: Icon, accent }: { label: string; value: string | number; icon: React.ElementType; accent?: boolean }) {
   return (
-    <div className="rounded-2xl bg-card border border-border p-5">
-      <div className="text-sm text-muted-foreground">{label}</div>
-      <div className="text-2xl font-bold mt-1">{value}</div>
+    <div className={cn(
+      "rounded-2xl bg-card border border-border p-4 flex flex-col gap-2 relative overflow-hidden",
+      accent && "border-primary/30"
+    )}>
+      {accent && <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl bg-primary" />}
+      <div className={cn("size-8 rounded-lg grid place-items-center", accent ? "bg-primary/15 text-primary" : "bg-secondary text-muted-foreground")}>
+        <Icon className="size-4" />
+      </div>
+      <div className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium">{label}</div>
+      <div className="text-2xl font-bold leading-none">{value}</div>
     </div>
   );
 }
