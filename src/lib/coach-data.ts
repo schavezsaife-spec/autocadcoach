@@ -6,6 +6,7 @@ import joinAfter from "@/assets/join_after.png.asset.json";
 import joinError from "@/assets/join_error.png.asset.json";
 import interfaceStep1 from "@/assets/interface_step1_start_drawing.png.asset.json";
 import interfaceStep2 from "@/assets/interface_step2_four_regions.png.asset.json";
+import interfaceStep3Pan from "@/assets/interface_step3_pan.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 
 export type Lesson = {
