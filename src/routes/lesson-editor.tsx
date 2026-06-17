@@ -4,9 +4,8 @@ import { z } from "zod";
 import { lessons } from "@/lib/coach-data";
 import {
   useLessonImages,
-  setLessonImage,
+  uploadLessonImage,
   clearLessonImage,
-  readImageFile,
 } from "@/lib/lesson-images";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -146,8 +145,7 @@ function SlotCard({
     if (!file) return;
     setBusy(true);
     try {
-      const url = await readImageFile(file);
-      setLessonImage(lessonId, slot.key, url);
+      await uploadLessonImage(lessonId, slot.key, file);
       toast.success(`${slot.label} updated`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not upload image");
@@ -177,13 +175,21 @@ function SlotCard({
         )}
       </div>
 
-      <div className="rounded-xl border border-dashed border-border bg-secondary/30 overflow-hidden aspect-video grid place-items-center">
+      <div className="rounded-xl border border-dashed border-border bg-secondary/30 overflow-hidden">
         {image ? (
-          <img src={image} alt={slot.label} className="w-full h-full object-contain bg-black/40" />
+          <img
+            src={image}
+            alt={slot.label}
+            loading="lazy"
+            decoding="async"
+            className="block w-full h-auto bg-black/40"
+          />
         ) : (
-          <div className="flex flex-col items-center gap-1 text-xs text-muted-foreground">
-            <ImageIcon className="size-5" aria-hidden />
-            <span className="uppercase tracking-wider">No image yet</span>
+          <div className="aspect-video grid place-items-center">
+            <div className="flex flex-col items-center gap-1 text-xs text-muted-foreground">
+              <ImageIcon className="size-5" aria-hidden />
+              <span className="uppercase tracking-wider">No image yet</span>
+            </div>
           </div>
         )}
       </div>
@@ -204,8 +210,11 @@ function SlotCard({
             variant="ghost"
             size="sm"
             onClick={() => {
-              clearLessonImage(lessonId, slot.key);
-              toast("Image removed");
+              clearLessonImage(lessonId, slot.key)
+                .then(() => toast("Image removed"))
+                .catch((e) =>
+                  toast.error(e instanceof Error ? e.message : "Could not remove image"),
+                );
             }}
             className="text-destructive hover:text-destructive"
           >
