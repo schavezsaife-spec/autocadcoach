@@ -9,17 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LessonsRouteImport } from './routes/lessons'
 import { Route as LessonEditorRouteImport } from './routes/lesson-editor'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
@@ -27,11 +24,6 @@ import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as LessonsIdRouteImport } from './routes/lessons.$id'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -52,11 +44,6 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LessonsRoute = LessonsRouteImport.update({
   id: '/lessons',
   path: '/lessons',
@@ -75,11 +62,6 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CookiesRoute = CookiesRouteImport.update({
-  id: '/cookies',
-  path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChatRoute = ChatRouteImport.update({
@@ -117,17 +99,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/chat': typeof ChatRoute
-  '/cookies': typeof CookiesRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/lesson-editor': typeof LessonEditorRoute
   '/lessons': typeof LessonsRouteWithChildren
-  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/terms': typeof TermsRoute
   '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -136,17 +115,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/chat': typeof ChatRoute
-  '/cookies': typeof CookiesRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/lesson-editor': typeof LessonEditorRoute
   '/lessons': typeof LessonsRouteWithChildren
-  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/terms': typeof TermsRoute
   '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -156,17 +132,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/chat': typeof ChatRoute
-  '/cookies': typeof CookiesRoute
   '/dashboard': typeof DashboardRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/lesson-editor': typeof LessonEditorRoute
   '/lessons': typeof LessonsRouteWithChildren
-  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/terms': typeof TermsRoute
   '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -177,17 +150,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/chat'
-    | '/cookies'
     | '/dashboard'
     | '/forgot-password'
     | '/lesson-editor'
     | '/lessons'
-    | '/privacy'
     | '/profile'
     | '/projects'
     | '/reset-password'
     | '/sitemap.xml'
-    | '/terms'
     | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
@@ -196,17 +166,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/chat'
-    | '/cookies'
     | '/dashboard'
     | '/forgot-password'
     | '/lesson-editor'
     | '/lessons'
-    | '/privacy'
     | '/profile'
     | '/projects'
     | '/reset-password'
     | '/sitemap.xml'
-    | '/terms'
     | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
@@ -215,17 +182,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/chat'
-    | '/cookies'
     | '/dashboard'
     | '/forgot-password'
     | '/lesson-editor'
     | '/lessons'
-    | '/privacy'
     | '/profile'
     | '/projects'
     | '/reset-password'
     | '/sitemap.xml'
-    | '/terms'
     | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
@@ -235,29 +199,19 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   ChatRoute: typeof ChatRoute
-  CookiesRoute: typeof CookiesRoute
   DashboardRoute: typeof DashboardRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LessonEditorRoute: typeof LessonEditorRoute
   LessonsRoute: typeof LessonsRouteWithChildren
-  PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -286,13 +240,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/lessons': {
       id: '/lessons'
       path: '/lessons'
@@ -319,13 +266,6 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cookies': {
-      id: '/cookies'
-      path: '/cookies'
-      fullPath: '/cookies'
-      preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chat': {
@@ -400,19 +340,26 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   ChatRoute: ChatRoute,
-  CookiesRoute: CookiesRoute,
   DashboardRoute: DashboardRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LessonEditorRoute: LessonEditorRoute,
   LessonsRoute: LessonsRouteWithChildren,
-  PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
