@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://autocadcoach.lovable.app/sitemap.xml

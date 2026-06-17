@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -23,6 +24,11 @@ import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as LessonsIdRouteImport } from './routes/lessons.$id'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/lessons/$id': typeof LessonsIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/projects'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/projects'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/projects'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/api/chat'
     | '/lessons/$id'
     | '/projects/$id'
@@ -194,11 +206,19 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
