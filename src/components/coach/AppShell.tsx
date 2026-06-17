@@ -22,7 +22,6 @@ const STORAGE_KEY = "sidebar_open";
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Hydrate from localStorage / detect mobile on mount.
@@ -43,9 +42,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     if (!mounted) return;
     try { localStorage.setItem(STORAGE_KEY, String(open)); } catch {}
   }, [open, mounted]);
-
-  // Close mobile drawer on route change.
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   return (
     <div className="h-screen flex w-full bg-background text-foreground overflow-hidden">
