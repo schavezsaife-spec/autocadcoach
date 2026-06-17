@@ -17,6 +17,14 @@ const NAV = [
   { to: "/chat", icon: Compass, label: "AI Coach" },
 ] as const;
 
+const PAGE_LABELS: Record<string, string> = {
+  "/dashboard": "Dashboard",
+  "/lessons": "Lessons",
+  "/projects": "Projects",
+  "/chat": "AI Coach",
+  "/profile": "Profile",
+};
+
 const STORAGE_KEY = "sidebar_open";
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -62,8 +70,13 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Desktop top bar */}
-        <div className="hidden md:flex items-center h-14 px-6 border-b border-border bg-background shrink-0">
+        <div className="hidden md:flex items-center justify-between h-14 px-6 border-b border-border bg-background shrink-0">
           <Logo size="md" />
+          {PAGE_LABELS[pathname] && (
+            <span className="text-sm font-medium text-muted-foreground">
+              {PAGE_LABELS[pathname]}
+            </span>
+          )}
         </div>
 
         <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">{children}</main>
