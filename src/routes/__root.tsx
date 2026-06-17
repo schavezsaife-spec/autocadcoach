@@ -48,9 +48,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">This page didn't load</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
@@ -82,16 +80,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "AutoCAD Coach — Learn AutoCAD by doing" },
-      { name: "description", content: "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor." },
+      {
+        name: "description",
+        content:
+          "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor.",
+      },
       { name: "author", content: "AutoCAD Coach" },
       { property: "og:title", content: "AutoCAD Coach — Learn AutoCAD by doing" },
-      { property: "og:description", content: "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor." },
+      {
+        property: "og:description",
+        content:
+          "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "AutoCAD Coach" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "AutoCAD Coach — Learn AutoCAD by doing" },
-      { name: "twitter:description", content: "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor." },
+      {
+        name: "twitter:description",
+        content:
+          "A gamified beginner-friendly platform to learn AutoCAD through lessons, projects, quizzes, and an AI tutor.",
+      },
     ],
     links: [
       {
@@ -133,25 +143,38 @@ function RootComponent() {
   );
 }
 
-function AppRouter() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isPublic =
-    pathname === "/" ||
+// Routes that render WITHOUT the AppShell sidebar layout
+const PUBLIC_ROUTES = ["/", "/trust"];
+
+function isPublicRoute(pathname: string): boolean {
+  return (
+    PUBLIC_ROUTES.includes(pathname) ||
     pathname === "" ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/forgot-password") ||
-    pathname.startsWith("/reset-password") ||
-    pathname === "/trust";
+    pathname.startsWith("/reset-password")
+  );
+}
 
+function AppRouter() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isPublic = isPublicRoute(pathname);
+
+  // AppShell is ALWAYS mounted — never conditionally unmounted.
+  // Conditional unmount causes a full remount flash every time you
+  // navigate between public and app routes. Instead we hide it with
+  // CSS and render the public Outlet in parallel. React keeps both
+  // subtrees alive, so no layout recalculation happens on navigation.
   return (
     <>
-      {/* AppShell stays mounted always — prevents remount flash on navigation */}
+      {/* App shell — always in DOM, hidden on public routes */}
       <div className={isPublic ? "hidden" : "contents"}>
         <AppShell>
-          {!isPublic && <Outlet />}
+          <Outlet />
         </AppShell>
       </div>
-      {/* Public pages render outside AppShell */}
+
+      {/* Public pages — rendered outside AppShell */}
       {isPublic && <Outlet />}
     </>
   );
