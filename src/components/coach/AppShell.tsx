@@ -235,20 +235,20 @@ function MobileAuthBadge() {
     return (
       <Link
         to="/auth"
-        className="inline-flex items-center gap-1 rounded-md bg-primary text-primary-foreground px-2.5 py-1.5 text-xs font-medium hover:bg-primary/90"
+        className="flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
       >
-        <LogIn className="size-3.5" /> Sign in
+        <LogIn className="size-5" />
+        <span>Sign in</span>
       </Link>
     );
   }
   return (
-    <Link to="/profile" aria-label="View profile">
-      <ProfileAvatar
-        image={p.profileImage}
-        firstName={p.firstName}
-        lastName={p.lastName}
-        size="sm"
-      />
+    <Link
+      to="/profile"
+      className="flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors"
+    >
+      <ProfileAvatar image={p.profileImage} firstName={p.firstName} lastName={p.lastName} size="sm" />
+      <span className="text-xs text-muted-foreground">Profile</span>
     </Link>
   );
 }
