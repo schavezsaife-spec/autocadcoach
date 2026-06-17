@@ -1,7 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, BookOpen, Wrench,
-  User, Compass, LogIn, Menu, PanelLeftClose, PanelLeftOpen,
+  Compass, LogIn, Menu, PanelLeftClose, PanelLeftOpen,
   LogOut,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
@@ -15,7 +15,6 @@ const NAV = [
   { to: "/lessons", icon: BookOpen, label: "Lessons" },
   { to: "/projects", icon: Wrench, label: "Projects" },
   { to: "/chat", icon: Compass, label: "AI Coach" },
-  { to: "/profile", icon: User, label: "Profile" },
 ] as const;
 
 const STORAGE_KEY = "sidebar_open";
@@ -121,19 +120,6 @@ function SidebarInner({
 }) {
   return (
     <>
-      {/* Toggle strip */}
-      <button
-        onClick={onToggle}
-        aria-label="Toggle sidebar"
-        className="w-full flex items-center justify-center h-14 border-b border-sidebar-border hover:bg-sidebar-accent transition-colors cursor-pointer shrink-0"
-      >
-        {collapsed ? (
-          <PanelLeftOpen className="size-4 text-muted-foreground" />
-        ) : (
-          <PanelLeftClose className="size-4 text-muted-foreground" />
-        )}
-      </button>
-
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
         {NAV.map(({ to, label, icon: Icon }) => {
           const active = pathname === to || pathname.startsWith(to + "/");
@@ -163,6 +149,25 @@ function SidebarInner({
           );
         })}
       </nav>
+
+      <button
+        onClick={onToggle}
+        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className={cn(
+          "flex items-center gap-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors mx-2 mb-1",
+          collapsed ? "justify-center h-10 w-10 mx-auto p-0" : "px-3 py-2 w-[calc(100%-1rem)]"
+        )}
+      >
+        {collapsed ? (
+          <PanelLeftOpen className="size-4 shrink-0" />
+        ) : (
+          <>
+            <PanelLeftClose className="size-4 shrink-0" />
+            <span>Collapse</span>
+          </>
+        )}
+      </button>
 
       <UserFooter collapsed={collapsed} />
     </>
