@@ -14,6 +14,7 @@ import lineStep1StartCommand from "@/assets/line_step1_start_command.png.asset.j
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
 import lineStep4EndCommand from "@/assets/line_step4_end_command.png.asset.json";
+import lineStep5SaveWork from "@/assets/line_step5_save_work.png.asset.json";
 
 export type Lesson = {
   id: string;
@@ -296,6 +297,7 @@ const richLine: RichLesson = {
       screenshot: {
         caption: "Save Drawing As dialog with the file name field filled in.",
         sourceUrl: AUTODESK + "?guid=GUID-2EB1F3A5-9B4F-4B7F-9D54-1A5F8B3F0B9F",
+        imageUrl: lineStep5SaveWork.url,
       },
     },
   ],
