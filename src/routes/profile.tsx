@@ -1,11 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCoach } from "@/lib/coach-store";
 import { lessons, projects } from "@/lib/coach-data";
-import { toast } from "sonner";
-import { LogOut, Trophy } from "lucide-react";
+import { Trophy, Flame, BookOpen, Wrench, Target, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { ProfileAvatar } from "@/components/coach/ProfileAvatar";
 import { ProfileImageUploader } from "@/components/coach/ProfileImageUploader";
 import { EditProfileForm } from "@/components/coach/EditProfileForm";
