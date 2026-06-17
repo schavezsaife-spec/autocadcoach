@@ -1,7 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, BookOpen, Wrench,
-  Compass, LogIn, Menu, PanelLeftClose, PanelLeftOpen,
+  Compass, LogIn, PanelLeftClose, PanelLeftOpen,
   LogOut,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
@@ -22,7 +22,6 @@ const STORAGE_KEY = "sidebar_open";
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Hydrate from localStorage / detect mobile on mount.
@@ -44,9 +43,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     try { localStorage.setItem(STORAGE_KEY, String(open)); } catch {}
   }, [open, mounted]);
 
-  // Close mobile drawer on route change.
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
-
   return (
     <div className="h-screen flex w-full bg-background text-foreground overflow-hidden">
       {/* Desktop sidebar */}
@@ -63,45 +59,35 @@ export function AppShell({ children }: { children: ReactNode }) {
         />
       </aside>
 
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-50">
-          <div
-            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-            aria-hidden
-          />
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
-            <SidebarInner
-              collapsed={false}
-              pathname={pathname}
-              onToggle={() => setMobileOpen(false)}
-              mobile
-            />
-          </aside>
-        </div>
-      )}
-
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Mobile top bar */}
-        <header className="md:hidden sticky top-0 z-40 flex items-center justify-between bg-sidebar border-b border-sidebar-border px-4 h-14">
-          <button
-            onClick={() => setMobileOpen(true)}
-            aria-label="Open menu"
-            className="rounded-md p-2 hover:bg-sidebar-accent"
-          >
-            <Menu className="size-5" />
-          </button>
-          <Logo size="sm" />
-          <MobileAuthBadge />
-        </header>
 
         {/* Desktop top bar */}
         <div className="hidden md:flex items-center h-14 px-6 border-b border-border bg-background shrink-0">
           <Logo size="md" />
         </div>
 
-        <main className="flex-1 min-w-0 overflow-y-auto">{children}</main>
+        <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">{children}</main>
+
+        {/* Mobile bottom nav */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-sidebar border-t border-sidebar-border flex items-center justify-around h-16 px-2">
+          {NAV.map(({ to, label, icon: Icon }) => {
+            const active = pathname === to || pathname.startsWith(to + "/");
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors text-xs font-medium",
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className={cn("size-5", active && "drop-shadow-[0_0_6px_currentColor]")} />
+                <span>{label}</span>
+              </Link>
+            );
+          })}
+          <MobileAuthBadge />
+        </nav>
       </div>
     </div>
   );
@@ -249,20 +235,20 @@ function MobileAuthBadge() {
     return (
       <Link
         to="/auth"
-        className="inline-flex items-center gap-1 rounded-md bg-primary text-primary-foreground px-2.5 py-1.5 text-xs font-medium hover:bg-primary/90"
+        className="flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
       >
-        <LogIn className="size-3.5" /> Sign in
+        <LogIn className="size-5" />
+        <span>Sign in</span>
       </Link>
     );
   }
   return (
-    <Link to="/profile" aria-label="View profile">
-      <ProfileAvatar
-        image={p.profileImage}
-        firstName={p.firstName}
-        lastName={p.lastName}
-        size="sm"
-      />
+    <Link
+      to="/profile"
+      className="flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors"
+    >
+      <ProfileAvatar image={p.profileImage} firstName={p.firstName} lastName={p.lastName} size="sm" />
+      <span className="text-xs text-muted-foreground">Profile</span>
     </Link>
   );
 }
