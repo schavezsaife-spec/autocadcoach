@@ -10,7 +10,16 @@ import { cn } from "@/lib/utils";
 import { GuestGate } from "@/components/coach/GuestGate";
 
 export const Route = createFileRoute("/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — AutoCAD Coach" }] }),
+  head: () => ({
+    meta: [
+      { title: "Dashboard — AutoCAD Coach" },
+      { name: "description", content: "Track your AutoCAD learning progress, XP, lessons completed, and active projects." },
+      { name: "robots", content: "noindex,nofollow" },
+      { property: "og:title", content: "Dashboard — AutoCAD Coach" },
+      { property: "og:url", content: "https://autocadcoach.lovable.app/dashboard" },
+    ],
+    links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/dashboard" }],
+  }),
   component: DashboardPage,
 });
 

@@ -13,7 +13,11 @@ export const Route = createFileRoute("/forgot-password")({
     meta: [
       { title: "Reset your password — AutoCAD Coach" },
       { name: "description", content: "Send a password reset link to your email." },
+      { name: "robots", content: "noindex,nofollow" },
+      { property: "og:title", content: "Reset your password — AutoCAD Coach" },
+      { property: "og:url", content: "https://autocadcoach.lovable.app/forgot-password" },
     ],
+    links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/forgot-password" }],
   }),
   component: ForgotPasswordPage,
 });
