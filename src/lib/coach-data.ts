@@ -13,6 +13,7 @@ import interfaceStep6VisualReference from "@/assets/interface_step6_visual_refer
 import lineStep1StartCommand from "@/assets/line_step1_start_command.png.asset.json";
 import circleStep1StartCommand from "@/assets/circle_step1_start_command.png.asset.json";
 import circleStep2ClickCentre from "@/assets/circle_step2_click_centre.png.asset.json";
+import circleStep3TypeRadius from "@/assets/circle_step3_type_radius.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -399,7 +400,7 @@ const richCircle: RichLesson = {
       screenshot: {
         caption: "Finished circle of radius 50, with the centre marker visible if PDMODE shows it.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
-        imageUrl: SLICE.circle_after,
+        imageUrl: circleStep3TypeRadius.url,
       },
     },
     {
