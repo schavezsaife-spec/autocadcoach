@@ -1,7 +1,8 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, BookOpen, Wrench,
   User, Compass, LogIn, Menu, PanelLeftClose, PanelLeftOpen,
+  LogOut,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -123,29 +124,29 @@ function SidebarInner({
         )}
       >
         {collapsed ? (
-          <Link to="/" aria-label="AutoCAD Coach home"><LogoMark size="md" /></Link>
+          <>
+            <Link to="/" aria-label="AutoCAD Coach home"><LogoMark size="md" /></Link>
+            <button
+              onClick={onToggle}
+              aria-label="Expand sidebar"
+              className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
+            >
+              <PanelLeftOpen className="size-4" />
+            </button>
+          </>
         ) : (
-          <Logo size="md" />
-        )}
-        {!collapsed && (
-          <button
-            onClick={onToggle}
-            aria-label={mobile ? "Close menu" : "Collapse sidebar"}
-            className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-          >
-            <PanelLeftClose className="size-4" />
-          </button>
+          <>
+            <Logo size="md" />
+            <button
+              onClick={onToggle}
+              aria-label={mobile ? "Close menu" : "Collapse sidebar"}
+              className="rounded-md p-1.5 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
+            >
+              <PanelLeftClose className="size-4" />
+            </button>
+          </>
         )}
       </div>
-      {collapsed && !mobile && (
-        <button
-          onClick={onToggle}
-          aria-label="Expand sidebar"
-          className="mx-auto mt-2 rounded-md p-2 text-muted-foreground hover:text-foreground hover:bg-sidebar-accent"
-        >
-          <PanelLeftOpen className="size-4" />
-        </button>
-      )}
 
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
         {NAV.map(({ to, label, icon: Icon }) => {
@@ -183,8 +184,14 @@ function SidebarInner({
 }
 
 function UserFooter({ collapsed }: { collapsed: boolean }) {
-  const { state } = useCoach();
+  const { state, signOut } = useCoach();
   const p = state.profile;
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await signOut();
+    navigate({ to: "/" });
+  }
 
   if (!p.isAuthenticated) {
     return (
@@ -205,29 +212,42 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
   }
 
   return (
-    <Link
-      to="/profile"
-      title={collapsed ? `${p.firstName} ${p.lastName}`.trim() || "Profile" : undefined}
-      className={cn(
-        "flex items-center border-t border-sidebar-border hover:bg-sidebar-accent transition-colors",
-        collapsed ? "justify-center p-3" : "gap-3 p-3"
-      )}
-    >
-      <ProfileAvatar
-        image={p.profileImage}
-        firstName={p.firstName}
-        lastName={p.lastName}
-        size="sm"
-      />
-      {!collapsed && (
-        <div className="min-w-0 flex-1">
-          <div className="text-sm font-medium text-sidebar-foreground truncate">
-            {`${p.firstName} ${p.lastName}`.trim() || "AutoCAD Learner"}
+    <div className={cn("border-t border-sidebar-border", collapsed ? "p-2 space-y-2" : "p-3 space-y-2")}>
+      <Link
+        to="/profile"
+        title={collapsed ? `${p.firstName} ${p.lastName}`.trim() || "Profile" : undefined}
+        className={cn(
+          "flex items-center hover:bg-sidebar-accent transition-colors rounded-lg",
+          collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 p-2.5"
+        )}
+      >
+        <ProfileAvatar
+          image={p.profileImage}
+          firstName={p.firstName}
+          lastName={p.lastName}
+          size="sm"
+        />
+        {!collapsed && (
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-medium text-sidebar-foreground truncate">
+              {`${p.firstName} ${p.lastName}`.trim() || "AutoCAD Learner"}
+            </div>
+            <div className="text-[11px] text-muted-foreground truncate">{p.email}</div>
           </div>
-          <div className="text-[11px] text-muted-foreground truncate">{p.email}</div>
-        </div>
-      )}
-    </Link>
+        )}
+      </Link>
+      <button
+        onClick={handleLogout}
+        title={collapsed ? "Log out" : undefined}
+        className={cn(
+          "flex items-center text-muted-foreground hover:text-destructive transition-colors rounded-lg",
+          collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2.5 text-sm w-full"
+        )}
+      >
+        <LogOut className="size-4 shrink-0" />
+        {!collapsed && <span>Log out</span>}
+      </button>
+    </div>
   );
 }
 
