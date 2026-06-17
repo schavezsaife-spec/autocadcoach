@@ -7,7 +7,27 @@ import { cn } from "@/lib/utils";
 import { GuestGate } from "@/components/coach/GuestGate";
 
 export const Route = createFileRoute("/lessons")({
-  head: () => ({ meta: [{ title: "Lessons — AutoCAD Coach" }] }),
+  head: () => ({
+    meta: [{ title: "Lessons — AutoCAD Coach" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "AutoCAD Coach Lessons",
+          itemListOrder: "https://schema.org/ItemListOrderAscending",
+          numberOfItems: lessons.length,
+          itemListElement: lessons.map((l, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            url: `https://autocadcoach.lovable.app/lessons/${l.id}`,
+            name: l.title,
+          })),
+        }),
+      },
+    ],
+  }),
   component: LessonsLayout,
 });
 
