@@ -16,6 +16,7 @@ import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.as
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
 import lineStep4EndCommand from "@/assets/line_step4_end_command.png.asset.json";
 import lineStep5SaveWork from "@/assets/line_step5_save_work.png.asset.json";
+import lineStep6VisualReference from "@/assets/line_step6_visual_reference.png.asset.json";
 
 export type Lesson = {
   id: string;
@@ -305,7 +306,7 @@ const richLine: RichLesson = {
   visualReference: {
     caption: "LINE command reference — Autodesk Help page documenting prompts and options.",
     sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
-    imageUrl: SLICE.line_after,
+    imageUrl: lineStep6VisualReference.url,
   },
   commonMistakes: [
     { mistake: "Forgetting to press Enter after typing a coordinate.", fix: "AutoCAD only commits a coordinate on Enter (or Spacebar). Always finish with Enter." },
