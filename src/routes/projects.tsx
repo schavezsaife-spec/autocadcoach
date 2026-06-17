@@ -6,7 +6,27 @@ import { CheckCircle2, Clock } from "lucide-react";
 import { GuestGate } from "@/components/coach/GuestGate";
 
 export const Route = createFileRoute("/projects")({
-  head: () => ({ meta: [{ title: "Projects — AutoCAD Coach" }] }),
+  head: () => ({
+    meta: [{ title: "Projects — AutoCAD Coach" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          name: "AutoCAD Coach Projects",
+          itemListOrder: "https://schema.org/ItemListOrderAscending",
+          numberOfItems: projects.length,
+          itemListElement: projects.map((p, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            url: `https://autocadcoach.lovable.app/projects/${p.id}`,
+            name: p.title,
+          })),
+        }),
+      },
+    ],
+  }),
   component: ProjectsLayout,
 });
 
