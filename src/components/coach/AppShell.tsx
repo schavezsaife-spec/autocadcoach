@@ -15,7 +15,6 @@ const NAV = [
   { to: "/lessons", icon: BookOpen, label: "Lessons" },
   { to: "/projects", icon: Wrench, label: "Projects" },
   { to: "/chat", icon: Compass, label: "AI Coach" },
-  { to: "/profile", icon: User, label: "Profile" },
 ] as const;
 
 const STORAGE_KEY = "sidebar_open";
