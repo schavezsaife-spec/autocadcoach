@@ -13,7 +13,10 @@ export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard — AutoCAD Coach" },
-      { name: "description", content: "Track your AutoCAD learning progress, XP, lessons completed, and active projects." },
+      {
+        name: "description",
+        content: "Track your AutoCAD learning progress, XP, lessons completed, and active projects.",
+      },
       { name: "robots", content: "noindex,nofollow" },
       { property: "og:title", content: "Dashboard — AutoCAD Coach" },
       { property: "og:url", content: "https://autocadcoach.lovable.app/dashboard" },
@@ -24,93 +27,142 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
-  const { state, totalXp, progressPct, isUnlocked } = useCoach();
+  const { state, totalXp, progressPct, isUnlocked, hydrated } = useCoach();
   const [q, setQ] = useState("");
   const isAuthed = state.profile.isAuthenticated;
 
-  const filtered = lessons.filter((l) =>
-    l.title.toLowerCase().includes(q.toLowerCase()) || l.tag.toLowerCase().includes(q.toLowerCase())
+  const filtered = lessons.filter(
+    (l) => l.title.toLowerCase().includes(q.toLowerCase()) || l.tag.toLowerCase().includes(q.toLowerCase()),
   );
 
-  return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-8">
-      <header>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Your Workspace</h1>
-        <p className="text-muted-foreground mt-1">Track progress and pick your next lesson.</p>
-      </header>
-
-      <GuestGate isAuthenticated={isAuthed}>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <Stat icon={BookOpen} label="Lessons" value={`${state.completedLessons.length}/${lessons.length}`} />
-        <Stat icon={Trophy} label="Total XP" value={`${totalXp}`} accent />
-        <Stat icon={Wrench} label="Projects" value={`${state.completedProjects.length}`} />
-        <Stat icon={Flame} label="Streak" value={`${state.streak} day${state.streak === 1 ? "" : "s"}`} />
-      </div>
-
-      <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
-        <div className="flex items-center justify-between mb-3">
-          <div className="font-semibold">Overall progress</div>
-          <div className="text-sm text-muted-foreground">{progressPct}%</div>
+  // Show skeleton instantly while hydrating from localStorage.
+  // Since hydrated flips synchronously from localStorage (not waiting
+  // for Supabase), this skeleton only shows for ~1 frame on first load.
+  if (!hydrated) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-8 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-card border border-border" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="rounded-2xl bg-card border border-border h-28" />
+          ))}
         </div>
-        <Progress value={progressPct} className="h-2" />
+        <div className="rounded-2xl bg-card border border-border h-16" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="rounded-2xl bg-card border border-border h-32" />
+          ))}
+        </div>
       </div>
+    );
+  }
 
-      <div className="mt-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
-          <h2 className="text-xl font-semibold">Lessons</h2>
-          <div className="relative w-full sm:max-w-xs">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <Input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search lessons…"
-              aria-label="Search lessons"
-              className="pl-9 bg-card border-border"
-            />
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-8 animate-in fade-in duration-150">
+      <GuestGate isAuthenticated={isAuthed}>
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <Stat icon={BookOpen} label="Lessons" value={`${state.completedLessons.length}/${lessons.length}`} />
+          <Stat icon={Trophy} label="Total XP" value={`${totalXp}`} accent />
+          <Stat icon={Wrench} label="Projects" value={`${state.completedProjects.length}`} />
+          <Stat icon={Flame} label="Streak" value={`${state.streak} day${state.streak === 1 ? "" : "s"}`} />
+        </div>
+
+        {/* Progress bar */}
+        <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-3">
+            <div className="font-semibold">Overall progress</div>
+            <div className="text-sm text-muted-foreground">{progressPct}%</div>
+          </div>
+          <Progress value={progressPct} className="h-2" />
+        </div>
+
+        {/* Lessons grid */}
+        <div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
+            <h2 className="text-xl font-semibold">Lessons</h2>
+            <div className="relative w-full sm:max-w-xs">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search lessons…"
+                aria-label="Search lessons"
+                className="pl-9 bg-card border-border"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+            {filtered.map((l) => {
+              const done = state.completedLessons.includes(l.id);
+              const unlocked = isUnlocked(l.id);
+              const cardCls = cn(
+                "rounded-2xl bg-card border border-border p-4 sm:p-5 transition-all block",
+                unlocked
+                  ? "hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
+                  : "opacity-40 cursor-not-allowed saturate-0",
+              );
+              const inner = (
+                <>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="border-primary/30 text-primary">
+                      Day {l.day}
+                    </Badge>
+                    {done ? (
+                      <Badge className="bg-primary/20 text-primary border-primary/30">
+                        <CheckCircle2 className="size-3 mr-1" /> Done
+                      </Badge>
+                    ) : !unlocked ? (
+                      <Badge variant="outline" className="text-muted-foreground/60 border-dashed">
+                        <Lock className="size-3 mr-1" /> Complete previous
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="border-border">
+                        {l.xp} XP
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="mt-3 font-semibold">{l.title}</div>
+                  <div className="text-sm text-muted-foreground mt-1">{l.description}</div>
+                </>
+              );
+              return unlocked ? (
+                <Link key={l.id} to="/lessons/$id" params={{ id: l.id }} className={cardCls}>
+                  {inner}
+                </Link>
+              ) : (
+                <div key={l.id} className={cardCls} aria-disabled>
+                  {inner}
+                </div>
+              );
+            })}
           </div>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
-          {filtered.map((l) => {
-            const done = state.completedLessons.includes(l.id);
-            const unlocked = isUnlocked(l.id);
-            const cardCls = cn(
-              "rounded-2xl bg-card border border-border p-4 sm:p-5 transition-all block",
-              unlocked ? "hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg cursor-pointer" : "opacity-40 cursor-not-allowed saturate-0"
-            );
-            const inner = (
-              <>
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="border-primary/30 text-primary">Day {l.day}</Badge>
-                  {done ? (
-                    <Badge className="bg-primary/20 text-primary border-primary/30"><CheckCircle2 className="size-3 mr-1" /> Done</Badge>
-                  ) : !unlocked ? (
-                    <Badge variant="outline" className="text-muted-foreground/60 border-dashed"><Lock className="size-3 mr-1" /> Complete previous</Badge>
-                  ) : (
-                    <Badge variant="outline" className="border-border">{l.xp} XP</Badge>
-                  )}
-                </div>
-                <div className="mt-3 font-semibold">{l.title}</div>
-                <div className="text-sm text-muted-foreground mt-1">{l.description}</div>
-              </>
-            );
-            return unlocked ? (
-              <Link key={l.id} to="/lessons/$id" params={{ id: l.id }} className={cardCls}>{inner}</Link>
-            ) : (
-              <div key={l.id} className={cardCls} aria-disabled>{inner}</div>
-            );
-          })}
-        </div>
-      </div>
       </GuestGate>
     </div>
   );
 }
 
-function Stat({ icon: Icon, label, value, accent }: { icon: typeof BookOpen; label: string; value: string; accent?: boolean }) {
+function Stat({
+  icon: Icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: typeof BookOpen;
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
   return (
     <div className={cn("rounded-2xl bg-card border border-border p-5", accent && "ring-1 ring-primary/30")}>
-      <div className={cn("size-9 rounded-lg grid place-items-center", accent ? "bg-primary/20 text-primary" : "bg-secondary text-foreground")}>
+      <div
+        className={cn(
+          "size-9 rounded-lg grid place-items-center",
+          accent ? "bg-primary/20 text-primary" : "bg-secondary text-foreground",
+        )}
+      >
         <Icon className="size-4" />
       </div>
       <div className="mt-3 text-sm text-muted-foreground">{label}</div>
