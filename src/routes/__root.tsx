@@ -134,8 +134,7 @@ function RootComponent() {
 }
 
 function AppRouter() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isPublic = pathname === "/" || pathname === "" || pathname.startsWith("/auth");
+  const isPublic = pathname === "/" || pathname === "" || pathname.startsWith("/auth") || pathname === "/trust";
 
   if (isPublic) {
     return <Outlet />;
