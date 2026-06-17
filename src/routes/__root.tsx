@@ -135,14 +135,24 @@ function RootComponent() {
 
 function AppRouter() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isPublic = pathname === "/" || pathname === "" || pathname.startsWith("/auth") || pathname === "/trust";
+  const isPublic =
+    pathname === "/" ||
+    pathname === "" ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password") ||
+    pathname === "/trust";
 
-  if (isPublic) {
-    return <Outlet />;
-  }
   return (
-    <AppShell>
-      <Outlet />
-    </AppShell>
+    <>
+      {/* AppShell is always mounted — prevents remount flash on navigation */}
+      <div className={isPublic ? "hidden" : "contents"}>
+        <AppShell>
+          {!isPublic && <Outlet />}
+        </AppShell>
+      </div>
+      {/* Public pages render outside AppShell */}
+      {isPublic && <Outlet />}
+    </>
   );
 }
