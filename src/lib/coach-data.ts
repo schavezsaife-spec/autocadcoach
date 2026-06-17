@@ -15,6 +15,7 @@ import circleStep1StartCommand from "@/assets/circle_step1_start_command.png.ass
 import circleStep2ClickCentre from "@/assets/circle_step2_click_centre.png.asset.json";
 import circleStep3TypeRadius from "@/assets/circle_step3_type_radius.png.asset.json";
 import circleStep4ConfirmSize from "@/assets/circle_step4_confirm_size.png.asset.json";
+import circleStep5VisualReference from "@/assets/circle_step5_visual_reference.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -419,7 +420,7 @@ const richCircle: RichLesson = {
   visualReference: {
     caption: "CIRCLE command reference — Autodesk Help page documenting all six creation methods.",
     sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
-    imageUrl: SLICE.circle_after,
+    imageUrl: circleStep5VisualReference.url,
   },
   commonMistakes: [
     { mistake: "Typing the diameter when AutoCAD is asking for the radius.", fix: "Either halve your value or, at the radius prompt, type D first, press Enter, then type the diameter." },
