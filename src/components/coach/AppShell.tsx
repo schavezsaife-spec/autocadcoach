@@ -184,8 +184,14 @@ function SidebarInner({
 }
 
 function UserFooter({ collapsed }: { collapsed: boolean }) {
-  const { state } = useCoach();
+  const { state, signOut } = useCoach();
   const p = state.profile;
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await signOut();
+    navigate({ to: "/" });
+  }
 
   if (!p.isAuthenticated) {
     return (
@@ -206,29 +212,42 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
   }
 
   return (
-    <Link
-      to="/profile"
-      title={collapsed ? `${p.firstName} ${p.lastName}`.trim() || "Profile" : undefined}
-      className={cn(
-        "flex items-center border-t border-sidebar-border hover:bg-sidebar-accent transition-colors",
-        collapsed ? "justify-center p-3" : "gap-3 p-3"
-      )}
-    >
-      <ProfileAvatar
-        image={p.profileImage}
-        firstName={p.firstName}
-        lastName={p.lastName}
-        size="sm"
-      />
-      {!collapsed && (
-        <div className="min-w-0 flex-1">
-          <div className="text-sm font-medium text-sidebar-foreground truncate">
-            {`${p.firstName} ${p.lastName}`.trim() || "AutoCAD Learner"}
+    <div className={cn("border-t border-sidebar-border", collapsed ? "p-2 space-y-2" : "p-3 space-y-2")}>
+      <Link
+        to="/profile"
+        title={collapsed ? `${p.firstName} ${p.lastName}`.trim() || "Profile" : undefined}
+        className={cn(
+          "flex items-center hover:bg-sidebar-accent transition-colors rounded-lg",
+          collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 p-2.5"
+        )}
+      >
+        <ProfileAvatar
+          image={p.profileImage}
+          firstName={p.firstName}
+          lastName={p.lastName}
+          size="sm"
+        />
+        {!collapsed && (
+          <div className="min-w-0 flex-1">
+            <div className="text-sm font-medium text-sidebar-foreground truncate">
+              {`${p.firstName} ${p.lastName}`.trim() || "AutoCAD Learner"}
+            </div>
+            <div className="text-[11px] text-muted-foreground truncate">{p.email}</div>
           </div>
-          <div className="text-[11px] text-muted-foreground truncate">{p.email}</div>
-        </div>
-      )}
-    </Link>
+        )}
+      </Link>
+      <button
+        onClick={handleLogout}
+        title={collapsed ? "Log out" : undefined}
+        className={cn(
+          "flex items-center text-muted-foreground hover:text-destructive transition-colors rounded-lg",
+          collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2.5 text-sm w-full"
+        )}
+      >
+        <LogOut className="size-4 shrink-0" />
+        {!collapsed && <span>Log out</span>}
+      </button>
+    </div>
   );
 }
 
