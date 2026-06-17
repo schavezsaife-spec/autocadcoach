@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Lightbox } from "@/components/coach/Lightbox";
 import { ScreenshotCard } from "@/components/coach/ScreenshotCard";
-import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target, Trophy, RotateCcw, XCircle, BookOpen, Compass, MapPin, ListChecks, Image as ImageIcon, Wrench, Dumbbell, Sparkles, Pencil } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target, Trophy, RotateCcw, XCircle, BookOpen, Compass, MapPin, ListChecks, Image as ImageIcon, Wrench, Dumbbell, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { cn } from "@/lib/utils";
@@ -129,19 +129,13 @@ function LessonViewer() {
       <p className="text-muted-foreground">{lesson.description}</p>
 
       <GuestGate isAuthenticated={isAuthed}>
-      <div className="flex">
-        <Button asChild variant="outline" size="sm" className="ml-auto">
-          <Link to="/lesson-editor" search={{ lesson: lesson.id }} >
-            <Pencil className="size-3.5 mr-1" /> Edit images
-          </Link>
-        </Button>
-      </div>
       {lesson.rich ? (
         <RichLessonBody
           rich={lesson.rich}
           fallbackImage={lesson.image}
           uploaded={uploadedImages}
           onOpenLightbox={() => setLightboxOpen(true)}
+          lessonId={lesson.id}
         />
       ) : (
         <LegacyLessonBody
@@ -304,19 +298,23 @@ function RichLessonBody({
   fallbackImage,
   uploaded,
   onOpenLightbox,
+  lessonId,
 }: {
   rich: RichLesson;
   fallbackImage: string;
   uploaded: LessonImageMap;
   onOpenLightbox: () => void;
+  lessonId: string;
 }) {
+  const hideVisual = lessonId === "interface";
+  const sections = hideVisual ? SECTIONS.filter((s) => s.id !== "visual") : SECTIONS;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-6 lg:gap-8">
       {/* Anchored TOC */}
       <nav className="hidden lg:block sticky top-6 self-start text-sm">
         <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">On this page</div>
         <ul className="space-y-1.5">
-          {SECTIONS.map((s) => (
+          {sections.map((s) => (
             <li key={s.id}>
               <a
                 href={`#${s.id}`}
@@ -415,6 +413,7 @@ function RichLessonBody({
           </ol>
         </Section>
 
+        {!hideVisual && (
         <Section id="visual" icon={ImageIcon} title="Visual reference">
           {rich.visualReference ? (
             <ScreenshotSlot
@@ -439,6 +438,7 @@ function RichLessonBody({
             </div>
           )}
         </Section>
+        )}
 
         <Section id="mistakes" icon={AlertCircle} title="Common mistakes & fixes" accent="destructive">
           <ul className="space-y-3 text-sm">
