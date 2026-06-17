@@ -76,7 +76,7 @@ function DashboardPage() {
             const unlocked = isUnlocked(l.id);
             const cardCls = cn(
               "rounded-2xl bg-card border border-border p-4 sm:p-5 transition-all block",
-              unlocked ? "hover:border-primary/40 hover:-translate-y-0.5" : "opacity-60 cursor-not-allowed"
+              unlocked ? "hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg cursor-pointer" : "opacity-40 cursor-not-allowed saturate-0"
             );
             const inner = (
               <>
@@ -85,7 +85,7 @@ function DashboardPage() {
                   {done ? (
                     <Badge className="bg-primary/20 text-primary border-primary/30"><CheckCircle2 className="size-3 mr-1" /> Done</Badge>
                   ) : !unlocked ? (
-                    <Badge variant="outline" className="text-muted-foreground"><Lock className="size-3 mr-1" /> Locked</Badge>
+                    <Badge variant="outline" className="text-muted-foreground/60 border-dashed"><Lock className="size-3 mr-1" /> Complete previous</Badge>
                   ) : (
                     <Badge variant="outline" className="border-border">{l.xp} XP</Badge>
                   )}
