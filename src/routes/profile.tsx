@@ -11,7 +11,16 @@ import { ProfileImageUploader } from "@/components/coach/ProfileImageUploader";
 import { EditProfileForm } from "@/components/coach/EditProfileForm";
 
 export const Route = createFileRoute("/profile")({
-  head: () => ({ meta: [{ title: "Profile — AutoCAD Coach" }] }),
+  head: () => ({
+    meta: [
+      { title: "Profile — AutoCAD Coach" },
+      { name: "description", content: "Manage your AutoCAD Coach account, profile details, and learning preferences." },
+      { name: "robots", content: "noindex,nofollow" },
+      { property: "og:title", content: "Profile — AutoCAD Coach" },
+      { property: "og:url", content: "https://autocadcoach.lovable.app/profile" },
+    ],
+    links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/profile" }],
+  }),
   component: ProfilePage,
 });
 

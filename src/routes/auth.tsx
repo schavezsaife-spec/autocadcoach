@@ -29,7 +29,11 @@ export const Route = createFileRoute("/auth")({
     meta: [
       { title: "Sign in — AutoCAD Coach" },
       { name: "description", content: "Create your account or sign in to AutoCAD Coach." },
+      { property: "og:title", content: "Sign in — AutoCAD Coach" },
+      { property: "og:description", content: "Create your account or sign in to AutoCAD Coach." },
+      { property: "og:url", content: "https://autocadcoach.lovable.app/auth" },
     ],
+    links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/auth" }],
   }),
   component: AuthPage,
 });

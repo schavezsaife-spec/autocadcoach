@@ -9,7 +9,16 @@ import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Logo } from "@/components/coach/Logo";
 
 export const Route = createFileRoute("/reset-password")({
-  head: () => ({ meta: [{ title: "Set a new password — AutoCAD Coach" }] }),
+  head: () => ({
+    meta: [
+      { title: "Set a new password — AutoCAD Coach" },
+      { name: "description", content: "Choose a new password to regain access to your AutoCAD Coach account." },
+      { name: "robots", content: "noindex,nofollow" },
+      { property: "og:title", content: "Set a new password — AutoCAD Coach" },
+      { property: "og:url", content: "https://autocadcoach.lovable.app/reset-password" },
+    ],
+    links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/reset-password" }],
+  }),
   component: ResetPasswordPage,
 });
 

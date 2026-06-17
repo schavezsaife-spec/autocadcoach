@@ -16,7 +16,16 @@ import { useCoach } from "@/lib/coach-store";
 import { GuestGate } from "@/components/coach/GuestGate";
 
 export const Route = createFileRoute("/lesson-editor")({
-  head: () => ({ meta: [{ title: "Lesson image editor — AutoCAD Coach" }] }),
+  head: () => ({
+    meta: [
+      { title: "Lesson image editor — AutoCAD Coach" },
+      { name: "description", content: "Upload and manage official screenshots for each AutoCAD Coach lesson step." },
+      { name: "robots", content: "noindex,nofollow" },
+      { property: "og:title", content: "Lesson image editor — AutoCAD Coach" },
+      { property: "og:url", content: "https://autocadcoach.lovable.app/lesson-editor" },
+    ],
+    links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/lesson-editor" }],
+  }),
   validateSearch: z.object({ lesson: z.string().optional() }),
   component: LessonEditor,
 });
