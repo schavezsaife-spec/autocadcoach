@@ -575,7 +575,6 @@ function ScreenshotSlot({
         src={src}
         alt={shot.caption}
         caption={shot.caption}
-        sourceUrl={shot.sourceUrl}
       />
     </div>
   );
