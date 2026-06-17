@@ -1,7 +1,7 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, BookOpen, Wrench,
-  Compass, LogIn, Menu, PanelLeftClose, PanelLeftOpen,
+  Compass, LogIn, PanelLeftClose, PanelLeftOpen,
   LogOut,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
