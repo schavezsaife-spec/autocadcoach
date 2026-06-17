@@ -11,7 +11,17 @@ import { GuestGate } from "@/components/coach/GuestGate";
 import { useCoach } from "@/lib/coach-store";
 
 export const Route = createFileRoute("/chat")({
-  head: () => ({ meta: [{ title: "AutoCoach — AutoCAD Coach" }] }),
+  head: () => ({
+    meta: [
+      { title: "AutoCoach — AutoCAD Coach" },
+      { name: "description", content: "Ask the AutoCoach AI tutor any AutoCAD question and troubleshoot common command problems." },
+      { property: "og:title", content: "AutoCoach — AutoCAD Coach" },
+      { property: "og:description", content: "Ask the AutoCoach AI tutor any AutoCAD question and troubleshoot common command problems." },
+      { property: "og:url", content: "https://autocadcoach.lovable.app/chat" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/chat" }],
+  }),
   component: CoachPage,
 });
 
