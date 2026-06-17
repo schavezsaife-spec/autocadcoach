@@ -8,7 +8,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useCoach } from "@/lib/coach-store";
 import { ProfileAvatar } from "./ProfileAvatar";
-import { Logo, LogoMark } from "./Logo";
+import { Logo } from "./Logo";
 
 const NAV = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
