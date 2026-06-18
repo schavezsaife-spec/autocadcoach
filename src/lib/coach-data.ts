@@ -535,7 +535,7 @@ const richRectangle: RichLesson = {
     caption:
       "RECTANG command reference — Autodesk Help page covering Chamfer, Fillet, Width, Area and Dimensions options.",
     sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
-    imageUrl: SLICE.rectangle_after,
+    imageUrl: rectangleStep5VisualReference.url,
   },
   commonMistakes: [
     { mistake: "Forgetting the @ symbol and getting a rectangle in the wrong place.", fix: "Always type @ before relative offsets, e.g. @200,100." },
