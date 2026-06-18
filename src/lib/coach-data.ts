@@ -17,6 +17,7 @@ import circleStep3TypeRadius from "@/assets/circle_step3_type_radius.png.asset.j
 import circleStep4ConfirmSize from "@/assets/circle_step4_confirm_size.png.asset.json";
 import circleStep5VisualReference from "@/assets/circle_step5_visual_reference.png.asset.json";
 import rectangleStep1StartCommand from "@/assets/rectangle_step1_start_command.png.asset.json";
+import rectangleStep2PickFirstCorner from "@/assets/rectangle_step2_pick_first_corner.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
