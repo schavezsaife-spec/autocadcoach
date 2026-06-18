@@ -526,7 +526,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Whole rectangle highlighted in blue with four grips at the corners and four mid-edge grips.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
-        imageUrl: SLICE.rectangle_after,
+        imageUrl: rectangleStep4VerifyPolyline.url,
       },
     },
   ],
