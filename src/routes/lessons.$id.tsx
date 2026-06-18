@@ -382,7 +382,6 @@ function RichLessonBody({
               <ScreenshotCard
                 src={uploaded.beforeYouStart}
                 alt="Before you start — annotated AutoCAD screenshot"
-                caption="Annotated workspace before you start."
               />
             </div>
           )}
@@ -556,7 +555,7 @@ function ScreenshotSlot({
   onOpen,
   large = false,
 }: {
-  shot: { caption: string; sourceUrl?: string; imageUrl?: string };
+  shot: { imageUrl?: string };
   fallback: string;
   uploadedUrl?: string;
   onOpen?: () => void;
@@ -572,7 +571,7 @@ function ScreenshotSlot({
     <div className="mt-3">
       <ScreenshotCard
         src={src}
-        alt={shot.caption}
+        alt="Lesson screenshot"
       />
     </div>
   );
