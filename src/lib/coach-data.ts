@@ -490,7 +490,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Command line showing the RECTANG first-corner prompt with the options in square brackets.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
-        imageUrl: SLICE.rectangle_action,
+        imageUrl: rectangleStep1StartCommand.url,
       },
     },
     {
