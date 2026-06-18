@@ -75,13 +75,10 @@ export type RichLesson = {
     instruction: string;
     explanation: string;
     screenshot: {
-      sourceUrl?: string;
       imageUrl?: string;
-      annotations?: string[];
     };
   }[];
   visualReference?: {
-    sourceUrl?: string;
     imageUrl?: string;
   };
   commonMistakes: { mistake: string; fix: string }[];
