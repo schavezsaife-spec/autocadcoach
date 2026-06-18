@@ -177,8 +177,6 @@ const richInterface: RichLesson = {
     },
   ],
   visualReference: {
-    caption:
-      "Annotated AutoCAD 2024 workspace overview from Autodesk Help: ribbon, drawing area, command line, status bar.",
     imageUrl: interfaceStep6VisualReference.url,
   },
   commonMistakes: [
@@ -487,8 +485,6 @@ const richRectangle: RichLesson = {
     },
   ],
   visualReference: {
-    caption:
-      "RECTANG command reference — Autodesk Help page covering Chamfer, Fillet, Width, Area and Dimensions options.",
     imageUrl: rectangleStep5VisualReference.url,
   },
   commonMistakes: [
@@ -597,8 +593,6 @@ const richTrim: RichLesson = {
     },
   ],
   visualReference: {
-    caption:
-      "TRIM command reference — Autodesk Help page covering Quick vs Standard mode and the Edge/Project options.",
     imageUrl: SLICE.trim_before,
   },
   commonMistakes: [
