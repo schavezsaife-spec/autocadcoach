@@ -184,7 +184,6 @@ function LessonViewer() {
         <Lightbox
           src={lesson.image}
           alt={`${lesson.title} reference image`}
-          caption={lesson.title}
           onClose={() => setLightboxOpen(false)}
         />
       )}
@@ -224,7 +223,7 @@ function LegacyLessonBody({
 
       {media?.action && (
         <div className="mt-6">
-          <ScreenshotCard src={media.action.src} alt={media.action.caption} caption={media.action.caption} />
+          <ScreenshotCard src={media.action.src} alt={media.action.caption} />
         </div>
       )}
 
@@ -250,10 +249,10 @@ function LegacyLessonBody({
           <div className="font-semibold mb-3">Before vs After</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {media.before && (
-              <ScreenshotCard src={media.before.src} alt={media.before.caption} caption={media.before.caption} />
+              <ScreenshotCard src={media.before.src} alt={media.before.caption} />
             )}
             {media.after && (
-              <ScreenshotCard src={media.after.src} alt={media.after.caption} caption={media.after.caption} />
+              <ScreenshotCard src={media.after.src} alt={media.after.caption} />
             )}
           </div>
         </div>
@@ -265,7 +264,7 @@ function LegacyLessonBody({
           <p className="mt-2 text-sm">{lesson.mistake}</p>
           {media?.error && (
             <div className="mt-3">
-              <ScreenshotCard src={media.error.src} alt={media.error.caption} caption={media.error.caption} />
+              <ScreenshotCard src={media.error.src} alt={media.error.caption} />
             </div>
           )}
         </div>
@@ -383,7 +382,6 @@ function RichLessonBody({
               <ScreenshotCard
                 src={uploaded.beforeYouStart}
                 alt="Before you start — annotated AutoCAD screenshot"
-                caption="Annotated workspace before you start."
               />
             </div>
           )}
@@ -557,7 +555,7 @@ function ScreenshotSlot({
   onOpen,
   large = false,
 }: {
-  shot: { caption: string; sourceUrl?: string; imageUrl?: string };
+  shot: { imageUrl?: string };
   fallback: string;
   uploadedUrl?: string;
   onOpen?: () => void;
@@ -573,8 +571,7 @@ function ScreenshotSlot({
     <div className="mt-3">
       <ScreenshotCard
         src={src}
-        alt={shot.caption}
-        caption={shot.caption}
+        alt="Lesson screenshot"
       />
     </div>
   );
@@ -585,7 +582,6 @@ function BeforeAfter({ label, src }: { label: string; src?: string }) {
     <ScreenshotCard
       src={src}
       alt={`${label} — annotated AutoCAD screenshot`}
-      caption={label}
     />
   );
 }

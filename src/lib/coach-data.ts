@@ -75,15 +75,10 @@ export type RichLesson = {
     instruction: string;
     explanation: string;
     screenshot: {
-      caption: string;
-      sourceUrl?: string;
       imageUrl?: string;
-      annotations?: string[];
     };
   }[];
   visualReference?: {
-    caption: string;
-    sourceUrl?: string;
     imageUrl?: string;
   };
   commonMistakes: { mistake: string; fix: string }[];
@@ -96,8 +91,6 @@ export type RichLesson = {
   proTips: string[];
   relatedCommands: { name: string; alias?: string; what: string }[];
 };
-
-const AUTODESK = "https://help.autodesk.com/view/ACD/2024/ENU/";
 
 const richInterface: RichLesson = {
   commandName: "Interface + Navigation",
@@ -136,8 +129,6 @@ const richInterface: RichLesson = {
       explanation:
         "acad.dwt is the imperial default template that ships with AutoCAD. Using a known template means lessons here behave exactly like the screenshots.",
       screenshot: {
-        caption: "Start tab → Start Drawing button. Circle the 'Start Drawing' button.",
-        sourceUrl: AUTODESK + "?guid=GUID-1F22CBED-1678-4410-A153-21F5C6A02C70",
         imageUrl: interfaceStep1.url,
       },
     },
@@ -148,8 +139,6 @@ const richInterface: RichLesson = {
       explanation:
         "Pointing at each region and naming it out loud builds spatial memory. You're not running any command yet — this is pure orientation.",
       screenshot: {
-        caption: "Full AutoCAD window with arrows labelling: 1 Ribbon, 2 Drawing area, 3 Command line, 4 Status bar.",
-        sourceUrl: AUTODESK + "?guid=GUID-2010CF44-7CE3-405F-A5E1-78D60C8055A8",
         imageUrl: interfaceStep2.url,
       },
     },
@@ -160,8 +149,6 @@ const richInterface: RichLesson = {
       explanation:
         "Holding the wheel triggers Realtime PAN. Releasing the wheel ends the pan. Your zoom level does not change.",
       screenshot: {
-        caption: "Cursor turned into the 'hand' pan icon inside the drawing area. Add an arrow showing drag direction.",
-        sourceUrl: AUTODESK + "?guid=GUID-7B6D9C7A-9C18-4F9A-9D6A-5C7C7E2A85B2",
         imageUrl: interfaceStep3Pan.url,
       },
     },
@@ -172,8 +159,6 @@ const richInterface: RichLesson = {
       explanation:
         "AutoCAD zooms toward the crosshair position, not the screen center. Where you point is where you go.",
       screenshot: {
-        caption: "Two side-by-side captures: same drawing zoomed out (left) and zoomed in (right). Label the cursor location.",
-        sourceUrl: AUTODESK + "?guid=GUID-C0F5C7CB-7B0F-4F7B-9C13-6C2E2C9A3A8E",
         imageUrl: interfaceStep4Zoom.url,
       },
     },
@@ -184,16 +169,11 @@ const richInterface: RichLesson = {
       explanation:
         "ZOOM EXTENTS (Z → E) recentres and rescales the view so every object fits on screen. Memorise this — it's your 'I'm lost' button.",
       screenshot: {
-        caption: "Command line showing the literal text: Command: Z  ZOOM  Specify corner… [All/Center/Dynamic/Extents/…]: E.",
-        sourceUrl: AUTODESK + "?guid=GUID-7B5A2A8C-5C2E-4D7C-9E5E-9A6E1C2E3D7B",
         imageUrl: interfaceStep5ZoomExtents.url,
       },
     },
   ],
   visualReference: {
-    caption:
-      "Annotated AutoCAD 2024 workspace overview from Autodesk Help: ribbon, drawing area, command line, status bar.",
-    sourceUrl: AUTODESK + "?guid=GUID-2010CF44-7CE3-405F-A5E1-78D60C8055A8",
     imageUrl: interfaceStep6VisualReference.url,
   },
   commonMistakes: [
@@ -262,8 +242,6 @@ const richLine: RichLesson = {
       explanation:
         "The command line should now read 'LINE Specify first point:'. AutoCAD is now waiting for one click or one typed coordinate.",
       screenshot: {
-        caption: "Command line showing: Command: LINE  Specify first point:",
-        sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
         imageUrl: lineStep1StartCommand.url,
       },
     },
@@ -274,8 +252,6 @@ const richLine: RichLesson = {
       explanation:
         "The first click anchors the first endpoint. AutoCAD now prompts 'Specify next point or [Undo]:'.",
       screenshot: {
-        caption: "Rubber-band line stretching from the picked start point to the current cursor position.",
-        sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
         imageUrl: lineStep2PickStartPoint.url,
       },
     },
@@ -285,8 +261,6 @@ const richLine: RichLesson = {
       explanation:
         "@100,0 means 'go 100 units along X and 0 along Y from the previous point' — i.e. 100 units to the right. This is exactly the kind of typed precision that separates CAD from sketching.",
       screenshot: {
-        caption: "Command line: Specify next point or [Undo]: @100,0  — and the new horizontal segment visible in the drawing.",
-        sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
         imageUrl: lineStep3RelativeCoordinate.url,
       },
     },
@@ -296,8 +270,6 @@ const richLine: RichLesson = {
       explanation:
         "Pressing Enter on the next-point prompt ends the chain. The single horizontal segment stays in the drawing.",
       screenshot: {
-        caption: "Drawing area with one horizontal 100-unit segment. Command line back to a clean 'Command:' prompt.",
-        sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
         imageUrl: lineStep4EndCommand.url,
       },
     },
@@ -307,15 +279,11 @@ const richLine: RichLesson = {
       explanation:
         "Saving early and often is non-negotiable in CAD. .dwg is AutoCAD's native format.",
       screenshot: {
-        caption: "Save Drawing As dialog with the file name field filled in.",
-        sourceUrl: AUTODESK + "?guid=GUID-2EB1F3A5-9B4F-4B7F-9D54-1A5F8B3F0B9F",
         imageUrl: lineStep5SaveWork.url,
       },
     },
   ],
   visualReference: {
-    caption: "LINE command reference — Autodesk Help page documenting prompts and options.",
-    sourceUrl: AUTODESK + "?guid=GUID-3A5C0E07-1F3C-4F8A-83E0-3F9D5BB28F2F",
     imageUrl: lineStep6VisualReference.url,
   },
   commonMistakes: [
@@ -383,8 +351,6 @@ const richCircle: RichLesson = {
       explanation:
         "The command line should now read 'CIRCLE Specify center point for circle or [3P/2P/Ttr (tan tan radius)]:'.",
       screenshot: {
-        caption: "Command line showing: Command: CIRCLE  Specify center point for circle or [3P/2P/Ttr]:",
-        sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
         imageUrl: circleStep1StartCommand.url,
       },
     },
@@ -394,8 +360,6 @@ const richCircle: RichLesson = {
       explanation:
         "AutoCAD now prompts 'Specify radius of circle or [Diameter]:' and a preview circle follows the cursor.",
       screenshot: {
-        caption: "Preview circle rubber-banding around the picked centre point, growing as the cursor moves.",
-        sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
         imageUrl: circleStep2ClickCentre.url,
       },
     },
@@ -405,8 +369,6 @@ const richCircle: RichLesson = {
       explanation:
         "AutoCAD draws a circle with a radius of 50 drawing units around your centre point and exits the command.",
       screenshot: {
-        caption: "Finished circle of radius 50, with the centre marker visible if PDMODE shows it.",
-        sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
         imageUrl: circleStep3TypeRadius.url,
       },
     },
@@ -416,15 +378,11 @@ const richCircle: RichLesson = {
       explanation:
         "LIST prints the object's properties to the command-line history (press F2 to see them). You'll see RADIUS = 50.0000 and the centre coordinates.",
       screenshot: {
-        caption: "F2 text window showing CIRCLE Layer, center point, radius, circumference and area.",
-        sourceUrl: AUTODESK + "?guid=GUID-9D7E2A91-7E2D-4B6F-9E2E-9C7A8F0E7E2D",
         imageUrl: circleStep4ConfirmSize.url,
       },
     },
   ],
   visualReference: {
-    caption: "CIRCLE command reference — Autodesk Help page documenting all six creation methods.",
-    sourceUrl: AUTODESK + "?guid=GUID-D6E2E47D-92D2-4F0B-9C36-4D8C7C5A8B9E",
     imageUrl: circleStep5VisualReference.url,
   },
   commonMistakes: [
@@ -492,8 +450,6 @@ const richRectangle: RichLesson = {
       explanation:
         "The command line should now read 'RECTANG Specify first corner point or [Chamfer/Elevation/Fillet/Thickness/Width]:'.",
       screenshot: {
-        caption: "Command line showing the RECTANG first-corner prompt with the options in square brackets.",
-        sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
         imageUrl: rectangleStep1StartCommand.url,
       },
     },
@@ -503,8 +459,6 @@ const richRectangle: RichLesson = {
       explanation:
         "AutoCAD now prompts 'Specify other corner point or [Area/Dimensions/Rotation]:' and a preview rectangle follows the cursor.",
       screenshot: {
-        caption: "Preview rectangle stretching from the picked first corner to the cursor.",
-        sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
         imageUrl: rectangleStep2PickFirstCorner.url,
       },
     },
@@ -514,8 +468,6 @@ const richRectangle: RichLesson = {
       explanation:
         "@200,100 means 'go 200 units right and 100 units up from the first corner'. The rectangle finishes as a closed polyline in one command — no JOIN needed.",
       screenshot: {
-        caption: "Command line: Specify other corner point: @200,100 — completed 200×100 rectangle in the drawing.",
-        sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
         imageUrl: rectangleStep3TypeSecondCorner.url,
       },
     },
@@ -525,16 +477,11 @@ const richRectangle: RichLesson = {
       explanation:
         "If only one edge highlights, you drew four separate LINE segments by mistake. RECTANGLE always produces a single polyline.",
       screenshot: {
-        caption: "Whole rectangle highlighted in blue with four grips at the corners and four mid-edge grips.",
-        sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
         imageUrl: rectangleStep4VerifyPolyline.url,
       },
     },
   ],
   visualReference: {
-    caption:
-      "RECTANG command reference — Autodesk Help page covering Chamfer, Fillet, Width, Area and Dimensions options.",
-    sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
     imageUrl: rectangleStep5VisualReference.url,
   },
   commonMistakes: [
@@ -602,8 +549,6 @@ const richTrim: RichLesson = {
       explanation:
         "TRIM needs two objects that intersect. With nothing to cut against, the command does nothing.",
       screenshot: {
-        caption: "Two LINE segments forming a plus sign in the drawing area.",
-        sourceUrl: AUTODESK + "?guid=GUID-7C0F6B8C-5C2E-4F7B-9C13-6C2E2C9A3A8E",
         imageUrl: SLICE.trim_before,
       },
     },
@@ -613,8 +558,6 @@ const richTrim: RichLesson = {
       explanation:
         "In Quick mode the command line reads 'Select object to trim or shift-select to extend or [cuTting edges/Crossing/mOde/…]'. Every visible object is already acting as a cutting edge.",
       screenshot: {
-        caption: "Command line showing the TRIM Quick-mode prompt.",
-        sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
         imageUrl: SLICE.trim_before,
       },
     },
@@ -624,8 +567,6 @@ const richTrim: RichLesson = {
       explanation:
         "Each click removes the segment between the nearest cutting edges. The remaining geometry stays.",
       screenshot: {
-        caption: "Cursor hovering over an overshoot with the segment turning grey to indicate it will be removed.",
-        sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
         imageUrl: SLICE.extend_before,
       },
     },
@@ -635,8 +576,6 @@ const richTrim: RichLesson = {
       explanation:
         "TRIM stays active so you can keep clicking. Press Enter (or Esc) to finish.",
       screenshot: {
-        caption: "Cleaned-up plus sign with no overshoots. Command line back to 'Command:'.",
-        sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
         imageUrl: SLICE.extend_after,
       },
     },
@@ -647,15 +586,10 @@ const richTrim: RichLesson = {
       explanation:
         "Standard mode is the legacy flow: pick cutting edges first, press Enter, then click segments. Useful when you have many overlapping objects and want explicit control.",
       screenshot: {
-        caption: "Command line transition: TRIM → Enter trim mode option [Quick/Standard] <Quick>: S.",
-        sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
       },
     },
   ],
   visualReference: {
-    caption:
-      "TRIM command reference — Autodesk Help page covering Quick vs Standard mode and the Edge/Project options.",
-    sourceUrl: AUTODESK + "?guid=GUID-86D8E8C0-7E2C-4B3F-8F1F-7A8E4C9B7C9A",
     imageUrl: SLICE.trim_before,
   },
   commonMistakes: [

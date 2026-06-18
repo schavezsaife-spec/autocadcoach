@@ -126,7 +126,7 @@ function ProjectViewer() {
       </GuestGate>
 
       {lightbox && (
-        <Lightbox src={project.image} alt={project.title} caption={project.title} onClose={() => setLightbox(false)} />
+        <Lightbox src={project.image} alt={project.title} onClose={() => setLightbox(false)} />
       )}
     </div>
   );
