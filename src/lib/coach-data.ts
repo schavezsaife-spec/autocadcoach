@@ -21,6 +21,7 @@ import rectangleStep2PickFirstCorner from "@/assets/rectangle_step2_pick_first_c
 import rectangleStep3TypeSecondCorner from "@/assets/rectangle_step3_type_second_corner.png.asset.json";
 import rectangleStep4VerifyPolyline from "@/assets/rectangle_step4_verify_polyline.png.asset.json";
 import rectangleStep5VisualReference from "@/assets/rectangle_step5_visual_reference.png.asset.json";
+import trimStep1CrossingLines from "@/assets/trim_step1_crossing_lines.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -549,7 +550,7 @@ const richTrim: RichLesson = {
       explanation:
         "TRIM needs two objects that intersect. With nothing to cut against, the command does nothing.",
       screenshot: {
-        imageUrl: SLICE.trim_before,
+        imageUrl: trimStep1CrossingLines.url,
       },
     },
     {
