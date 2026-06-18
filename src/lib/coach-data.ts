@@ -16,6 +16,7 @@ import circleStep2ClickCentre from "@/assets/circle_step2_click_centre.png.asset
 import circleStep3TypeRadius from "@/assets/circle_step3_type_radius.png.asset.json";
 import circleStep4ConfirmSize from "@/assets/circle_step4_confirm_size.png.asset.json";
 import circleStep5VisualReference from "@/assets/circle_step5_visual_reference.png.asset.json";
+import rectangleStep1StartCommand from "@/assets/rectangle_step1_start_command.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -489,7 +490,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Command line showing the RECTANG first-corner prompt with the options in square brackets.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
-        imageUrl: SLICE.rectangle_action,
+        imageUrl: rectangleStep1StartCommand.url,
       },
     },
     {
