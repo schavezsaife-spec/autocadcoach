@@ -514,7 +514,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Command line: Specify other corner point: @200,100 — completed 200×100 rectangle in the drawing.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
-        imageUrl: SLICE.rectangle_after,
+        imageUrl: rectangleStep3TypeSecondCorner.url,
       },
     },
     {
