@@ -502,7 +502,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Preview rectangle stretching from the picked first corner to the cursor.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
-        imageUrl: SLICE.rectangle_action,
+        imageUrl: rectangleStep2PickFirstCorner.url,
       },
     },
     {
