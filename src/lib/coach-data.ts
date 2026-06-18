@@ -18,6 +18,7 @@ import circleStep4ConfirmSize from "@/assets/circle_step4_confirm_size.png.asset
 import circleStep5VisualReference from "@/assets/circle_step5_visual_reference.png.asset.json";
 import rectangleStep1StartCommand from "@/assets/rectangle_step1_start_command.png.asset.json";
 import rectangleStep2PickFirstCorner from "@/assets/rectangle_step2_pick_first_corner.png.asset.json";
+import rectangleStep3TypeSecondCorner from "@/assets/rectangle_step3_type_second_corner.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -513,7 +514,7 @@ const richRectangle: RichLesson = {
       screenshot: {
         caption: "Command line: Specify other corner point: @200,100 — completed 200×100 rectangle in the drawing.",
         sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
-        imageUrl: SLICE.rectangle_after,
+        imageUrl: rectangleStep3TypeSecondCorner.url,
       },
     },
     {
