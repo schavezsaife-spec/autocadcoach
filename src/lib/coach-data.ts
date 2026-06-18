@@ -20,6 +20,7 @@ import rectangleStep1StartCommand from "@/assets/rectangle_step1_start_command.p
 import rectangleStep2PickFirstCorner from "@/assets/rectangle_step2_pick_first_corner.png.asset.json";
 import rectangleStep3TypeSecondCorner from "@/assets/rectangle_step3_type_second_corner.png.asset.json";
 import rectangleStep4VerifyPolyline from "@/assets/rectangle_step4_verify_polyline.png.asset.json";
+import rectangleStep5VisualReference from "@/assets/rectangle_step5_visual_reference.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -534,7 +535,7 @@ const richRectangle: RichLesson = {
     caption:
       "RECTANG command reference — Autodesk Help page covering Chamfer, Fillet, Width, Area and Dimensions options.",
     sourceUrl: AUTODESK + "?guid=GUID-D6E1E08D-3F8B-4F1E-9B89-7C5F9D6E2F7D",
-    imageUrl: SLICE.rectangle_after,
+    imageUrl: rectangleStep5VisualReference.url,
   },
   commonMistakes: [
     { mistake: "Forgetting the @ symbol and getting a rectangle in the wrong place.", fix: "Always type @ before relative offsets, e.g. @200,100." },
