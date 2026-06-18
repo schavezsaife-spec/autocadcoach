@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Trash2, ImageIcon, ArrowLeft, ExternalLink } from "lucide-react";
+import { Upload, Trash2, ImageIcon, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useCoach } from "@/lib/coach-store";
 import { GuestGate } from "@/components/coach/GuestGate";
@@ -33,8 +33,6 @@ export const Route = createFileRoute("/lesson-editor")({
 type Slot = {
   key: string;
   label: string;
-  caption?: string;
-  sourceUrl?: string;
 };
 
 function LessonEditor() {
@@ -60,21 +58,17 @@ function LessonEditor() {
         list.push({
           key: "visual",
           label: "Visual reference",
-          caption: lesson.rich.visualReference.caption,
-          sourceUrl: lesson.rich.visualReference.sourceUrl,
         });
       }
       lesson.rich.detailedSteps.forEach((s, i) => {
         list.push({
           key: `step:${i}`,
           label: `Step ${i + 1} — ${s.title}`,
-          caption: s.screenshot.caption,
-          sourceUrl: s.screenshot.sourceUrl,
         });
       });
     } else {
-      lesson.steps.forEach((text, i) => {
-        list.push({ key: `step:${i}`, label: `Step ${i + 1}`, caption: text });
+      lesson.steps.forEach((_text, i) => {
+        list.push({ key: `step:${i}`, label: `Step ${i + 1}` });
       });
     }
     return list;
@@ -168,20 +162,7 @@ function SlotCard({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="font-semibold text-sm">{slot.label}</div>
-          {slot.caption && (
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-3">{slot.caption}</p>
-          )}
         </div>
-        {slot.sourceUrl && (
-          <a
-            href={slot.sourceUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs text-primary hover:underline inline-flex items-center gap-1 shrink-0"
-          >
-            Docs <ExternalLink className="size-3" />
-          </a>
-        )}
       </div>
 
       <div className="rounded-xl border border-dashed border-border bg-secondary/30 overflow-hidden">
