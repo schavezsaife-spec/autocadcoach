@@ -20,6 +20,7 @@ import rectangleStep1StartCommand from "@/assets/rectangle_step1_start_command.p
 import rectangleStep2PickFirstCorner from "@/assets/rectangle_step2_pick_first_corner.png.asset.json";
 import rectangleStep3TypeSecondCorner from "@/assets/rectangle_step3_type_second_corner.png.asset.json";
 import rectangleStep4VerifyPolyline from "@/assets/rectangle_step4_verify_polyline.png.asset.json";
+import rectangleStep5VisualReference from "@/assets/rectangle_step5_visual_reference.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
