@@ -25,6 +25,7 @@ import trimStep1CrossingLines from "@/assets/trim_step1_crossing_lines.png.asset
 import trimStep2StartTrimCommand from "@/assets/trim_step2_start_trim_command.png.asset.json";
 import trimStep3ClickSegmentRemove from "@/assets/trim_step3_click_segment_remove.png.asset.json";
 import trimStep4EndCommand from "@/assets/trim_step4_end_command.png.asset.json";
+import trimStep5StandardMode from "@/assets/trim_step5_standard_mode.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -590,6 +591,7 @@ const richTrim: RichLesson = {
       explanation:
         "Standard mode is the legacy flow: pick cutting edges first, press Enter, then click segments. Useful when you have many overlapping objects and want explicit control.",
       screenshot: {
+        imageUrl: trimStep5StandardMode.url,
       },
     },
   ],
