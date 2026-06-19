@@ -24,6 +24,7 @@ import rectangleStep5VisualReference from "@/assets/rectangle_step5_visual_refer
 import trimStep1CrossingLines from "@/assets/trim_step1_crossing_lines.png.asset.json";
 import trimStep2StartTrimCommand from "@/assets/trim_step2_start_trim_command.png.asset.json";
 import trimStep3ClickSegmentRemove from "@/assets/trim_step3_click_segment_remove.png.asset.json";
+import trimStep4EndCommand from "@/assets/trim_step4_end_command.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -579,7 +580,7 @@ const richTrim: RichLesson = {
       explanation:
         "TRIM stays active so you can keep clicking. Press Enter (or Esc) to finish.",
       screenshot: {
-        imageUrl: SLICE.extend_after,
+        imageUrl: trimStep4EndCommand.url,
       },
     },
     {
