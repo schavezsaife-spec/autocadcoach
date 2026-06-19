@@ -23,6 +23,7 @@ import rectangleStep4VerifyPolyline from "@/assets/rectangle_step4_verify_polyli
 import rectangleStep5VisualReference from "@/assets/rectangle_step5_visual_reference.png.asset.json";
 import trimStep1CrossingLines from "@/assets/trim_step1_crossing_lines.png.asset.json";
 import trimStep2StartTrimCommand from "@/assets/trim_step2_start_trim_command.png.asset.json";
+import trimStep3ClickSegmentRemove from "@/assets/trim_step3_click_segment_remove.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -569,7 +570,7 @@ const richTrim: RichLesson = {
       explanation:
         "Each click removes the segment between the nearest cutting edges. The remaining geometry stays.",
       screenshot: {
-        imageUrl: SLICE.extend_before,
+        imageUrl: trimStep3ClickSegmentRemove.url,
       },
     },
     {
