@@ -27,6 +27,7 @@ import trimStep3ClickSegmentRemove from "@/assets/trim_step3_click_segment_remov
 import trimStep4EndCommand from "@/assets/trim_step4_end_command.png.asset.json";
 import trimStep5StandardMode from "@/assets/trim_step5_standard_mode.png.asset.json";
 import trimStep6VisualReference from "@/assets/trim_step6_visual_reference.png.asset.json";
+import movecopyStep1SelectObject from "@/assets/movecopy_step1_select_object.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -662,7 +663,9 @@ const richMoveCopy: RichLesson = {
       title: "Select the object you want to move",
       instruction: "Click the object once so it shows blue grips.",
       explanation: "Picking first means MOVE will use the current selection set instead of asking for one.",
-      screenshot: emptyShot,
+      screenshot: {
+        imageUrl: movecopyStep1SelectObject.url,
+      },
     },
     {
       title: "Start the MOVE command",
