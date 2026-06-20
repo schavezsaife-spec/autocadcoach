@@ -29,6 +29,7 @@ import trimStep5StandardMode from "@/assets/trim_step5_standard_mode.png.asset.j
 import trimStep6VisualReference from "@/assets/trim_step6_visual_reference.png.asset.json";
 import movecopyStep1SelectObject from "@/assets/movecopy_step1_select_object.png.asset.json";
 import movecopyStep2StartMove from "@/assets/movecopy_step2_start_move_command.png.asset.json";
+import movecopyStep3PickBasePoint from "@/assets/movecopy_step3_pick_snapped_base_point.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -680,7 +681,9 @@ const richMoveCopy: RichLesson = {
       title: "Pick a snapped base point",
       instruction: "Hover over a corner or endpoint until the green snap marker appears, then click.",
       explanation: "Snapping to real geometry gives you a precise, repeatable offset — not an eyeballed shift.",
-      screenshot: emptyShot,
+      screenshot: {
+        imageUrl: movecopyStep3PickBasePoint.url,
+      },
     },
     {
       title: "Specify the destination",
