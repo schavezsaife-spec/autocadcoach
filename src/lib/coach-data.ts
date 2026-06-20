@@ -31,6 +31,7 @@ import movecopyStep1SelectObject from "@/assets/movecopy_step1_select_object.png
 import movecopyStep2StartMove from "@/assets/movecopy_step2_start_move_command.png.asset.json";
 import movecopyStep3PickBasePoint from "@/assets/movecopy_step3_pick_snapped_base_point.png.asset.json";
 import movecopyStep4SpecifyDestination from "@/assets/movecopy_step4_specify_destination.png.asset.json";
+import movecopyStep5DuplicateCopy from "@/assets/movecopy_step5_duplicate_copy.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -698,7 +699,9 @@ const richMoveCopy: RichLesson = {
       title: "Duplicate instead with COPY",
       instruction: "Press Esc, select the object again, type CO, Enter. Repeat steps 3 and 4 — but COPY keeps prompting for more destinations until you press Enter.",
       explanation: "COPY mirrors the MOVE workflow but is non-destructive and can place multiple copies in one command.",
-      screenshot: emptyShot,
+      screenshot: {
+        imageUrl: movecopyStep5DuplicateCopy.url,
+      },
     },
   ],
   visualReference: emptyShot,
