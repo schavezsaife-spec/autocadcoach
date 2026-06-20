@@ -1826,6 +1826,7 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200",
     mistake: "Picking a random base point — always use a corner or endpoint.",
     challenge: "Copy a circle 5 times in a horizontal row, 100 units apart.",
+    rich: richMoveCopy,
   },
   {
     id: "osnap", day: 7, title: "Precision with OSNAP", tag: "Precision", xp: 70,
@@ -1840,6 +1841,7 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1551033406-611cf9a28f67?w=1200",
     mistake: "Drawing without OSNAP — your geometry will never connect.",
     challenge: "Draw a triangle with vertices snapped to three existing circle centers.",
+    rich: richOsnap,
   },
   {
     id: "layers", day: 8, title: "Layers Basics", tag: "Organization", xp: 70,
@@ -1853,6 +1855,7 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1487014679447-9f8336841d58?w=1200",
     mistake: "Drawing everything on Layer 0. Always switch layers first.",
     challenge: "Move 3 existing objects each to a different new layer.",
+    rich: richLayers,
   },
   {
     id: "dim-text", day: 9, title: "Dimensions + Text", tag: "Annotation", xp: 70,
@@ -1866,6 +1869,7 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200",
     mistake: "Tiny text that's invisible when zoomed out — bump up the height.",
     challenge: "Fully dimension a 100x200 rectangle with a title block.",
+    rich: richDimText,
   },
   {
     id: "hatch", day: 10, title: "HATCH", tag: "Fill", xp: 60,
@@ -1880,6 +1884,7 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=1200",
     mistake: "HATCH fails on open shapes — close all gaps first.",
     challenge: "Hatch a rectangle with ANSI31 at 45 degrees.",
+    rich: richHatch,
   },
   {
     id: "blocks", day: 11, title: "BLOCKS", tag: "Reusability", xp: 80,
@@ -1894,6 +1899,7 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=1200",
     mistake: "Forgetting the base point — your block inserts off-center.",
     challenge: "Make a chair block and insert it 4 times around a table.",
+    rich: richBlocks,
   },
   {
     id: "join", day: 12, title: "JOIN", tag: "Editing", xp: 60,
@@ -1914,6 +1920,7 @@ export const lessons: Lesson[] = [
       after: { src: joinAfter.url, caption: "After: a single closed polyline you can edit as one object." },
       error: { src: joinError.url, caption: "If endpoints don't touch exactly, JOIN fails — snap them first with OSNAP (F3)." },
     },
+    rich: richJoin,
   },
   {
     id: "extrude", day: 13, title: "EXTRUDE", tag: "3D", xp: 90,
@@ -1935,6 +1942,7 @@ export const lessons: Lesson[] = [
       before: { src: extrudeBefore.url, caption: "Before: a flat 2D closed shape." },
       after: { src: extrudeAfter.url, caption: "After: the shape pushed into a 3D solid." },
     },
+    rich: richExtrude,
   },
   {
     id: "polyline-rect", day: 14, title: "POLYLINE Deep-Dive", tag: "Drawing", xp: 60,
@@ -1948,6 +1956,7 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1551033406-611cf9a28f67?w=1200",
     mistake: "Using LINE when you need a single closed shape — pick PLINE instead.",
     challenge: "Draw an L-shape with POLYLINE and close it.",
+    rich: richPolyline,
   },
   {
     id: "offset-mirror", day: 15, title: "OFFSET + MIRROR", tag: "Editing", xp: 70,
@@ -1961,6 +1970,7 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1545972154-9bb223aac798?w=1200",
     mistake: "Forgetting to set distance before selecting in OFFSET.",
     challenge: "Mirror half a butterfly to make a full symmetrical one.",
+    rich: richOffsetMirror,
   },
   {
     id: "fillet-chamfer", day: 16, title: "FILLET + CHAMFER", tag: "Editing", xp: 70,
@@ -1974,6 +1984,7 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=1200",
     mistake: "Setting radius 0 by accident — your corner just becomes sharp.",
     challenge: "Fillet all 4 corners of a rectangle with radius 15.",
+    rich: richFilletChamfer,
   },
   {
     id: "array-review", day: 17, title: "ARRAY + Dimensions Review", tag: "Review", xp: 100,
@@ -1987,6 +1998,7 @@ export const lessons: Lesson[] = [
     image: "https://images.unsplash.com/photo-1487014679447-9f8336841d58?w=1200",
     mistake: "Negative spacing in ARRAY — it overlaps everything.",
     challenge: "Polar array a circle 8 times around a center point.",
+    rich: richArrayReview,
   },
 ];
 
