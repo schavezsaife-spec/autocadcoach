@@ -30,6 +30,7 @@ import trimStep6VisualReference from "@/assets/trim_step6_visual_reference.png.a
 import movecopyStep1SelectObject from "@/assets/movecopy_step1_select_object.png.asset.json";
 import movecopyStep2StartMove from "@/assets/movecopy_step2_start_move_command.png.asset.json";
 import movecopyStep3PickBasePoint from "@/assets/movecopy_step3_pick_snapped_base_point.png.asset.json";
+import movecopyStep4SpecifyDestination from "@/assets/movecopy_step4_specify_destination.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -689,7 +690,9 @@ const richMoveCopy: RichLesson = {
       title: "Specify the destination",
       instruction: "Click the new location, or type a relative coordinate like @100,0 and press Enter.",
       explanation: "Typed coordinates move by an exact distance; clicked points let you snap onto existing geometry.",
-      screenshot: emptyShot,
+      screenshot: {
+        imageUrl: movecopyStep4SpecifyDestination.url,
+      },
     },
     {
       title: "Duplicate instead with COPY",
