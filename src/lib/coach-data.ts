@@ -28,6 +28,7 @@ import trimStep4EndCommand from "@/assets/trim_step4_end_command.png.asset.json"
 import trimStep5StandardMode from "@/assets/trim_step5_standard_mode.png.asset.json";
 import trimStep6VisualReference from "@/assets/trim_step6_visual_reference.png.asset.json";
 import movecopyStep1SelectObject from "@/assets/movecopy_step1_select_object.png.asset.json";
+import movecopyStep2StartMove from "@/assets/movecopy_step2_start_move_command.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -671,7 +672,9 @@ const richMoveCopy: RichLesson = {
       title: "Start the MOVE command",
       instruction: "Type M and press Enter.",
       explanation: "The command line now reads 'Specify base point or [Displacement]:'. AutoCAD is waiting for the grab handle.",
-      screenshot: emptyShot,
+      screenshot: {
+        imageUrl: movecopyStep2StartMove.url,
+      },
     },
     {
       title: "Pick a snapped base point",
