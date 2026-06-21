@@ -32,6 +32,7 @@ import movecopyStep2StartMove from "@/assets/movecopy_step2_start_move_command.p
 import movecopyStep3PickBasePoint from "@/assets/movecopy_step3_pick_snapped_base_point.png.asset.json";
 import movecopyStep4SpecifyDestination from "@/assets/movecopy_step4_specify_destination.png.asset.json";
 import movecopyStep5DuplicateCopy from "@/assets/movecopy_step5_duplicate_copy.png.asset.json";
+import movecopyStep6VisualReference from "@/assets/movecopy_step6_visual_reference.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
@@ -704,7 +705,9 @@ const richMoveCopy: RichLesson = {
       },
     },
   ],
-  visualReference: emptyShot,
+  visualReference: {
+    imageUrl: movecopyStep6VisualReference.url,
+  },
   commonMistakes: [
     { mistake: "Picking a random empty point as the base point.", fix: "Always snap to a corner, endpoint, midpoint or centre so the move is precise." },
     { mistake: "Using MOVE when you wanted to keep the original.", fix: "Press Ctrl + Z and rerun with COPY (CO) instead." },
