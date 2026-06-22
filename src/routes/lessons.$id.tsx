@@ -377,14 +377,12 @@ function RichLessonBody({
               </li>
             ))}
           </ul>
-          {(uploaded.beforeYouStart || !uploaded.beforeYouStart) && (
-            <div className="mt-4">
-              <ScreenshotCard
-                src={uploaded.beforeYouStart}
-                alt="Before you start — annotated AutoCAD screenshot"
-              />
-            </div>
-          )}
+          <div className="mt-4">
+            <ScreenshotCard
+              src={uploaded.beforeYouStart}
+              alt="Before you start — annotated AutoCAD screenshot"
+            />
+          </div>
         </Section>
 
         <Section id="steps" icon={ListChecks} title="Step-by-step instructions">
