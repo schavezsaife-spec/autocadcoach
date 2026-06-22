@@ -10,7 +10,6 @@ import { supabase } from "@/integrations/supabase/client";
  * Slot keys:
  *   - `step:<index>`      annotated screenshot for a specific step
  *   - `visual`            main visual reference image
- *   - `beforeYouStart`    annotated "before you start" screenshot
  *   - `before` / `after`  the before vs after comparison
  */
 const BUCKET = "lesson-screenshots";
