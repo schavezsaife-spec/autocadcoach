@@ -382,6 +382,17 @@ function RichLessonBody({
               <ScreenshotCard
                 src={uploaded.beforeYouStart}
                 alt="Before you start — annotated AutoCAD screenshot"
+                lessonId={lessonId}
+                slot="beforeYouStart"
+              />
+            </div>
+          )}
+          {!uploaded.beforeYouStart && (
+            <div className="mt-4">
+              <ScreenshotCard
+                alt="Before you start — annotated AutoCAD screenshot"
+                lessonId={lessonId}
+                slot="beforeYouStart"
               />
             </div>
           )}
@@ -403,6 +414,8 @@ function RichLessonBody({
                       shot={s.screenshot}
                       fallback={fallbackImage}
                       uploadedUrl={uploaded[`step:${i}`]}
+                      lessonId={lessonId}
+                      slot={`step:${i}`}
                     />
                   </div>
                 </div>
@@ -420,6 +433,8 @@ function RichLessonBody({
               uploadedUrl={uploaded.visual}
               onOpen={onOpenLightbox}
               large
+              lessonId={lessonId}
+              slot="visual"
             />
           ) : (
             <p className="text-sm text-muted-foreground">No reference image required for this lesson.</p>
@@ -430,8 +445,8 @@ function RichLessonBody({
                 Before vs After
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <BeforeAfter label="Before" src={uploaded.before} />
-                <BeforeAfter label="After" src={uploaded.after} />
+                <BeforeAfter label="Before" src={uploaded.before} lessonId={lessonId} slot="before" />
+                <BeforeAfter label="After" src={uploaded.after} lessonId={lessonId} slot="after" />
               </div>
             </div>
           )}
@@ -554,12 +569,16 @@ function ScreenshotSlot({
   uploadedUrl,
   onOpen,
   large = false,
+  lessonId,
+  slot,
 }: {
   shot: { imageUrl?: string };
   fallback: string;
   uploadedUrl?: string;
   onOpen?: () => void;
   large?: boolean;
+  lessonId?: string;
+  slot?: string;
 }) {
   const src = uploadedUrl ?? shot.imageUrl;
   // `fallback`, `onOpen`, `large` are intentionally unused — ScreenshotCard
@@ -572,16 +591,30 @@ function ScreenshotSlot({
       <ScreenshotCard
         src={src}
         alt="Lesson screenshot"
+        lessonId={lessonId}
+        slot={slot}
       />
     </div>
   );
 }
 
-function BeforeAfter({ label, src }: { label: string; src?: string }) {
+function BeforeAfter({
+  label,
+  src,
+  lessonId,
+  slot,
+}: {
+  label: string;
+  src?: string;
+  lessonId?: string;
+  slot?: string;
+}) {
   return (
     <ScreenshotCard
       src={src}
       alt={`${label} — annotated AutoCAD screenshot`}
+      lessonId={lessonId}
+      slot={slot}
     />
   );
 }
