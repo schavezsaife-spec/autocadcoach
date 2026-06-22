@@ -49,7 +49,6 @@ function LessonEditor() {
   const slots: Slot[] = useMemo(() => {
     if (!lesson) return [];
     const list: Slot[] = [
-      { key: "beforeYouStart", label: "Before you start" },
       { key: "before", label: "Before vs After — Before" },
       { key: "after", label: "Before vs After — After" },
     ];
