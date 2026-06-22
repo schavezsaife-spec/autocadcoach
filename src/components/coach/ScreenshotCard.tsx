@@ -17,17 +17,19 @@ export function ScreenshotCard({
   className,
   lessonId,
   slot,
+  uploadable = false,
 }: {
   src?: string;
   alt: string;
   className?: string;
   lessonId?: string;
   slot?: string;
+  uploadable?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const canUpload = Boolean(lessonId && slot);
+  const canUpload = uploadable && Boolean(lessonId && slot);
 
   const onPick = async (file: File | null) => {
     if (!file || !lessonId || !slot) return;
