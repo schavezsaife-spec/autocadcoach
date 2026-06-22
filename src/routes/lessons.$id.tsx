@@ -569,12 +569,16 @@ function ScreenshotSlot({
   uploadedUrl,
   onOpen,
   large = false,
+  lessonId,
+  slot,
 }: {
   shot: { imageUrl?: string };
   fallback: string;
   uploadedUrl?: string;
   onOpen?: () => void;
   large?: boolean;
+  lessonId?: string;
+  slot?: string;
 }) {
   const src = uploadedUrl ?? shot.imageUrl;
   // `fallback`, `onOpen`, `large` are intentionally unused — ScreenshotCard
@@ -587,16 +591,30 @@ function ScreenshotSlot({
       <ScreenshotCard
         src={src}
         alt="Lesson screenshot"
+        lessonId={lessonId}
+        slot={slot}
       />
     </div>
   );
 }
 
-function BeforeAfter({ label, src }: { label: string; src?: string }) {
+function BeforeAfter({
+  label,
+  src,
+  lessonId,
+  slot,
+}: {
+  label: string;
+  src?: string;
+  lessonId?: string;
+  slot?: string;
+}) {
   return (
     <ScreenshotCard
       src={src}
       alt={`${label} — annotated AutoCAD screenshot`}
+      lessonId={lessonId}
+      slot={slot}
     />
   );
 }
