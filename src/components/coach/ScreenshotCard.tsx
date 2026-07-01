@@ -28,6 +28,7 @@ export function ScreenshotCard({
 }) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [localSrc, setLocalSrc] = useState<string | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const canUpload = uploadable && Boolean(lessonId && slot);
 
@@ -35,7 +36,8 @@ export function ScreenshotCard({
     if (!file || !lessonId || !slot) return;
     setUploading(true);
     try {
-      await uploadLessonImage(lessonId, slot, file);
+      const url = await uploadLessonImage(lessonId, slot, file);
+      setLocalSrc(url);
       toast.success("Screenshot updated");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
@@ -45,6 +47,8 @@ export function ScreenshotCard({
     }
   };
 
+  const displaySrc = localSrc ?? src;
+
   return (
     <figure
       className={cn(
@@ -52,7 +56,7 @@ export function ScreenshotCard({
         className,
       )}
     >
-      {src ? (
+      {displaySrc ? (
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -60,7 +64,7 @@ export function ScreenshotCard({
           aria-label={`Enlarge: ${alt}`}
         >
           <img
-            src={src}
+            src={displaySrc}
             alt={alt}
             loading="lazy"
             decoding="async"
@@ -96,20 +100,20 @@ export function ScreenshotCard({
             }}
             disabled={uploading}
             className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 rounded-full bg-background/85 backdrop-blur border border-border px-2.5 py-1 text-[11px] font-medium text-foreground hover:bg-background transition-colors disabled:opacity-60"
-            aria-label={src ? "Replace screenshot" : "Upload screenshot"}
+            aria-label={displaySrc ? "Replace screenshot" : "Upload screenshot"}
           >
             {uploading ? (
               <Loader2 className="size-3 animate-spin" />
             ) : (
               <Upload className="size-3" />
             )}
-            {uploading ? "Uploading…" : src ? "Replace" : "Upload"}
+            {uploading ? "Uploading…" : displaySrc ? "Replace" : "Upload"}
           </button>
         </>
       )}
 
-      {open && src && (
-        <Lightbox src={src} alt={alt} onClose={() => setOpen(false)} />
+      {open && displaySrc && (
+        <Lightbox src={displaySrc} alt={alt} onClose={() => setOpen(false)} />
       )}
     </figure>
   );
