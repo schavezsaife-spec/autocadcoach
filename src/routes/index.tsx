@@ -220,7 +220,7 @@ function MobileLink({
 function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: string }) {
   const primaryTo = isAuthed ? "/lessons/$id" : "/auth";
   return (
-    <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center px-4 sm:px-6 overflow-hidden">
+    <section className="relative min-h-[80vh] sm:min-h-[90vh] flex flex-col items-center justify-center text-center px-4 sm:px-6 overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 -z-30" style={{ background: "var(--gradient-hero)" }} aria-hidden />
       {/* Dot grid */}
@@ -233,9 +233,9 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
         aria-hidden
       />
       {/* Animated orbs — more dynamic movement */}
-      <div className="orb-1 absolute -top-32 -left-32 size-[420px] rounded-full bg-cyan-500 blur-[120px] -z-20" aria-hidden />
-      <div className="orb-2 absolute -bottom-32 -right-32 size-[460px] rounded-full bg-indigo-500 blur-[120px] -z-20" aria-hidden />
-      <div className="orb-3 absolute top-1/2 right-1/4 size-[280px] rounded-full bg-violet-500 blur-[120px] -z-20" aria-hidden />
+      <div className="orb-1 absolute -top-20 -left-20 sm:-top-32 sm:-left-32 size-[240px] sm:size-[420px] rounded-full bg-cyan-500 blur-[120px] -z-20" aria-hidden />
+      <div className="orb-2 absolute -bottom-20 -right-20 sm:-bottom-32 sm:-right-32 size-[260px] sm:size-[460px] rounded-full bg-indigo-500 blur-[120px] -z-20" aria-hidden />
+      <div className="orb-3 absolute top-1/2 right-1/4 size-[160px] sm:size-[280px] rounded-full bg-violet-500 blur-[120px] -z-20" aria-hidden />
       {/* Subtle grid lines */}
       <div
         className="absolute inset-0 -z-20 opacity-[0.04]"
@@ -253,14 +253,14 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
           <Sparkles className="size-3.5 spin-slow" /> Beginner-friendly CAD learning
         </div>
         {/* Headline */}
-        <h1 className="mt-6 text-5xl md:text-7xl font-black tracking-tighter leading-[1.05]">
+        <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-[1.05]">
           <span className="fade-up block" style={{ animationDelay: "400ms" }}>Master AutoCAD</span>
           <span className="fade-up shimmer-text block" style={{ animationDelay: "600ms" }}>
             from zero to fluent.
           </span>
         </h1>
         {/* Subheading */}
-        <p className="fade-up mt-6 max-w-xl mx-auto text-lg text-muted-foreground" style={{ animationDelay: "800ms" }}>
+        <p className="fade-up mt-6 max-w-xl mx-auto text-base sm:text-lg text-muted-foreground" style={{ animationDelay: "800ms" }}>
           AutoCAD Coach turns engineering software into a step-by-step game. Lessons, projects, quizzes,
           and an AI tutor — all in one place.
         </p>
