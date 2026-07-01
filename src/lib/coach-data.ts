@@ -33,6 +33,7 @@ import movecopyStep3PickBasePoint from "@/assets/movecopy_step3_pick_snapped_bas
 import movecopyStep4SpecifyDestination from "@/assets/movecopy_step4_specify_destination.png.asset.json";
 import movecopyStep5DuplicateCopy from "@/assets/movecopy_step5_duplicate_copy.png.asset.json";
 import movecopyStep6VisualReference from "@/assets/movecopy_step6_visual_reference.png.asset.json";
+import osnapStep1ToggleOn from "@/assets/osnap_step1_toggle_osnap_on.png.asset.json";
 import { SLICE } from "@/lib/lesson-slices";
 import lineStep2PickStartPoint from "@/assets/line_step2_pick_start_point.png.asset.json";
 import lineStep3RelativeCoordinate from "@/assets/line_step3_relative_coordinate.png.asset.json";
