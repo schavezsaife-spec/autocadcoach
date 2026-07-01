@@ -42,13 +42,13 @@ function DashboardPage() {
     return (
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-8 animate-pulse">
         <div className="h-8 w-48 rounded-lg bg-card border border-border" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="rounded-2xl bg-card border border-border h-28" />
           ))}
         </div>
         <div className="rounded-2xl bg-card border border-border h-16" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="rounded-2xl bg-card border border-border h-32" />
           ))}
@@ -61,7 +61,7 @@ function DashboardPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-8 animate-in fade-in duration-150">
       <GuestGate isAuthenticated={isAuthed}>
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           <Stat icon={BookOpen} label="Lessons" value={`${state.completedLessons.length}/${lessons.length}`} />
           <Stat icon={Trophy} label="Total XP" value={`${totalXp}`} accent />
           <Stat icon={Wrench} label="Projects" value={`${state.completedProjects.length}`} />
@@ -93,7 +93,7 @@ function DashboardPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {filtered.map((l) => {
               const done = state.completedLessons.includes(l.id);
               const unlocked = isUnlocked(l.id);

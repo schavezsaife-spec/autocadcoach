@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { Image as ImageIcon, Maximize2, Upload, Loader2 } from "lucide-react";
 import { Lightbox } from "@/components/coach/Lightbox";
 import { cn } from "@/lib/utils";
-import { uploadLessonImage } from "@/lib/lesson-images";
+import { uploadLessonImage } from "@/lib/lesson-images-local";
 import { toast } from "sonner";
 
 /**
@@ -56,7 +56,7 @@ export function ScreenshotCard({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="block w-full relative focus:outline-none focus-visible:ring-2 focus-visible:ring-primary aspect-video"
+          className="block w-full relative focus:outline-none focus-visible:ring-2 focus-visible:ring-primary aspect-video sm:aspect-auto sm:max-h-[500px]"
           aria-label={`Enlarge: ${alt}`}
         >
           <img
