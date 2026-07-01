@@ -5,12 +5,6 @@ import { cn } from "@/lib/utils";
 import { uploadLessonImage } from "@/lib/lesson-images-local";
 import { toast } from "sonner";
 
-/**
- * Renders a lesson screenshot. When `lessonId` + `slot` are provided, a
- * temporary build-time upload control is shown so admins can attach or
- * replace the image directly from the lesson page. Images are always
- * displayed at a locked 16:9 aspect ratio.
- */
 export function ScreenshotCard({
   src,
   alt,
@@ -28,14 +22,21 @@ export function ScreenshotCard({
 }) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  // Track the locally-uploaded data-URL so the image updates instantly
+  // without waiting for the parent re-render via useLessonImages.
+  const [localSrc, setLocalSrc] = useState<string | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const canUpload = uploadable && Boolean(lessonId && slot);
+
+  // localSrc (just uploaded) takes priority over the prop coming from the parent.
+  const displaySrc = localSrc ?? src;
 
   const onPick = async (file: File | null) => {
     if (!file || !lessonId || !slot) return;
     setUploading(true);
     try {
-      await uploadLessonImage(lessonId, slot, file);
+      const url = await uploadLessonImage(lessonId, slot, file);
+      setLocalSrc(url);
       toast.success("Screenshot updated");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed");
@@ -52,15 +53,15 @@ export function ScreenshotCard({
         className,
       )}
     >
-      {src ? (
+      {displaySrc ? (
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="block w-full relative focus:outline-none focus-visible:ring-2 focus-visible:ring-primary aspect-video sm:aspect-auto sm:max-h-[500px]"
+          className="block w-full relative focus:outline-none focus-visible:ring-2 focus-visible:ring-primary aspect-video"
           aria-label={`Enlarge: ${alt}`}
         >
           <img
-            src={src}
+            src={displaySrc}
             alt={alt}
             loading="lazy"
             decoding="async"
@@ -96,21 +97,15 @@ export function ScreenshotCard({
             }}
             disabled={uploading}
             className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 rounded-full bg-background/85 backdrop-blur border border-border px-2.5 py-1 text-[11px] font-medium text-foreground hover:bg-background transition-colors disabled:opacity-60"
-            aria-label={src ? "Replace screenshot" : "Upload screenshot"}
+            aria-label={displaySrc ? "Replace screenshot" : "Upload screenshot"}
           >
-            {uploading ? (
-              <Loader2 className="size-3 animate-spin" />
-            ) : (
-              <Upload className="size-3" />
-            )}
-            {uploading ? "Uploading…" : src ? "Replace" : "Upload"}
+            {uploading ? <Loader2 className="size-3 animate-spin" /> : <Upload className="size-3" />}
+            {uploading ? "Uploading…" : displaySrc ? "Replace" : "Upload"}
           </button>
         </>
       )}
 
-      {open && src && (
-        <Lightbox src={src} alt={alt} onClose={() => setOpen(false)} />
-      )}
+      {open && displaySrc && <Lightbox src={displaySrc} alt={alt} onClose={() => setOpen(false)} />}
     </figure>
   );
 }
