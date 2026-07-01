@@ -772,7 +772,9 @@ const richOsnap: RichLesson = {
       title: "Toggle OSNAP on",
       instruction: "Press F3. The status-bar Object Snap icon highlights blue.",
       explanation: "F3 is the master switch. Without it, no snap modes fire.",
-      screenshot: emptyShot,
+      screenshot: {
+        imageUrl: osnapStep1ToggleOn.url,
+      },
     },
     {
       title: "Open snap settings",
