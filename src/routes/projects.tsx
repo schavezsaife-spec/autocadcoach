@@ -1,9 +1,12 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { useState, useMemo } from "react";
 import { projects } from "@/lib/coach-data";
 import { useCoach } from "@/lib/coach-store";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { CheckCircle2, Clock, Search } from "lucide-react";
 import { GuestGate } from "@/components/coach/GuestGate";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects")({
   head: () => ({
