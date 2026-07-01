@@ -51,40 +51,128 @@ function ProjectsLayout() {
 function ProjectList() {
   const { state } = useCoach();
   const isAuthed = state.profile.isAuthenticated;
+
+  const [q, setQ] = useState("");
+  const [difficulty, setDifficulty] = useState<"All" | "Beginner" | "Easy" | "Medium">("All");
+  const [sort, setSort] = useState<"default" | "time-asc" | "time-desc" | "alpha">("default");
+
+  const filtered = useMemo(() => {
+    let result = projects.filter((p) => {
+      const qLower = q.toLowerCase();
+      if (qLower) {
+        const haystack = `${p.title} ${p.description} ${p.skills.join(" ")}`.toLowerCase();
+        if (!haystack.includes(qLower)) return false;
+      }
+      if (difficulty !== "All" && p.difficulty !== difficulty) return false;
+      return true;
+    });
+
+    if (sort === "time-asc") {
+      result = [...result].sort((a, b) => parseInt(a.time, 10) - parseInt(b.time, 10));
+    } else if (sort === "time-desc") {
+      result = [...result].sort((a, b) => parseInt(b.time, 10) - parseInt(a.time, 10));
+    } else if (sort === "alpha") {
+      result = [...result].sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    return result;
+  }, [q, difficulty, sort]);
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-      <p className="mb-6 text-sm text-muted-foreground">Apply what you've learned with hands-on builds.</p>
       <GuestGate isAuthenticated={isAuthed}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
-        {projects.map((p) => {
-          const done = state.completedProjects.includes(p.id);
-          return (
-            <Link
-              key={p.id}
-              to="/projects/$id"
-              params={{ id: p.id }}
-              className="rounded-2xl bg-card border border-border overflow-hidden hover:border-primary/40 transition-all hover:-translate-y-0.5"
+        <div className="flex flex-col gap-3 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="relative w-full sm:max-w-xs">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search projects…"
+                aria-label="Search projects"
+                className="pl-9 bg-card border-border"
+              />
+            </div>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as typeof sort)}
+              aria-label="Sort projects"
+              className="bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground"
             >
-              <img src={p.image} alt={p.title} className="w-full h-36 sm:h-40 object-cover" />
-              <div className="p-4 sm:p-5">
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="border-primary/30 text-primary">{p.difficulty}</Badge>
-                  <div className="text-xs text-muted-foreground inline-flex items-center gap-1">
-                    <Clock className="size-3" /> {p.time}
-                  </div>
-                </div>
-                <div className="mt-3 font-semibold">{p.title}</div>
-                <div className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</div>
-                {done && (
-                  <Badge className="mt-3 bg-primary/20 text-primary border-primary/30">
-                    <CheckCircle2 className="size-3 mr-1" /> Built
-                  </Badge>
+              <option value="default">Default</option>
+              <option value="alpha">A–Z</option>
+              <option value="time-asc">Time ↑</option>
+              <option value="time-desc">Time ↓</option>
+            </select>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {(["All", "Beginner", "Easy", "Medium"] as const).map((d) => (
+              <button
+                key={d}
+                onClick={() => setDifficulty(d)}
+                className={cn(
+                  "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                  difficulty === d
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/40"
                 )}
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+              >
+                {d}
+              </button>
+            ))}
+          </div>
+
+          <div className="text-sm text-muted-foreground">{filtered.length} projects</div>
+        </div>
+
+        {filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <Search className="size-8 text-muted-foreground" />
+            <p className="font-medium">No projects match your filters</p>
+            <button
+              onClick={() => {
+                setQ("");
+                setDifficulty("All");
+                setSort("default");
+              }}
+              className="text-primary text-sm underline"
+            >
+              Clear filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {filtered.map((p) => {
+              const done = state.completedProjects.includes(p.id);
+              return (
+                <Link
+                  key={p.id}
+                  to="/projects/$id"
+                  params={{ id: p.id }}
+                  className="rounded-2xl bg-card border border-border overflow-hidden hover:border-primary/40 transition-all hover:-translate-y-0.5"
+                >
+                  <img src={p.image} alt={p.title} className="w-full h-36 sm:h-40 object-cover" />
+                  <div className="p-4 sm:p-5">
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="border-primary/30 text-primary">{p.difficulty}</Badge>
+                      <div className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                        <Clock className="size-3" /> {p.time}
+                      </div>
+                    </div>
+                    <div className="mt-3 font-semibold">{p.title}</div>
+                    <div className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</div>
+                    {done && (
+                      <Badge className="mt-3 bg-primary/20 text-primary border-primary/30">
+                        <CheckCircle2 className="size-3 mr-1" /> Built
+                      </Badge>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </GuestGate>
     </div>
   );
