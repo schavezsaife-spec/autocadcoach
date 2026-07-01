@@ -41,7 +41,7 @@ function CoachPage() {
   const { state } = useCoach();
   const isAuthed = state.profile.isAuthenticated;
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-4 md:pb-0 flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-[calc(100dvh-3.5rem)]">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 flex flex-col h-[calc(100dvh-3rem)] md:h-[calc(100dvh-3.5rem)]">
       <p className="mb-3 text-sm text-muted-foreground">Ask anything about AutoCAD — commands, errors, workflows.</p>
 
       <Tabs defaultValue="ask" className="flex-1 flex flex-col min-h-0">

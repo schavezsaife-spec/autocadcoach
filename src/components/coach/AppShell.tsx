@@ -52,11 +52,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [open, mounted]);
 
   return (
-    <div className="h-dvh flex w-full bg-background text-foreground overflow-hidden">
+    <div className="h-screen flex w-full bg-background text-foreground overflow-hidden">
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden md:flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-200 overflow-hidden h-dvh",
+          "hidden md:flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-200 overflow-hidden h-screen",
           open ? "w-64" : "w-16",
         )}
       >
@@ -85,7 +85,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Link
                 key={to}
                 to={to}
-                aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors text-xs font-medium",
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground",
@@ -122,7 +121,6 @@ function SidebarInner({
               key={to}
               to={to}
               title={collapsed ? label : undefined}
-              aria-current={active ? "page" : undefined}
               className={cn(
                 "flex items-center rounded-lg text-sm font-medium transition-colors",
                 collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2.5",
