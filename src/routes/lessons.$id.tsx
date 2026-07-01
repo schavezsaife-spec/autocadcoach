@@ -118,7 +118,7 @@ function LessonViewer() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-24 md:pb-10 space-y-6">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-20 md:pb-10 space-y-4 sm:space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <Badge variant="outline" className="border-primary/30 text-primary">Day {lesson.day}</Badge>
         <Badge variant="outline" className="border-border">{lesson.tag}</Badge>

@@ -52,11 +52,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [open, mounted]);
 
   return (
-    <div className="h-screen flex w-full bg-background text-foreground overflow-hidden">
+    <div className="h-dvh flex w-full bg-background text-foreground overflow-hidden">
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden md:flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-200 overflow-hidden h-screen",
+          "hidden md:flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-200 overflow-hidden h-dvh",
           open ? "w-64" : "w-16",
         )}
       >
@@ -85,6 +85,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Link
                 key={to}
                 to={to}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors text-xs font-medium",
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground",
@@ -120,6 +121,7 @@ function SidebarInner({
             <Link
               key={to}
               to={to}
+              aria-current={active ? "page" : undefined}
               title={collapsed ? label : undefined}
               className={cn(
                 "flex items-center rounded-lg text-sm font-medium transition-colors",
@@ -141,7 +143,7 @@ function SidebarInner({
       {/* Collapse / expand toggle */}
       <button
         onClick={onToggle}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        aria-label="Toggle sidebar"
         title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         className={cn(
           "flex items-center gap-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors mx-2 mb-1",
