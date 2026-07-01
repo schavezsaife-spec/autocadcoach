@@ -50,7 +50,7 @@ function LessonList() {
   const { state, isUnlocked } = useCoach();
   const isAuthed = state.profile.isAuthenticated;
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-10">
       <p className="mb-6 text-sm text-muted-foreground">Complete each lesson to unlock the next.</p>
       <GuestGate isAuthenticated={isAuthed}>
       <ol className="relative space-y-4 before:absolute before:left-5 sm:before:left-6 before:top-0 before:bottom-0 before:w-px before:bg-border">
@@ -72,7 +72,7 @@ function LessonList() {
             </>
           );
           return (
-            <li key={l.id} className="relative pl-14 sm:pl-16">
+            <li key={l.id} className="relative pl-12 sm:pl-14">
               <div className={cn(
                 "absolute left-1 top-4 size-10 rounded-full grid place-items-center ring-4 ring-background shadow-md",
                 done ? "bg-primary text-primary-foreground shadow-primary/30" : unlocked ? "bg-primary/15 text-primary ring-primary/20" : "bg-muted text-muted-foreground"
