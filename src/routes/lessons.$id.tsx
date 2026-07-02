@@ -305,7 +305,7 @@ function RichLessonBody({
   onOpenLightbox: () => void;
   lessonId: string;
 }) {
-  const hideVisual = lessonId === "interface" || lessonId === "osnap";
+  const hideVisual = lessonId === "interface" || lessonId === "osnap" || lessonId === "layers";
   const sections = hideVisual ? SECTIONS.filter((s) => s.id !== "visual") : SECTIONS;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-6 lg:gap-8">
@@ -389,8 +389,6 @@ function RichLessonBody({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="font-semibold">{s.title}</div>
-                    <p className="mt-1 text-sm">{s.instruction}</p>
-                    <p className="mt-2 text-sm text-muted-foreground italic">{s.explanation}</p>
                     <ScreenshotSlot
                       shot={s.screenshot}
                       fallback={fallbackImage}
