@@ -305,7 +305,7 @@ function RichLessonBody({
   onOpenLightbox: () => void;
   lessonId: string;
 }) {
-  const hideVisual = lessonId === "interface" || lessonId === "osnap" || lessonId === "layers" || lessonId === "dim-text" || lessonId === "hatch";
+  const hideVisual = lessonId === "interface" || lessonId === "osnap" || lessonId === "layers" || lessonId === "dim-text" || lessonId === "hatch" || lessonId === "blocks";
   const sections = hideVisual ? SECTIONS.filter((s) => s.id !== "visual") : SECTIONS;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-6 lg:gap-8">
