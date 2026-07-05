@@ -1725,6 +1725,12 @@ const richArrayReview: RichLesson = {
       explanation: "A consistent dimension style across the drawing is what separates beginner from professional output.",
       screenshot: emptyShot,
     },
+    {
+      title: "Visual Reference",
+      instruction: "Review the completed array pattern and dimension style in the reference image.",
+      explanation: "Compare your result with this visual summary to confirm the pattern spacing and dimension appearance.",
+      screenshot: emptyShot,
+    },
   ],
   visualReference: emptyShot,
   commonMistakes: [
