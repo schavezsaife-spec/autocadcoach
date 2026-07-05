@@ -10,31 +10,24 @@ type Props = {
 };
 
 const sizeMap = {
-  sm: { box: "size-7", icon: 18, text: "text-sm" },
-  md: { box: "size-9", icon: 22, text: "text-base" },
-  lg: { box: "size-12", icon: 30, text: "text-xl" },
+  sm: { box: "size-7", icon: 28, text: "text-sm", tag: "text-[7px]" },
+  md: { box: "size-9", icon: 36, text: "text-base", tag: "text-[8px]" },
+  lg: { box: "size-12", icon: 48, text: "text-xl", tag: "text-[10px]" },
 };
 
 export function LogoMark({ size = "md", className }: { size?: "sm" | "md" | "lg"; className?: string }) {
   const s = sizeMap[size];
   return (
-    <span
-      className={cn(
-        "relative grid place-items-center rounded-xl bg-gradient-to-br from-[oklch(0.32_0.07_255)] to-[oklch(0.20_0.05_255)] ring-1 ring-primary/40 shadow-[0_0_18px_-6px_oklch(0.82_0.14_210/0.6)] shrink-0 overflow-hidden",
-        s.box,
-        className,
-      )}
+    <img
+      src={logoMark}
+      alt=""
+      width={s.icon}
+      height={s.icon}
+      className={cn("shrink-0 object-contain drop-shadow-[0_2px_8px_rgba(225,29,46,0.35)]", className)}
+      style={{ width: s.icon, height: s.icon }}
+      draggable={false}
       aria-hidden
-    >
-      <img
-        src={logoMark}
-        alt=""
-        width={s.icon}
-        height={s.icon}
-        className="size-[78%] object-contain"
-        draggable={false}
-      />
-    </span>
+    />
   );
 }
 
@@ -44,8 +37,18 @@ export function Logo({ className, iconOnly, size = "md", asLink = true }: Props)
     <span className={cn("flex items-center gap-2 min-w-0", className)}>
       <LogoMark size={size} />
       {!iconOnly && (
-        <span className={cn("font-semibold tracking-tight text-foreground truncate", s.text)}>
-          AutoCAD <span className="text-primary">Coach</span>
+        <span className="flex flex-col leading-none min-w-0">
+          <span className={cn("font-semibold tracking-tight text-foreground truncate", s.text)}>
+            AutoCAD <span className="text-primary">Coach</span>
+          </span>
+          <span
+            className={cn(
+              "mt-1 font-medium uppercase tracking-[0.18em] text-muted-foreground/80 truncate",
+              s.tag,
+            )}
+          >
+            Learn. Practice. Succeed.
+          </span>
         </span>
       )}
     </span>
