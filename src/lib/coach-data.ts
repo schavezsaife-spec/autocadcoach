@@ -1720,7 +1720,7 @@ const richArrayReview: RichLesson = {
       screenshot: emptyShot,
     },
     {
-      title: "Review Dimension Style",
+      title: "Add and Review Dimensions",
       instruction: "Type D, Enter. Inspect text height, arrow size and units. Adjust to suit your plot scale.",
       explanation: "A consistent dimension style across the drawing is what separates beginner from professional output.",
       screenshot: emptyShot,
