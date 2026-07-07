@@ -2057,6 +2057,7 @@ export const projects: Project[] = [
     steps: [
       "Draw a center circle of radius 50.",
       "OFFSET it by 10 outward for the rim.",
+      "Draw another circle from the same center point with radius 30.",
       "Polar ARRAY 6 small circles for bolts.",
     ],
     image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200",
