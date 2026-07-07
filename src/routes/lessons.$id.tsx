@@ -213,7 +213,7 @@ function LegacyLessonBody({
         className="block w-full rounded-2xl overflow-hidden border border-border group"
         aria-label={`Enlarge image for ${lesson.title}`}
       >
-        <img src={heroSrc} alt={`${lesson.title} reference`} className="w-full h-64 object-contain bg-secondary/40 group-hover:scale-[1.02] transition-transform" />
+        <img src={heroSrc} alt={`${lesson.title} reference`} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-contain bg-secondary/40 group-hover:scale-[1.02] transition-transform" />
       </button>
 
       <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
