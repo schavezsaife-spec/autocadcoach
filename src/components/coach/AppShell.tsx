@@ -107,6 +107,26 @@ function SidebarInner({
 }) {
   return (
     <>
+      {/* Collapse / expand toggle */}
+      <button
+        onClick={onToggle}
+        aria-label="Toggle sidebar"
+        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className={cn(
+          "flex items-center gap-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors mx-2 mt-2",
+          collapsed ? "justify-center h-10 w-10 mx-auto p-0" : "px-3 py-2 w-[calc(100%-1rem)]",
+        )}
+      >
+        {collapsed ? (
+          <PanelLeftOpen className="size-4 shrink-0" />
+        ) : (
+          <>
+            <PanelLeftClose className="size-4 shrink-0" />
+            <span>Collapse</span>
+          </>
+        )}
+      </button>
+
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
         {NAV.map(({ to, label, icon: Icon }) => {
           const active = pathname === to || pathname.startsWith(to + "/");
@@ -132,26 +152,6 @@ function SidebarInner({
           );
         })}
       </nav>
-
-      {/* Collapse / expand toggle */}
-      <button
-        onClick={onToggle}
-        aria-label="Toggle sidebar"
-        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className={cn(
-          "flex items-center gap-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors mx-2 mb-1",
-          collapsed ? "justify-center h-10 w-10 mx-auto p-0" : "px-3 py-2 w-[calc(100%-1rem)]",
-        )}
-      >
-        {collapsed ? (
-          <PanelLeftOpen className="size-4 shrink-0" />
-        ) : (
-          <>
-            <PanelLeftClose className="size-4 shrink-0" />
-            <span>Collapse</span>
-          </>
-        )}
-      </button>
 
       <UserFooter collapsed={collapsed} />
     </>
