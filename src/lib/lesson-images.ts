@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
  *   - `before` / `after`  the before vs after comparison
  */
 const BUCKET = "lesson-screenshots";
+const SIGNED_URL_TTL = 60 * 60 * 24 * 365 * 10; // ~10 years
 const MAX_BYTES = 25 * 1024 * 1024; // 25MB — preserves original resolution
 
 export type LessonImageMap = Record<string, string>;
@@ -112,8 +113,13 @@ export async function uploadLessonImage(
     .upload(path, file, { cacheControl: "31536000", upsert: false, contentType: file.type });
   if (upErr) throw new Error(upErr.message);
 
-  const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
-  const url = pub.publicUrl;
+  const { data: signed, error: signErr } = await supabase.storage
+    .from(BUCKET)
+    .createSignedUrl(path, SIGNED_URL_TTL);
+  if (signErr || !signed?.signedUrl) {
+    throw new Error(signErr?.message ?? "Could not generate image URL.");
+  }
+  const url = signed.signedUrl;
 
   // Remember the old storage path so we can clean it up after the upsert.
   const previousPath = pathCache.get(lessonId)?.get(slot) ?? null;
