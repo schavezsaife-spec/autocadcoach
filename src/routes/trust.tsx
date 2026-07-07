@@ -82,7 +82,7 @@ function TrustPage() {
           <div className="max-w-6xl mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {PILLARS.map((p) => (
               <div key={p.title} className="rounded-xl border border-border bg-card p-6">
-                <div className="size-10 rounded-lg bg-primary/10 text-primary grid place-items-center mb-4">
+                <div className="size-10 rounded-lg bg-success/15 text-success grid place-items-center mb-4">
                   <p.icon className="size-5" />
                 </div>
                 <h3 className="font-semibold text-base">{p.title}</h3>
