@@ -1,6 +1,9 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { projects } from "@/lib/coach-data";
+import { useLocalizedProjects } from "@/lib/i18n/content";
+import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 import { useCoach } from "@/lib/coach-store";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -11,10 +14,10 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/projects")({
   head: () => ({
     meta: [
-      { title: "Projects — AutoCAD Coach" },
-      { name: "description", content: "Hands-on AutoCAD projects — keychains, wheels, and more — to apply the commands you've learned." },
-      { property: "og:title", content: "Projects — AutoCAD Coach" },
-      { property: "og:description", content: "Hands-on AutoCAD projects — keychains, wheels, and more — to apply the commands you've learned." },
+      { title: i18n.t("meta:projectsTitle") },
+      { name: "description", content: i18n.t("meta:projectsDesc") },
+      { property: "og:title", content: i18n.t("meta:projectsTitle") },
+      { property: "og:description", content: i18n.t("meta:projectsDesc") },
       { property: "og:url", content: "https://autocadcoach.lovable.app/projects" },
       { property: "og:type", content: "website" },
     ],
@@ -50,6 +53,8 @@ function ProjectsLayout() {
 
 function ProjectList() {
   const { state } = useCoach();
+  const { t } = useTranslation(["projects", "common"]);
+  const localized = useLocalizedProjects();
   const isAuthed = state.profile.isAuthenticated;
 
   const [q, setQ] = useState("");
@@ -57,7 +62,7 @@ function ProjectList() {
   const [sort, setSort] = useState<"default" | "time-asc" | "time-desc" | "alpha">("default");
 
   const filtered = useMemo(() => {
-    let result = projects.filter((p) => {
+    let result = localized.filter((p) => {
       const qLower = q.toLowerCase();
       if (qLower) {
         const haystack = `${p.title} ${p.description} ${p.skills.join(" ")}`.toLowerCase();
@@ -76,7 +81,7 @@ function ProjectList() {
     }
 
     return result;
-  }, [q, difficulty, sort]);
+  }, [q, difficulty, sort, localized]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
@@ -88,21 +93,21 @@ function ProjectList() {
               <Input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Search projects…"
-                aria-label="Search projects"
+                placeholder={t("projects:searchPlaceholder")}
+                aria-label={t("projects:searchPlaceholder")}
                 className="pl-9 bg-card border-border"
               />
             </div>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as typeof sort)}
-              aria-label="Sort projects"
+              aria-label={t("projects:sortDefault")}
               className="bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground"
             >
-              <option value="default">Default</option>
-              <option value="alpha">A–Z</option>
-              <option value="time-asc">Time ↑</option>
-              <option value="time-desc">Time ↓</option>
+              <option value="default">{t("projects:sortDefault")}</option>
+              <option value="alpha">{t("projects:sortAlpha")}</option>
+              <option value="time-asc">{t("projects:sortTimeAsc")}</option>
+              <option value="time-desc">{t("projects:sortTimeDesc")}</option>
             </select>
           </div>
 
@@ -118,18 +123,18 @@ function ProjectList() {
                     : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/40"
                 )}
               >
-                {d}
+                {t(`projects:difficulty.${d}`)}
               </button>
             ))}
           </div>
 
-          <div className="text-sm text-muted-foreground">{filtered.length} projects</div>
+          <div className="text-sm text-muted-foreground">{t("projects:countLabel", { count: filtered.length })}</div>
         </div>
 
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <Search className="size-8 text-muted-foreground" />
-            <p className="font-medium">No projects match your filters</p>
+            <p className="font-medium">{t("projects:noMatch")}</p>
             <button
               onClick={() => {
                 setQ("");
@@ -138,7 +143,7 @@ function ProjectList() {
               }}
               className="text-primary text-sm underline"
             >
-              Clear filters
+              {t("projects:clearFilters")}
             </button>
           </div>
         ) : (
@@ -155,7 +160,7 @@ function ProjectList() {
                   <img src={p.image} alt={p.title} loading="lazy" decoding="async" width={800} height={450} className="w-full h-36 sm:h-40 object-cover" />
                   <div className="p-4 sm:p-5">
                     <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="border-primary/30 text-primary">{p.difficulty}</Badge>
+                      <Badge variant="outline" className="border-primary/30 text-primary">{t(`projects:difficulty.${p.difficulty}`)}</Badge>
                       <div className="text-xs text-muted-foreground inline-flex items-center gap-1">
                         <Clock className="size-3" /> {p.time}
                       </div>
@@ -164,7 +169,7 @@ function ProjectList() {
                     <div className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</div>
                     {done && (
                       <Badge className="mt-3 bg-primary/20 text-primary border-primary/30">
-                        <CheckCircle2 className="size-3 mr-1" /> Built
+                        <CheckCircle2 className="size-3 mr-1" /> {t("projects:built")}
                       </Badge>
                     )}
                   </div>
