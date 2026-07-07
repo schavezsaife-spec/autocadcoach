@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useCoach } from "@/lib/coach-store";
 import { lessons } from "@/lib/coach-data";
+import { useLocalizedLessons } from "@/lib/i18n/content";
 import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GuestGate } from "@/components/coach/GuestGate";
@@ -33,8 +34,9 @@ function DashboardPage() {
   const { t } = useTranslation(["dashboard", "common"]);
   const [q, setQ] = useState("");
   const isAuthed = state.profile.isAuthenticated;
+  const localizedLessons = useLocalizedLessons();
 
-  const filtered = lessons.filter(
+  const filtered = localizedLessons.filter(
     (l) => l.title.toLowerCase().includes(q.toLowerCase()) || l.tag.toLowerCase().includes(q.toLowerCase()),
   );
 
