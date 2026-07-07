@@ -69,8 +69,8 @@ function ForgotPasswordPage() {
           </p>
 
           {sent ? (
-            <div className="mt-6 rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm">
-              <div className="flex items-start gap-2 text-primary">
+            <div className="mt-6 rounded-lg border border-success/30 bg-success/10 p-4 text-sm">
+              <div className="flex items-start gap-2 text-success">
                 <CheckCircle2 className="size-4 mt-0.5" />
                 <div>
                   <div className="font-medium">Check your email</div>
