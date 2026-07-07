@@ -5,23 +5,15 @@ import { cn } from "@/lib/utils";
 import { useCoach } from "@/lib/coach-store";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { Logo } from "./Logo";
+import { LanguageToggle } from "./LanguageToggle";
+import { useTranslation } from "react-i18next";
 
 const NAV = [
-  { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/lessons", icon: BookOpen, label: "Lessons" },
-  { to: "/projects", icon: Wrench, label: "Projects" },
-  { to: "/chat", icon: Compass, label: "AI Coach" },
+  { to: "/dashboard", icon: LayoutDashboard, tKey: "dashboard" },
+  { to: "/lessons", icon: BookOpen, tKey: "lessons" },
+  { to: "/projects", icon: Wrench, tKey: "projects" },
+  { to: "/chat", icon: Compass, tKey: "chat" },
 ] as const;
-
-function getPageLabel(pathname: string): string {
-  if (pathname === "/dashboard") return "Dashboard";
-  if (pathname.startsWith("/lessons")) return "Lessons";
-  if (pathname.startsWith("/projects")) return "Projects";
-  if (pathname === "/chat") return "AI Coach";
-  if (pathname === "/profile") return "Profile";
-  if (pathname === "/lesson-editor") return "Lesson Editor";
-  return "";
-}
 
 const STORAGE_KEY = "sidebar_open";
 
@@ -72,8 +64,22 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         {/* Mobile bottom nav */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-sidebar border-t border-sidebar-border flex items-center justify-around h-16 px-2">
-          {NAV.map(({ to, label, icon: Icon }) => {
+          <MobileNavItems pathname={pathname} />
+          <LanguageToggle variant="mobile" />
+          <MobileAuthBadge />
+        </nav>
+      </div>
+    </div>
+  );
+}
+
+function MobileNavItems({ pathname }: { pathname: string }) {
+  const { t } = useTranslation("nav");
+  return (
+    <>
+      {NAV.map(({ to, tKey, icon: Icon }) => {
             const active = pathname === to || pathname.startsWith(to + "/");
+            const label = t(tKey);
             return (
               <Link
                 key={to}
@@ -89,10 +95,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Link>
             );
           })}
-          <MobileAuthBadge />
-        </nav>
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -105,13 +108,14 @@ function SidebarInner({
   pathname: string;
   onToggle: () => void;
 }) {
+  const { t } = useTranslation("nav");
   return (
     <>
       {/* Collapse / expand toggle */}
       <button
         onClick={onToggle}
-        aria-label="Toggle sidebar"
-        title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        aria-label={t("toggleSidebar")}
+        title={collapsed ? t("expandSidebar") : t("collapseSidebar")}
         className={cn(
           "flex items-center gap-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors mx-2 mt-2",
           collapsed ? "justify-center h-10 w-10 mx-auto p-0" : "px-3 py-2 w-[calc(100%-1rem)]",
@@ -122,14 +126,18 @@ function SidebarInner({
         ) : (
           <>
             <PanelLeftClose className="size-4 shrink-0" />
-            <span>Collapse</span>
+            <span>{t("collapse")}</span>
           </>
         )}
       </button>
 
+      {/* Language toggle — mirrors the collapse button treatment */}
+      <LanguageToggle variant="sidebar" collapsed={collapsed} />
+
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
-        {NAV.map(({ to, label, icon: Icon }) => {
+        {NAV.map(({ to, tKey, icon: Icon }) => {
           const active = pathname === to || pathname.startsWith(to + "/");
+          const label = t(tKey);
           return (
             <Link
               key={to}
@@ -162,6 +170,7 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
   const { state, signOut } = useCoach();
   const p = state.profile;
   const navigate = useNavigate();
+  const { t } = useTranslation("common");
 
   async function handleLogout() {
     await signOut();
@@ -173,14 +182,14 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
       <div className={cn("border-t border-sidebar-border", collapsed ? "p-2" : "p-3")}>
         <Link
           to="/auth"
-          title={collapsed ? "Sign in" : undefined}
+          title={collapsed ? t("signIn") : undefined}
           className={cn(
             "flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90",
             collapsed ? "h-10 w-10 mx-auto" : "px-3 py-2.5",
           )}
         >
           <LogIn className="size-4 shrink-0" />
-          {!collapsed && <span>Sign in</span>}
+          {!collapsed && <span>{t("signIn")}</span>}
         </Link>
       </div>
     );
@@ -208,14 +217,14 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
       </Link>
       <button
         onClick={handleLogout}
-        title={collapsed ? "Log out" : undefined}
+        title={collapsed ? t("signOut") : undefined}
         className={cn(
           "flex items-center text-muted-foreground hover:text-destructive transition-colors rounded-lg",
           collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2.5 text-sm w-full",
         )}
       >
         <LogOut className="size-4 shrink-0" />
-        {!collapsed && <span>Log out</span>}
+        {!collapsed && <span>{t("signOut")}</span>}
       </button>
     </div>
   );
@@ -224,6 +233,8 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
 function MobileAuthBadge() {
   const { state } = useCoach();
   const p = state.profile;
+  const { t: tc } = useTranslation("common");
+  const { t: tn } = useTranslation("nav");
   if (!p.isAuthenticated) {
     return (
       <Link
@@ -231,7 +242,7 @@ function MobileAuthBadge() {
         className="flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
       >
         <LogIn className="size-5" />
-        <span>Sign in</span>
+        <span>{tc("signIn")}</span>
       </Link>
     );
   }
@@ -241,7 +252,7 @@ function MobileAuthBadge() {
       className="flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors"
     >
       <ProfileAvatar image={p.profileImage} firstName={p.firstName} lastName={p.lastName} size="sm" />
-      <span className="text-xs text-muted-foreground">Profile</span>
+      <span className="text-xs text-muted-foreground">{tn("profile")}</span>
     </Link>
   );
 }

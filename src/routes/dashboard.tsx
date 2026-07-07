@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useCoach } from "@/lib/coach-store";
 import { lessons } from "@/lib/coach-data";
+import { useLocalizedLessons } from "@/lib/i18n/content";
 import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GuestGate } from "@/components/coach/GuestGate";
@@ -12,13 +15,13 @@ import { GuestGate } from "@/components/coach/GuestGate";
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — AutoCAD Coach" },
+      { title: i18n.t("meta:dashboardTitle") },
       {
         name: "description",
-        content: "Track your AutoCAD learning progress, XP, lessons completed, and active projects.",
+        content: i18n.t("meta:dashboardDesc"),
       },
       { name: "robots", content: "noindex,nofollow" },
-      { property: "og:title", content: "Dashboard — AutoCAD Coach" },
+      { property: "og:title", content: i18n.t("meta:dashboardTitle") },
       { property: "og:url", content: "https://autocadcoach.lovable.app/dashboard" },
     ],
     links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/dashboard" }],
@@ -28,10 +31,12 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardPage() {
   const { state, totalXp, progressPct, isUnlocked, hydrated } = useCoach();
+  const { t } = useTranslation(["dashboard", "common"]);
   const [q, setQ] = useState("");
   const isAuthed = state.profile.isAuthenticated;
+  const localizedLessons = useLocalizedLessons();
 
-  const filtered = lessons.filter(
+  const filtered = localizedLessons.filter(
     (l) => l.title.toLowerCase().includes(q.toLowerCase()) || l.tag.toLowerCase().includes(q.toLowerCase()),
   );
 
@@ -62,16 +67,20 @@ function DashboardPage() {
       <GuestGate isAuthenticated={isAuthed}>
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-          <Stat icon={BookOpen} label="Lessons" value={`${state.completedLessons.length}/${lessons.length}`} />
-          <Stat icon={Trophy} label="Total XP" value={`${totalXp}`} accent />
-          <Stat icon={Wrench} label="Projects" value={`${state.completedProjects.length}`} />
-          <Stat icon={Flame} label="Streak" value={`${state.streak} day${state.streak === 1 ? "" : "s"}`} />
+          <Stat icon={BookOpen} label={t("dashboard:lessons")} value={`${state.completedLessons.length}/${lessons.length}`} />
+          <Stat icon={Trophy} label={t("dashboard:totalXp")} value={`${totalXp}`} accent />
+          <Stat icon={Wrench} label={t("dashboard:projects")} value={`${state.completedProjects.length}`} />
+          <Stat
+            icon={Flame}
+            label={t("dashboard:streak")}
+            value={`${state.streak} ${t("dashboard:days", { count: state.streak })}`}
+          />
         </div>
 
         {/* Progress bar */}
         <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
           <div className="flex items-center justify-between mb-3">
-            <div className="font-semibold">Overall progress</div>
+            <div className="font-semibold">{t("dashboard:overallProgress")}</div>
             <div className="text-sm text-muted-foreground">{progressPct}%</div>
           </div>
           <Progress value={progressPct} className="h-2" />
@@ -80,14 +89,14 @@ function DashboardPage() {
         {/* Lessons grid */}
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
-            <h2 className="text-xl font-semibold">Lessons</h2>
+            <h2 className="text-xl font-semibold">{t("dashboard:lessons")}</h2>
             <div className="relative w-full sm:max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Search lessons…"
-                aria-label="Search lessons"
+                placeholder={t("dashboard:searchLessons")}
+                aria-label={t("dashboard:searchLessons")}
                 className="pl-9 bg-card border-border"
               />
             </div>
@@ -107,15 +116,15 @@ function DashboardPage() {
                 <>
                   <div className="flex items-center justify-between">
                     <Badge variant="outline" className="border-primary/30 text-primary">
-                      Day {l.day}
+                      {t("common:day")} {l.day}
                     </Badge>
                     {done ? (
                       <Badge className="bg-primary/20 text-primary border-primary/30">
-                        <CheckCircle2 className="size-3 mr-1" /> Done
+                        <CheckCircle2 className="size-3 mr-1" /> {t("dashboard:done")}
                       </Badge>
                     ) : !unlocked ? (
                       <Badge variant="outline" className="text-muted-foreground/60 border-dashed">
-                        <Lock className="size-3 mr-1" /> Complete previous
+                        <Lock className="size-3 mr-1" /> {t("dashboard:completePrevious")}
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="border-border">

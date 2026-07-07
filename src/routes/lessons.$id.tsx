@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { lessons, getLessonQuiz, type RichLesson } from "@/lib/coach-data";
+import { useLocalizedLesson, useLocalizedLessons } from "@/lib/i18n/content";
+import { useTranslation } from "react-i18next";
 import { useCoach } from "@/lib/coach-store";
 import { useLessonImages, type LessonImageMap } from "@/lib/lesson-images";
 import { Button } from "@/components/ui/button";
@@ -68,16 +70,18 @@ function LessonViewer() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const { state, set, completeLesson, passLessonQuiz, isUnlocked } = useCoach();
+  const { t } = useTranslation(["lessons", "common"]);
+  const localizedList = useLocalizedLessons();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const isAuthed = state.profile.isAuthenticated;
   const uploadedImages = useLessonImages(id);
 
-  const lesson = lessons.find((l) => l.id === id);
+  const lesson = useLocalizedLesson(id);
   if (!lesson) {
     return (
       <div className="p-10">
-        <p>Lesson not found.</p>
-        <Link to="/lessons" className="text-primary underline">Back to lessons</Link>
+        <p>{t("lessons:locked")}</p>
+        <Link to="/lessons" className="text-primary underline">{t("lessons:backToLessons")}</Link>
       </div>
     );
   }
@@ -85,16 +89,16 @@ function LessonViewer() {
   if (!isUnlocked(lesson.id)) {
     return (
       <div className="max-w-2xl mx-auto p-10 pb-24 md:pb-10 text-center">
-        <h1 className="text-2xl font-bold">This lesson is locked</h1>
-        <p className="text-muted-foreground mt-2">Finish the previous lesson to unlock it.</p>
-        <Button asChild className="mt-6"><Link to="/lessons">Back to path</Link></Button>
+        <h1 className="text-2xl font-bold">{t("lessons:locked")}</h1>
+        <p className="text-muted-foreground mt-2">{t("dashboard:completePrevious", { ns: "dashboard" })}</p>
+        <Button asChild className="mt-6"><Link to="/lessons">{t("lessons:backToLessons")}</Link></Button>
       </div>
     );
   }
 
-  const idx = lessons.findIndex((l) => l.id === lesson.id);
-  const prev = lessons[idx - 1];
-  const next = lessons[idx + 1];
+  const idx = localizedList.findIndex((l) => l.id === lesson.id);
+  const prev = localizedList[idx - 1];
+  const next = localizedList[idx + 1];
   const step = state.lessonStep[lesson.id] ?? 0;
   const stepPct = Math.round(((step + 1) / lesson.steps.length) * 100);
   const done = state.completedLessons.includes(lesson.id);
