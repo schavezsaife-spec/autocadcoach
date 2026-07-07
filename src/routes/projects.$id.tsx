@@ -88,7 +88,7 @@ function ProjectViewer() {
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="outline" className="border-primary/30 text-primary">{t(`projects:difficulty.${project.difficulty}`)}</Badge>
         <Badge variant="outline" className="border-border"><Clock className="size-3 mr-1" /> {project.time}</Badge>
-        {done && <Badge className="bg-primary/20 text-primary border-primary/30"><CheckCircle2 className="size-3 mr-1" /> {t("projects:built")}</Badge>}
+        {done && <Badge className="bg-success/20 text-success border-success/30"><CheckCircle2 className="size-3 mr-1" /> {t("projects:built")}</Badge>}
       </div>
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{project.title}</h1>
       <p className="text-muted-foreground">{project.description}</p>

@@ -140,11 +140,11 @@ function ProfilePage() {
             </h1>
             <div className="text-sm text-muted-foreground truncate mt-0.5">{p.email}</div>
             <div className="mt-3 flex flex-wrap gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 text-primary border border-primary/30 px-3 py-1 text-xs font-semibold">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 text-success border border-success/30 px-3 py-1 text-xs font-semibold">
                 <Trophy className="size-3" /> {totalXp} XP earned
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-card border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
-                <Flame className="size-3 text-orange-400" /> {state.streak} day streak
+                <Flame className="size-3 text-success" /> {state.streak} day streak
               </span>
             </div>
             {/* Photo actions — only shown when a photo exists or as a subtle hint */}
@@ -192,7 +192,7 @@ function ProfilePage() {
       <div className="rounded-2xl bg-card border border-border p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="font-semibold">Completed lessons</div>
-          <span className="text-xs bg-primary/15 text-primary border border-primary/30 rounded-full px-2.5 py-0.5 font-semibold">
+          <span className="text-xs bg-success/15 text-success border border-success/30 rounded-full px-2.5 py-0.5 font-semibold">
             {state.completedLessons.length} / {lessons.length}
           </span>
         </div>
@@ -204,7 +204,7 @@ function ProfilePage() {
               const l = lessons.find((x) => x.id === id);
               return (
                 l && (
-                  <Badge key={id} className="bg-primary/15 text-primary border-primary/30">
+                  <Badge key={id} className="bg-success/15 text-success border-success/30">
                     <CheckCircle2 className="size-3 mr-1" /> {l.title}
                   </Badge>
                 )
@@ -318,14 +318,14 @@ function StatCard({
     <div
       className={cn(
         "rounded-2xl bg-card border border-border p-4 flex flex-col gap-2 relative overflow-hidden",
-        accent && "border-primary/30",
+        accent && "border-success/30",
       )}
     >
-      {accent && <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl bg-primary" />}
+      {accent && <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl bg-success" />}
       <div
         className={cn(
           "size-8 rounded-lg grid place-items-center",
-          accent ? "bg-primary/15 text-primary" : "bg-secondary text-muted-foreground",
+          accent ? "bg-success/15 text-success" : "bg-secondary text-muted-foreground",
         )}
       >
         <Icon className="size-4" />

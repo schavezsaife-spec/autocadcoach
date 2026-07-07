@@ -202,7 +202,7 @@ function AskAutoCoach() {
             key={s}
             onClick={() => send(s)}
             disabled={loading}
-            className="text-xs rounded-full border border-border bg-card hover:border-primary/40 px-3 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            className="text-xs rounded-full border border-border bg-card hover:border-primary/40 px-3 py-1.5 text-muted-foreground hover:text-foreground transition-colors duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {s}
           </button>

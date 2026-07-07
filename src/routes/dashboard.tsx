@@ -83,7 +83,12 @@ function DashboardPage() {
             <div className="font-semibold">{t("dashboard:overallProgress")}</div>
             <div className="text-sm text-muted-foreground">{progressPct}%</div>
           </div>
-          <Progress value={progressPct} className="h-2" />
+          <Progress
+            value={progressPct}
+            className="h-2"
+            trackClassName="bg-success/20"
+            indicatorClassName="bg-success"
+          />
         </div>
 
         {/* Lessons grid */}
@@ -119,7 +124,7 @@ function DashboardPage() {
                       {t("common:day")} {l.day}
                     </Badge>
                     {done ? (
-                      <Badge className="bg-primary/20 text-primary border-primary/30">
+                      <Badge className="bg-success/20 text-success border-success/30">
                         <CheckCircle2 className="size-3 mr-1" /> {t("dashboard:done")}
                       </Badge>
                     ) : !unlocked ? (
@@ -165,11 +170,11 @@ function Stat({
   accent?: boolean;
 }) {
   return (
-    <div className={cn("rounded-2xl bg-card border border-border p-5", accent && "ring-1 ring-primary/30")}>
+    <div className={cn("rounded-2xl bg-card border border-border p-5", accent && "ring-1 ring-success/30")}>
       <div
         className={cn(
           "size-9 rounded-lg grid place-items-center",
-          accent ? "bg-primary/20 text-primary" : "bg-secondary text-foreground",
+          accent ? "bg-success/20 text-success" : "bg-secondary text-foreground",
         )}
       >
         <Icon className="size-4" />

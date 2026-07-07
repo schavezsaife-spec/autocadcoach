@@ -80,7 +80,7 @@ function LessonList() {
             <li key={l.id} className="relative pl-12 sm:pl-14">
               <div className={cn(
                 "absolute left-1 top-4 size-10 rounded-full grid place-items-center ring-4 ring-background shadow-md",
-                done ? "bg-primary text-primary-foreground shadow-primary/30" : unlocked ? "bg-primary/15 text-primary ring-primary/20" : "bg-muted text-muted-foreground"
+                done ? "bg-success text-success-foreground shadow-success/30" : unlocked ? "bg-primary/15 text-primary ring-primary/20" : "bg-muted text-muted-foreground"
               )}>
                 {done ? <CheckCircle2 className="size-5" /> : unlocked ? <Sparkles className="size-5" /> : <Lock className="size-5" />}
               </div>
