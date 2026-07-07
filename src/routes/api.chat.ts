@@ -94,7 +94,14 @@ export const Route = createFileRoute("/api/chat")({
             { status: 500 },
           );
         }
-        const { messages } = (await request.json()) as { messages: Msg[] };
+        const body = (await request.json()) as { messages: Msg[]; language?: string };
+        const messages = body.messages;
+        const lang = body.language === "es" ? "es" : "en";
+        const languageInstruction =
+          lang === "es"
+            ? "\n\n## Language\n- Respond in Spanish (español). Keep AutoCAD command names in uppercase English (e.g. `TRIM`, `EXTRUDE`). Translate all explanatory prose."
+            : "\n\n## Language\n- Respond in English.";
+        const systemContent = SYSTEM + languageInstruction;
 
         const callGateway = () =>
           fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -105,7 +112,7 @@ export const Route = createFileRoute("/api/chat")({
             },
             body: JSON.stringify({
               model: "google/gemini-2.5-flash",
-              messages: [{ role: "system", content: SYSTEM }, ...messages],
+              messages: [{ role: "system", content: systemContent }, ...messages],
             }),
           });
 
