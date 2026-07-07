@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { troubleshooting } from "@/lib/coach-data";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { useCoach } from "@/lib/coach-store";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({
@@ -94,14 +95,28 @@ function AskAutoCoach() {
     setInput("");
     setLoading(true);
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ messages: newMsgs }),
       });
       if (!res.ok) {
-        const errText = await res.text();
-        toast.error(errText || "AutoCoach is unavailable.");
+        const raw = await res.text().catch(() => "");
+        console.error("[chat] request failed", res.status, raw);
+        let message = "AutoCoach hit a snag — please try again.";
+        if (res.status === 401) {
+          message = "Please sign in to chat with AutoCoach.";
+        } else if (res.status === 429) {
+          message = "AutoCoach is getting a lot of questions — try again shortly.";
+        } else if (res.status === 402) {
+          message = "AutoCoach is temporarily out of AI credits.";
+        }
+        toast.error(message);
         setMessages((m) => [
           ...m,
           { role: "assistant", content: "Sorry, I couldn't reach AutoCoach right now. Try again in a moment." },
@@ -110,7 +125,8 @@ function AskAutoCoach() {
         const data = await res.json();
         setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
       }
-    } catch {
+    } catch (err) {
+      console.error("[chat] network error", err);
       toast.error("Network error.");
     } finally {
       setLoading(false);

@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { lessons } from "@/lib/coach-data";
+import { supabase } from "@/integrations/supabase/client";
 import {
   useLessonImages,
   uploadLessonImage,
@@ -38,6 +39,38 @@ type Slot = {
 function LessonEditor() {
   const { state } = useCoach();
   const isAuthed = state.profile.isAuthenticated;
+  const [adminCheck, setAdminCheck] = useState<"pending" | "yes" | "no">("pending");
+
+  useEffect(() => {
+    let active = true;
+    if (!isAuthed) {
+      setAdminCheck("no");
+      return;
+    }
+    (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id;
+      if (!uid) {
+        if (active) setAdminCheck("no");
+        return;
+      }
+      const { data, error } = await supabase.rpc("has_role", {
+        _user_id: uid,
+        _role: "admin",
+      });
+      if (!active) return;
+      if (error) {
+        console.error("[lesson-editor] role check failed", error);
+        setAdminCheck("no");
+      } else {
+        setAdminCheck(data ? "yes" : "no");
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [isAuthed]);
+
   const search = Route.useSearch();
   const initial = search.lesson && lessons.some((l) => l.id === search.lesson)
     ? search.lesson
@@ -93,6 +126,22 @@ function LessonEditor() {
       </div>
 
       <GuestGate isAuthenticated={isAuthed}>
+        {adminCheck === "pending" && (
+          <div className="rounded-2xl bg-card border border-border p-6 text-sm text-muted-foreground">
+            Checking permissions…
+          </div>
+        )}
+        {adminCheck === "no" && (
+          <div className="rounded-2xl bg-card border border-border p-6 space-y-2">
+            <div className="font-semibold">Admins only</div>
+            <p className="text-sm text-muted-foreground">
+              This editor is restricted to AutoCAD Coach admins. If you think you should
+              have access, contact the site owner.
+            </p>
+          </div>
+        )}
+        {adminCheck === "yes" && (
+          <>
         <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3">
           <label className="text-sm text-muted-foreground sm:w-32 shrink-0">Editing lesson</label>
           <Select value={lessonId} onValueChange={setLessonId}>
@@ -125,6 +174,8 @@ function LessonEditor() {
               />
             ))}
           </div>
+        )}
+          </>
         )}
       </GuestGate>
     </div>

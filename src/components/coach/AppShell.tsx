@@ -65,8 +65,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-        {/* Page content — fade-in on every navigation */}
-        <main key={pathname} className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0 animate-in fade-in duration-150">
+        {/* Page content */}
+        <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">
           {children}
         </main>
 

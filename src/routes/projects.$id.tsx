@@ -98,7 +98,7 @@ function ProjectViewer() {
         </TabsList>
         <TabsContent value="details" className="space-y-6 mt-0">
           <button onClick={() => setLightbox(true)} className="block w-full rounded-2xl overflow-hidden border border-border group">
-        <img src={project.image} alt={`${project.title} reference`} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
+            <img src={project.image} alt={`${project.title} reference`} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
       </button>
 
           <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
