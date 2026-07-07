@@ -279,3 +279,59 @@ function SlotCard({
     </div>
   );
 }
+
+const REPROCESS_LESSON_IDS = ["interface", "line", "circle", "rectangle", "trim"];
+
+function ReprocessPanel() {
+  const [busy, setBusy] = useState(false);
+  const [results, setResults] = useState<ReprocessResult[] | null>(null);
+
+  async function run() {
+    setBusy(true);
+    setResults(null);
+    try {
+      const out = await reprocessLessonImages(REPROCESS_LESSON_IDS);
+      setResults(out);
+      const trimmedCount = out.filter((r) => r.trimmed).length;
+      toast.success(`Reprocessed ${out.length} image${out.length === 1 ? "" : "s"} — ${trimmedCount} trimmed`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Reprocess failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 space-y-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="font-semibold text-sm flex items-center gap-2">
+            <Scissors className="size-4" /> Reprocess legacy screenshots
+          </div>
+          <p className="text-xs text-muted-foreground mt-1 max-w-md">
+            One-time migration: auto-trims empty margins from images already uploaded for
+            lessons {REPROCESS_LESSON_IDS.map((id) => `"${id}"`).join(", ")}. Safe to run
+            more than once — already-tight images are skipped.
+          </p>
+        </div>
+        <Button type="button" onClick={run} disabled={busy} variant="outline" size="sm">
+          {busy ? <Loader2 className="size-4 mr-1 animate-spin" /> : <Scissors className="size-4 mr-1" />}
+          {busy ? "Reprocessing…" : "Run reprocess"}
+        </Button>
+      </div>
+      {results && (
+        <ul className="text-xs font-mono space-y-0.5 max-h-56 overflow-auto rounded-md bg-secondary/40 p-2">
+          {results.map((r, i) => (
+            <li
+              key={`${r.lessonId}-${r.slot}-${i}`}
+              className={r.error ? "text-destructive" : r.trimmed ? "text-success" : "text-muted-foreground"}
+            >
+              {r.lessonId}/{r.slot}: {r.before[0]}×{r.before[1]} → {r.after[0]}×{r.after[1]}
+              {r.trimmed ? " ✓ trimmed" : r.error ? ` ✕ ${r.error}` : " – skipped"}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
