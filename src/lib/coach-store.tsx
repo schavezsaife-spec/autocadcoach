@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { lessons } from "./coach-data";
 import { supabase } from "./supabase";
 import type { User } from "@supabase/supabase-js";
+import { setAppLanguage, type AppLanguage } from "./i18n";
 
 export type Profile = {
   firstName: string;
@@ -21,6 +22,7 @@ export type CoachState = {
   lessonQuizPassed: Record<string, boolean>;
   profile: Profile;
   streak: number;
+  language: AppLanguage;
 };
 
 const DEFAULT: CoachState = {
@@ -39,6 +41,7 @@ const DEFAULT: CoachState = {
     isAuthenticated: false,
   },
   streak: 1,
+  language: "en",
 };
 
 const KEY = "autocad-coach-state-v1";
@@ -97,6 +100,12 @@ export function CoachProvider({ children }: { children: ReactNode }) {
     } catch {}
     setHydrated(true);
   }, []);
+
+  // Sync language into i18next whenever it changes.
+  useEffect(() => {
+    if (!hydrated) return;
+    setAppLanguage(state.language);
+  }, [state.language, hydrated]);
 
   // Persist to localStorage whenever state changes (after hydration).
   useEffect(() => {
