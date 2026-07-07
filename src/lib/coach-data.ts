@@ -1,4 +1,5 @@
 import extrudeAction from "@/assets/extrude_action.png.asset.json";
+import keychainHero from "@/assets/keychain-hero.jpg.asset.json";
 import extrudeBefore from "@/assets/extrude_before.png.asset.json";
 import extrudeAfter from "@/assets/extrude_after.png.asset.json";
 import joinAction from "@/assets/join_before.png.asset.json";
@@ -1844,7 +1845,7 @@ export const lessons: Lesson[] = [
       "Click a base point, then click destination.",
       "Repeat with CO for COPY.",
     ],
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200",
+    image: keychainHero.url,
     mistake: "Picking a random base point — always use a corner or endpoint.",
     challenge: "Copy a circle 5 times in a horizontal row, 100 units apart.",
     rich: richMoveCopy,
