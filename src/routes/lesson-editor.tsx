@@ -160,7 +160,18 @@ function LessonEditor() {
             </SelectContent>
           </Select>
           {lesson && (
-            <Badge variant="outline" className="border-border self-start sm:self-auto">
+            <Badge
+              variant={
+                slots.length > 0 && Object.keys(images).length >= slots.length
+                  ? "success"
+                  : "outline"
+              }
+              className={
+                slots.length > 0 && Object.keys(images).length >= slots.length
+                  ? "self-start sm:self-auto"
+                  : "border-border self-start sm:self-auto"
+              }
+            >
               {Object.keys(images).length} / {slots.length} uploaded
             </Badge>
           )}
