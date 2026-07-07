@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, Compass, Send, User, Wrench } from "lucide-react";
+import { AlertTriangle, Compass, Send, Sparkles, User, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { troubleshooting } from "@/lib/coach-data";
@@ -41,23 +41,48 @@ function CoachPage() {
   const { state } = useCoach();
   const isAuthed = state.profile.isAuthenticated;
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-4 md:pb-0 flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-[calc(100dvh-3.5rem)]">
-      <p className="mb-3 text-sm text-muted-foreground">Ask anything about AutoCAD — commands, errors, workflows.</p>
+    <div className="flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-[calc(100dvh-3.5rem)]">
+      {/* Sticky page header */}
+      <div className="sticky top-0 z-20 bg-background/85 backdrop-blur border-b border-border">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
+          <div className="size-9 rounded-xl bg-primary/15 text-primary grid place-items-center shrink-0 ring-1 ring-primary/30">
+            <Sparkles className="size-4" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-base font-semibold text-foreground truncate">AutoCAD Coach</h1>
+            <p className="text-xs text-muted-foreground truncate">
+              Ask anything about AutoCAD — commands, errors, workflows.
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Tabs defaultValue="ask" className="flex-1 flex flex-col min-h-0">
-        <TabsList className="self-start">
-          <TabsTrigger value="ask"><Compass className="size-4 mr-1.5" /> Ask AutoCoach</TabsTrigger>
-          <TabsTrigger value="troubleshoot"><Wrench className="size-4 mr-1.5" /> Troubleshoot</TabsTrigger>
-        </TabsList>
-        <TabsContent value="ask" className="flex-1 min-h-0 mt-4">
-          <GuestGate isAuthenticated={isAuthed} message="Sign in to chat with AutoCoach and save your conversations.">
-            <AskAutoCoach />
-          </GuestGate>
-        </TabsContent>
-        <TabsContent value="troubleshoot" className="flex-1 min-h-0 mt-4 overflow-y-auto">
-          <TroubleshootGrid />
-        </TabsContent>
-      </Tabs>
+      <div className="flex-1 min-h-0 max-w-3xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 md:pb-0 flex flex-col">
+        <Tabs defaultValue="ask" className="flex-1 flex flex-col min-h-0">
+          <TabsList className="self-start">
+            <TabsTrigger
+              value="ask"
+              className="transition-colors duration-150 ease-out"
+            >
+              <Compass className="size-4 mr-1.5" /> Ask AutoCoach
+            </TabsTrigger>
+            <TabsTrigger
+              value="troubleshoot"
+              className="transition-colors duration-150 ease-out"
+            >
+              <Wrench className="size-4 mr-1.5" /> Troubleshoot
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="ask" className="flex-1 min-h-0 mt-4">
+            <GuestGate isAuthenticated={isAuthed} message="Sign in to chat with AutoCoach and save your conversations.">
+              <AskAutoCoach />
+            </GuestGate>
+          </TabsContent>
+          <TabsContent value="troubleshoot" className="flex-1 min-h-0 mt-4 overflow-y-auto">
+            <TroubleshootGrid />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }
@@ -122,7 +147,7 @@ function AskAutoCoach() {
               {m.role === "assistant" ? <Compass className="size-4" /> : <User className="size-4" />}
             </div>
             <div className={cn(
-              "rounded-2xl px-4 py-3 text-sm max-w-[80%]",
+              "rounded-2xl px-4 py-3 text-sm max-w-[90%] md:max-w-[80%]",
               m.role === "assistant" ? "bg-secondary text-foreground" : "bg-primary text-primary-foreground"
             )}>
               {m.role === "assistant" ? (
@@ -146,7 +171,13 @@ function AskAutoCoach() {
         ))}
         {loading && (
           <div className="flex gap-3">
-            <div className="size-8 rounded-full bg-primary/15 text-primary grid place-items-center"><Compass className="size-4" /></div>
+            <div className="relative size-8 rounded-full bg-primary/15 text-primary grid place-items-center">
+              <Compass className="size-4" />
+              <span className="absolute -top-0.5 -right-0.5 flex size-2.5">
+                <span className="absolute inline-flex size-full rounded-full bg-primary/70 opacity-75 animate-ping" />
+                <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
+              </span>
+            </div>
             <div className="rounded-2xl px-4 py-3 text-sm bg-secondary text-muted-foreground flex items-center gap-2">
               <span className="inline-flex gap-1">
                 <span className="size-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -159,21 +190,23 @@ function AskAutoCoach() {
         )}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {SUGGESTIONS.map((s) => (
-          <button
-            key={s}
-            onClick={() => send(s)}
-            disabled={loading}
-            className="text-xs rounded-full border border-border bg-card hover:border-primary/40 px-3 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {s}
-          </button>
-        ))}
+      <div className="mt-3 -mx-4 sm:mx-0 overflow-x-auto sm:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex flex-nowrap sm:flex-wrap gap-1.5 px-4 sm:px-0">
+          {SUGGESTIONS.map((s) => (
+            <button
+              key={s}
+              onClick={() => send(s)}
+              disabled={loading}
+              className="shrink-0 sm:shrink text-xs rounded-full border border-border bg-card hover:border-primary/40 px-3 py-1.5 text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
       </div>
 
       <form
-        className="mt-3 flex gap-2"
+        className="sticky bottom-0 mt-3 flex gap-2 bg-background/85 backdrop-blur pt-2 pb-[max(env(safe-area-inset-bottom),0.5rem)]"
         onSubmit={(e) => { e.preventDefault(); send(input); }}
       >
         <Input
@@ -184,7 +217,12 @@ function AskAutoCoach() {
           className="bg-card border-border"
           disabled={loading}
         />
-        <Button type="submit" disabled={loading || !input.trim()} className="bg-primary text-primary-foreground hover:bg-primary/90">
+        <Button
+          type="submit"
+          disabled={loading || !input.trim()}
+          aria-busy={loading}
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
+        >
           <Send className="size-4" />
         </Button>
       </form>
