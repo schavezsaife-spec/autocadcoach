@@ -64,13 +64,15 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Desktop top bar */}
-        <div className="hidden md:flex items-center justify-between h-14 px-6 border-b border-border bg-background shrink-0">
-          <Logo size="md" />
-          {getPageLabel(pathname) && (
-            <span className="text-sm font-medium text-muted-foreground">{getPageLabel(pathname)}</span>
-          )}
-        </div>
+        {/* Desktop top bar — hidden on /chat so AI Coach can reclaim the vertical space */}
+        {pathname !== "/chat" && (
+          <div className="hidden md:flex items-center justify-between h-14 px-6 border-b border-border bg-background shrink-0">
+            <Logo size="md" />
+            {getPageLabel(pathname) && (
+              <span className="text-sm font-medium text-muted-foreground">{getPageLabel(pathname)}</span>
+            )}
+          </div>
+        )}
 
         {/* Page content — fade-in on every navigation */}
         <main key={pathname} className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0 animate-in fade-in duration-150">
