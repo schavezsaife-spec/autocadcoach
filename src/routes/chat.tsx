@@ -240,6 +240,7 @@ function AskAutoCoach() {
 }
 
 function TroubleshootGrid() {
+  const { t: tc } = useTranslation("chat");
   return (
     <div className="grid sm:grid-cols-2 gap-4">
       {troubleshooting.map((t) => (
@@ -252,12 +253,12 @@ function TroubleshootGrid() {
             <h2 className="font-semibold text-foreground">{t.title}</h2>
           </div>
           <div className="mt-3">
-            <div className="text-xs uppercase tracking-wide text-muted-foreground">Cause</div>
+            <div className="text-xs uppercase tracking-wide text-muted-foreground">{tc("cause")}</div>
             <p className="text-sm mt-1">{t.cause}</p>
           </div>
           <div className="mt-3">
             <div className="flex items-center gap-1 text-xs uppercase tracking-wide text-primary">
-              <Wrench className="size-3" /> Fix
+              <Wrench className="size-3" /> {tc("fix")}
             </div>
             <p className="text-sm mt-1">{t.fix}</p>
           </div>
