@@ -23,8 +23,8 @@ export function LogoMark({ size = "md", className }: { size?: "sm" | "md" | "lg"
       alt=""
       width={s.icon}
       height={s.icon}
-      className={cn("shrink-0 object-contain drop-shadow-[0_2px_8px_rgba(43,123,255,0.35)]", className)}
-      style={{ width: s.icon, height: s.icon }}
+      className={cn("shrink-0 object-contain", className)}
+      style={{ width: s.icon, height: s.icon, filter: "var(--shadow-logo-glow)" }}
       draggable={false}
       aria-hidden
     />
