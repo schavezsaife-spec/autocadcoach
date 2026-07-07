@@ -168,7 +168,7 @@ function ProjectList() {
                     <div className="mt-3 font-semibold">{p.title}</div>
                     <div className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</div>
                     {done && (
-                      <Badge className="mt-3 bg-primary/20 text-primary border-primary/30">
+                      <Badge className="mt-3 bg-success/20 text-success border-success/30">
                         <CheckCircle2 className="size-3 mr-1" /> {t("projects:built")}
                       </Badge>
                     )}
