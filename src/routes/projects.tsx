@@ -152,7 +152,7 @@ function ProjectList() {
                   params={{ id: p.id }}
                   className="rounded-2xl bg-card border border-border overflow-hidden hover:border-primary/40 transition-all hover:-translate-y-0.5"
                 >
-                  <img src={p.image} alt={p.title} className="w-full h-36 sm:h-40 object-cover" />
+                  <img src={p.image} alt={p.title} loading="lazy" decoding="async" width={800} height={450} className="w-full h-36 sm:h-40 object-cover" />
                   <div className="p-4 sm:p-5">
                     <div className="flex items-center justify-between">
                       <Badge variant="outline" className="border-primary/30 text-primary">{p.difficulty}</Badge>
