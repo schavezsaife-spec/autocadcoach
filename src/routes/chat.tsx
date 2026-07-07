@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,16 +17,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/chat")({
   head: () => ({
     meta: [
-      { title: "AutoCoach — AutoCAD Coach" },
-      {
-        name: "description",
-        content: "Ask the AutoCoach AI tutor any AutoCAD question and troubleshoot common command problems.",
-      },
-      { property: "og:title", content: "AutoCoach — AutoCAD Coach" },
-      {
-        property: "og:description",
-        content: "Ask the AutoCoach AI tutor any AutoCAD question and troubleshoot common command problems.",
-      },
+      { title: i18n.t("meta:chatTitle") },
+      { name: "description", content: i18n.t("meta:chatDesc") },
+      { property: "og:title", content: i18n.t("meta:chatTitle") },
+      { property: "og:description", content: i18n.t("meta:chatDesc") },
       { property: "og:url", content: "https://autocadcoach.lovable.app/chat" },
       { property: "og:type", content: "website" },
     ],
@@ -35,17 +31,9 @@ export const Route = createFileRoute("/chat")({
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-const SUGGESTIONS = [
-  "How do I use TRIM?",
-  "What is OFFSET used for?",
-  "Why won't my EXTRUDE work?",
-  "How do layers work?",
-  "What's the difference between LINE and PLINE?",
-  "How do I mirror an object?",
-];
-
 function CoachPage() {
   const { state } = useCoach();
+  const { t } = useTranslation(["chat", "gate"]);
   const isAuthed = state.profile.isAuthenticated;
   return (
     <div className="w-full px-4 sm:px-6 lg:px-10 py-4 md:py-6 pb-4 md:pb-0 flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-dvh">
@@ -54,14 +42,14 @@ function CoachPage() {
       <Tabs defaultValue="ask" className="flex-1 flex flex-col min-h-0">
         <TabsList className="self-start">
           <TabsTrigger value="ask">
-            <Compass className="size-4 mr-1.5" /> Ask AutoCoach
+            <Compass className="size-4 mr-1.5" /> {t("chat:askTab")}
           </TabsTrigger>
           <TabsTrigger value="troubleshoot">
-            <Wrench className="size-4 mr-1.5" /> Troubleshoot
+            <Wrench className="size-4 mr-1.5" /> {t("chat:troubleshootTab")}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="ask" className="flex-1 min-h-0 mt-4">
-          <GuestGate isAuthenticated={isAuthed} message="Sign in to chat with AutoCoach.">
+          <GuestGate isAuthenticated={isAuthed} message={t("gate:chatMessage")}>
             <AskAutoCoach />
           </GuestGate>
         </TabsContent>
