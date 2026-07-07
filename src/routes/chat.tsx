@@ -61,7 +61,7 @@ function CoachPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="ask" className="flex-1 min-h-0 mt-4">
-          <GuestGate isAuthenticated={isAuthed} message="Sign in to chat with AutoCoach and save your conversations.">
+          <GuestGate isAuthenticated={isAuthed} message="Sign in to chat with AutoCoach.">
             <AskAutoCoach />
           </GuestGate>
         </TabsContent>
