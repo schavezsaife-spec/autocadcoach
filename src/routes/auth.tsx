@@ -9,6 +9,7 @@ import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Logo } from "@/components/coach/Logo";
+import { useTranslation } from "react-i18next";
 
 /**
  * Setup checklist for the developer:
@@ -42,6 +43,7 @@ type Mode = "signup" | "signin";
 
 function AuthPage() {
   const { state } = useCoach();
+  const { t } = useTranslation(["auth", "common"]);
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("signup");
   const [firstName, setFirstName] = useState("");
@@ -161,7 +163,7 @@ function AuthPage() {
 
         <div className="rounded-2xl bg-card/80 backdrop-blur border border-border p-6 sm:p-8 shadow-[var(--shadow-glow)]">
           <h1 className="text-2xl font-bold tracking-tight">
-            {mode === "signup" ? "Create your account" : "Welcome back"}
+            {mode === "signup" ? t("auth:createAccount") : t("auth:signInTitle")}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             {mode === "signup"
@@ -181,13 +183,13 @@ function AuthPage() {
             ) : (
               <GoogleIcon className="size-4 mr-2" />
             )}
-            Continue with Google
+            {t("auth:continueWithGoogle")}
           </Button>
 
           <div className="my-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-border" />
             <span className="text-xs text-muted-foreground">
-              or {mode === "signup" ? "sign up" : "sign in"} with email
+              {t("auth:or")} {mode === "signup" ? t("auth:createAccount") : t("auth:signInTitle")}
             </span>
             <div className="h-px flex-1 bg-border" />
           </div>
@@ -205,30 +207,30 @@ function AuthPage() {
             {mode === "signup" && (
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="firstName">First name</Label>
+                  <Label htmlFor="firstName">{t("auth:firstName")}</Label>
                   <Input
                     id="firstName"
                     required
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="First name"
+                    placeholder={t("auth:firstName")}
                     className="bg-secondary border-border"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="lastName">Last name</Label>
+                  <Label htmlFor="lastName">{t("auth:lastName")}</Label>
                   <Input
                     id="lastName"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Last name"
+                    placeholder={t("auth:lastName")}
                     className="bg-secondary border-border"
                   />
                 </div>
               </div>
             )}
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("auth:email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -241,10 +243,10 @@ function AuthPage() {
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t("auth:password")}</Label>
                 {mode === "signin" && (
                   <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-                    Forgot password?
+                    {t("auth:forgotPassword")}
                   </Link>
                 )}
               </div>
@@ -276,18 +278,18 @@ function AuthPage() {
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-glow)]"
             >
               {loading && <Loader2 className="size-4 mr-2 animate-spin" />}
-              {mode === "signup" ? "Create Account" : "Sign In"}
+              {mode === "signup" ? t("auth:createAccount") : t("auth:signInTitle")}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            {mode === "signup" ? "Already have an account?" : "Don't have an account?"}{" "}
+            {mode === "signup" ? t("auth:haveAccount") : t("auth:noAccount")}{" "}
             <button
               type="button"
               onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
               className="text-primary hover:underline font-medium"
             >
-              {mode === "signup" ? "Sign in" : "Create one"}
+              {mode === "signup" ? t("auth:signInTitle") : t("auth:createAccount")}
             </button>
           </div>
         </div>
