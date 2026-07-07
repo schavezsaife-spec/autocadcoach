@@ -74,6 +74,7 @@ function DashboardPage() {
             icon={Flame}
             label={t("dashboard:streak")}
             value={`${state.streak} ${t("dashboard:days", { count: state.streak })}`}
+            accent
           />
         </div>
 
