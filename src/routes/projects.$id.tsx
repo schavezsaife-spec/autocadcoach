@@ -13,6 +13,7 @@ import { useLessonImages } from "@/lib/lesson-images";
 import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects/$id")({
   head: ({ params }) => {
