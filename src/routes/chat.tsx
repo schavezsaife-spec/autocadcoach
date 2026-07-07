@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, Compass, Send, Sparkles, User, Wrench } from "lucide-react";
+import { AlertTriangle, Compass, Send, User, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { troubleshooting } from "@/lib/coach-data";
@@ -15,9 +15,15 @@ export const Route = createFileRoute("/chat")({
   head: () => ({
     meta: [
       { title: "AutoCoach — AutoCAD Coach" },
-      { name: "description", content: "Ask the AutoCoach AI tutor any AutoCAD question and troubleshoot common command problems." },
+      {
+        name: "description",
+        content: "Ask the AutoCoach AI tutor any AutoCAD question and troubleshoot common command problems.",
+      },
       { property: "og:title", content: "AutoCoach — AutoCAD Coach" },
-      { property: "og:description", content: "Ask the AutoCoach AI tutor any AutoCAD question and troubleshoot common command problems." },
+      {
+        property: "og:description",
+        content: "Ask the AutoCoach AI tutor any AutoCAD question and troubleshoot common command problems.",
+      },
       { property: "og:url", content: "https://autocadcoach.lovable.app/chat" },
       { property: "og:type", content: "website" },
     ],
@@ -41,55 +47,37 @@ function CoachPage() {
   const { state } = useCoach();
   const isAuthed = state.profile.isAuthenticated;
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-[calc(100dvh-3.5rem)]">
-      {/* Sticky page header */}
-      <div className="sticky top-0 z-20 bg-background/85 backdrop-blur border-b border-border">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
-          <div className="size-9 rounded-xl bg-primary/15 text-primary grid place-items-center shrink-0 ring-1 ring-primary/30">
-            <Sparkles className="size-4" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-base font-semibold text-foreground truncate">AutoCAD Coach</h1>
-            <p className="text-xs text-muted-foreground truncate">
-              Ask anything about AutoCAD — commands, errors, workflows.
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="w-full px-4 sm:px-6 lg:px-10 py-4 md:py-6 pb-4 md:pb-0 flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-dvh">
+      <p className="mb-3 text-sm text-muted-foreground">Ask anything about AutoCAD — commands, errors, workflows.</p>
 
-      <div className="flex-1 min-h-0 max-w-3xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4 md:pb-0 flex flex-col">
-        <Tabs defaultValue="ask" className="flex-1 flex flex-col min-h-0">
-          <TabsList className="self-start">
-            <TabsTrigger
-              value="ask"
-              className="transition-colors duration-150 ease-out"
-            >
-              <Compass className="size-4 mr-1.5" /> Ask AutoCoach
-            </TabsTrigger>
-            <TabsTrigger
-              value="troubleshoot"
-              className="transition-colors duration-150 ease-out"
-            >
-              <Wrench className="size-4 mr-1.5" /> Troubleshoot
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="ask" className="flex-1 min-h-0 mt-4">
-            <GuestGate isAuthenticated={isAuthed} message="Sign in to chat with AutoCoach and save your conversations.">
-              <AskAutoCoach />
-            </GuestGate>
-          </TabsContent>
-          <TabsContent value="troubleshoot" className="flex-1 min-h-0 mt-4 overflow-y-auto">
-            <TroubleshootGrid />
-          </TabsContent>
-        </Tabs>
-      </div>
+      <Tabs defaultValue="ask" className="flex-1 flex flex-col min-h-0">
+        <TabsList className="self-start">
+          <TabsTrigger value="ask">
+            <Compass className="size-4 mr-1.5" /> Ask AutoCoach
+          </TabsTrigger>
+          <TabsTrigger value="troubleshoot">
+            <Wrench className="size-4 mr-1.5" /> Troubleshoot
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="ask" className="flex-1 min-h-0 mt-4">
+          <GuestGate isAuthenticated={isAuthed} message="Sign in to chat with AutoCoach and save your conversations.">
+            <AskAutoCoach />
+          </GuestGate>
+        </TabsContent>
+        <TabsContent value="troubleshoot" className="flex-1 min-h-0 mt-4 overflow-y-auto">
+          <TroubleshootGrid />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
 
 function AskAutoCoach() {
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: "Hi! I'm **AutoCoach**, your AutoCAD tutor. Ask me anything — TRIM, JOIN, EXTRUDE, LAYERS, you name it." },
+    {
+      role: "assistant",
+      content: "Hi! I'm **AutoCoach**, your AutoCAD tutor. Ask me anything — TRIM, JOIN, EXTRUDE, LAYERS, you name it.",
+    },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -112,23 +100,17 @@ function AskAutoCoach() {
         body: JSON.stringify({ messages: newMsgs }),
       });
       if (!res.ok) {
-        const raw = await res.text();
-        console.error("[chat] api error", res.status, raw);
-        let message = "AutoCoach hit a snag — please try again.";
-        try {
-          const parsed = JSON.parse(raw);
-          if (parsed?.error) message = parsed.error;
-        } catch {
-          /* keep default */
-        }
-        toast.error(message);
-        setMessages((m) => [...m, { role: "assistant", content: message }]);
+        const errText = await res.text();
+        toast.error(errText || "AutoCoach is unavailable.");
+        setMessages((m) => [
+          ...m,
+          { role: "assistant", content: "Sorry, I couldn't reach AutoCoach right now. Try again in a moment." },
+        ]);
       } else {
         const data = await res.json();
         setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
       }
-    } catch (err) {
-      console.error("[chat] network error", err);
+    } catch {
       toast.error("Network error.");
     } finally {
       setLoading(false);
@@ -140,18 +122,23 @@ function AskAutoCoach() {
       <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-2xl bg-card border border-border p-4 space-y-4">
         {messages.map((m, i) => (
           <div key={i} className={cn("flex gap-3", m.role === "user" && "flex-row-reverse")}>
-            <div className={cn(
-              "size-8 rounded-full grid place-items-center shrink-0",
-              m.role === "assistant" ? "bg-primary/15 text-primary" : "bg-secondary text-foreground"
-            )}>
+            <div
+              className={cn(
+                "size-8 rounded-full grid place-items-center shrink-0",
+                m.role === "assistant" ? "bg-primary/15 text-primary" : "bg-secondary text-foreground",
+              )}
+            >
               {m.role === "assistant" ? <Compass className="size-4" /> : <User className="size-4" />}
             </div>
-            <div className={cn(
-              "rounded-2xl px-4 py-3 text-sm max-w-[90%] md:max-w-[80%]",
-              m.role === "assistant" ? "bg-secondary text-foreground" : "bg-primary text-primary-foreground"
-            )}>
+            <div
+              className={cn(
+                "rounded-2xl px-4 py-3 text-sm max-w-[80%]",
+                m.role === "assistant" ? "bg-secondary text-foreground" : "bg-primary text-primary-foreground",
+              )}
+            >
               {m.role === "assistant" ? (
-                <div className="prose prose-sm prose-invert max-w-none
+                <div
+                  className="prose prose-sm prose-invert max-w-none
                   [&>p]:mb-2 [&>p:last-child]:mb-0
                   [&>ol]:mb-2 [&>ol]:pl-4 [&>ol>li]:mb-1
                   [&>ul]:mb-2 [&>ul]:pl-4 [&>ul>li]:mb-1
@@ -160,7 +147,8 @@ function AskAutoCoach() {
                   [&>blockquote]:border-l-2 [&>blockquote]:border-primary/50 [&>blockquote]:pl-3 [&>blockquote]:text-muted-foreground [&>blockquote]:italic [&>blockquote]:mb-2
                   [&_code]:bg-background/60 [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-primary [&_code]:text-xs [&_code]:font-mono
                   [&_strong]:text-foreground [&_strong]:font-semibold
-                ">
+                "
+                >
                   <ReactMarkdown>{m.content}</ReactMarkdown>
                 </div>
               ) : (
@@ -171,18 +159,23 @@ function AskAutoCoach() {
         ))}
         {loading && (
           <div className="flex gap-3">
-            <div className="relative size-8 rounded-full bg-primary/15 text-primary grid place-items-center">
+            <div className="size-8 rounded-full bg-primary/15 text-primary grid place-items-center">
               <Compass className="size-4" />
-              <span className="absolute -top-0.5 -right-0.5 flex size-2.5">
-                <span className="absolute inline-flex size-full rounded-full bg-primary/70 opacity-75 animate-ping" />
-                <span className="relative inline-flex size-2.5 rounded-full bg-primary" />
-              </span>
             </div>
             <div className="rounded-2xl px-4 py-3 text-sm bg-secondary text-muted-foreground flex items-center gap-2">
               <span className="inline-flex gap-1">
-                <span className="size-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="size-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="size-1.5 rounded-full bg-primary/60 animate-bounce" style={{ animationDelay: "300ms" }} />
+                <span
+                  className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                  style={{ animationDelay: "0ms" }}
+                />
+                <span
+                  className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                  style={{ animationDelay: "150ms" }}
+                />
+                <span
+                  className="size-1.5 rounded-full bg-primary/60 animate-bounce"
+                  style={{ animationDelay: "300ms" }}
+                />
               </span>
               AutoCoach is thinking…
             </div>
@@ -190,24 +183,25 @@ function AskAutoCoach() {
         )}
       </div>
 
-      <div className="mt-3 -mx-4 sm:mx-0 overflow-x-auto sm:overflow-visible [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex flex-nowrap sm:flex-wrap gap-1.5 px-4 sm:px-0">
-          {SUGGESTIONS.map((s) => (
-            <button
-              key={s}
-              onClick={() => send(s)}
-              disabled={loading}
-              className="shrink-0 sm:shrink text-xs rounded-full border border-border bg-card hover:border-primary/40 px-3 py-1.5 text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap"
-            >
-              {s}
-            </button>
-          ))}
-        </div>
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {SUGGESTIONS.map((s) => (
+          <button
+            key={s}
+            onClick={() => send(s)}
+            disabled={loading}
+            className="text-xs rounded-full border border-border bg-card hover:border-primary/40 px-3 py-1.5 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {s}
+          </button>
+        ))}
       </div>
 
       <form
-        className="sticky bottom-0 mt-3 flex gap-2 bg-background/85 backdrop-blur pt-2 pb-[max(env(safe-area-inset-bottom),0.5rem)]"
-        onSubmit={(e) => { e.preventDefault(); send(input); }}
+        className="mt-3 flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          send(input);
+        }}
       >
         <Input
           value={input}
@@ -220,7 +214,6 @@ function AskAutoCoach() {
         <Button
           type="submit"
           disabled={loading || !input.trim()}
-          aria-busy={loading}
           className="bg-primary text-primary-foreground hover:bg-primary/90"
         >
           <Send className="size-4" />
@@ -234,7 +227,10 @@ function TroubleshootGrid() {
   return (
     <div className="grid sm:grid-cols-2 gap-4">
       {troubleshooting.map((t) => (
-        <article key={t.title} className="rounded-2xl bg-card border border-border p-5 hover:border-primary/40 transition-colors">
+        <article
+          key={t.title}
+          className="rounded-2xl bg-card border border-border p-5 hover:border-primary/40 transition-colors"
+        >
           <div className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="size-4" />
             <h2 className="font-semibold text-foreground">{t.title}</h2>
