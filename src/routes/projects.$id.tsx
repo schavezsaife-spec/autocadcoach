@@ -13,6 +13,7 @@ import { useLessonImages } from "@/lib/lesson-images";
 import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects/$id")({
   head: ({ params }) => {
@@ -128,7 +129,12 @@ function ProjectViewer() {
           <div className="flex flex-col sm:flex-row gap-3">
         <Button
           onClick={() => { completeProject(project.id); toast.success(t("projects:markedComplete", { title: project.title })); }}
-          className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
+          className={cn(
+            "w-full sm:w-auto",
+            done
+              ? "bg-success text-success-foreground hover:bg-success/90"
+              : "bg-primary text-primary-foreground hover:bg-primary/90",
+          )}
         >
           <CheckCircle2 className="size-4 mr-1" /> {t("common:markComplete")}
         </Button>

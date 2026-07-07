@@ -254,7 +254,7 @@ function TroubleshootGrid() {
             <p className="text-sm mt-1">{t.cause}</p>
           </div>
           <div className="mt-3">
-            <div className="flex items-center gap-1 text-xs uppercase tracking-wide text-primary">
+            <div className="flex items-center gap-1 text-xs uppercase tracking-wide text-success">
               <Wrench className="size-3" /> {tc("fix")}
             </div>
             <p className="text-sm mt-1">{t.fix}</p>
