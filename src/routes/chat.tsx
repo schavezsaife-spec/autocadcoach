@@ -87,14 +87,23 @@ function AskAutoCoach() {
         body: JSON.stringify({ messages: newMsgs }),
       });
       if (!res.ok) {
-        const errText = await res.text();
-        toast.error(errText || "AutoCoach is unavailable.");
-        setMessages((m) => [...m, { role: "assistant", content: "Sorry, I couldn't reach AutoCoach right now. Try again in a moment." }]);
+        const raw = await res.text();
+        console.error("[chat] api error", res.status, raw);
+        let message = "AutoCoach hit a snag — please try again.";
+        try {
+          const parsed = JSON.parse(raw);
+          if (parsed?.error) message = parsed.error;
+        } catch {
+          /* keep default */
+        }
+        toast.error(message);
+        setMessages((m) => [...m, { role: "assistant", content: message }]);
       } else {
         const data = await res.json();
         setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
       }
-    } catch {
+    } catch (err) {
+      console.error("[chat] network error", err);
       toast.error("Network error.");
     } finally {
       setLoading(false);

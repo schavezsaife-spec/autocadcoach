@@ -81,26 +81,53 @@ export const Route = createFileRoute("/api/chat")({
     handlers: {
       POST: async ({ request }) => {
         const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        if (!key) {
+          return Response.json(
+            { error: "AutoCoach hit a snag — please try again." },
+            { status: 500 },
+          );
+        }
         const { messages } = (await request.json()) as { messages: Msg[] };
 
-        const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Lovable-API-Key": key,
-          },
-          body: JSON.stringify({
-            model: "google/gemini-2.0-flash-001",
-            messages: [{ role: "system", content: SYSTEM }, ...messages],
-          }),
-        });
+        const callGateway = () =>
+          fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Lovable-API-Key": key,
+            },
+            body: JSON.stringify({
+              model: "google/gemini-2.0-flash-001",
+              messages: [{ role: "system", content: SYSTEM }, ...messages],
+            }),
+          });
+
+        let res: Response;
+        try {
+          res = await callGateway();
+          if (res.status >= 500) {
+            const rawFirst = await res.text().catch(() => "");
+            console.error("[api/chat] gateway 5xx, retrying once:", res.status, rawFirst);
+            res = await callGateway();
+          }
+        } catch (err) {
+          console.error("[api/chat] network error:", err);
+          return Response.json(
+            { error: "AutoCoach hit a snag — please try again." },
+            { status: 502 },
+          );
+        }
 
         if (!res.ok) {
-          const text = await res.text();
-          if (res.status === 429) return new Response("Rate limited. Try again in a moment.", { status: 429 });
-          if (res.status === 402) return new Response("AI credits exhausted. Add credits in workspace billing.", { status: 402 });
-          return new Response(text || "AI error", { status: res.status });
+          const raw = await res.text().catch(() => "");
+          console.error("[api/chat] gateway error", res.status, raw);
+          let message = "AutoCoach hit a snag — please try again.";
+          if (res.status === 429) {
+            message = "AutoCoach is getting a lot of questions right now — try again in a few seconds.";
+          } else if (res.status === 402) {
+            message = "AutoCoach is temporarily out of AI credits — please check back soon.";
+          }
+          return Response.json({ error: message }, { status: res.status });
         }
 
         const data = await res.json();
