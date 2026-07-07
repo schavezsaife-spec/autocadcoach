@@ -90,11 +90,11 @@ function PrivacyContent() {
       <Section title="Your Rights">
         <p>
           You may access, correct, or delete your personal data at any time. Contact us at{" "}
-          <strong>support@autocadcoach.lovable.app</strong>.
+          <a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a>.
         </p>
       </Section>
       <Section title="Contact">
-        <p>Questions? Email us at <strong>support@autocadcoach.lovable.app</strong>.</p>
+        <p>Questions? Email us at <a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a>.</p>
       </Section>
     </>
   );
