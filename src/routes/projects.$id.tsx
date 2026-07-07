@@ -5,6 +5,9 @@ import { useCoach } from "@/lib/coach-store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Lightbox } from "@/components/coach/Lightbox";
+import { ScreenshotCard } from "@/components/coach/ScreenshotCard";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useLessonImages } from "@/lib/lesson-images";
 import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
@@ -63,6 +66,9 @@ function ProjectViewer() {
   const [lightbox, setLightbox] = useState(false);
   const isAuthed = state.profile.isAuthenticated;
   const project = projects.find((p) => p.id === id);
+  const projectImageKey = `project:${id}`;
+  const uploaded = useLessonImages(projectImageKey);
+  const finalUrl = uploaded.final;
 
   if (!project) {
     return (
@@ -85,11 +91,17 @@ function ProjectViewer() {
       <p className="text-muted-foreground">{project.description}</p>
 
       <GuestGate isAuthenticated={isAuthed}>
-      <button onClick={() => setLightbox(true)} className="block w-full rounded-2xl overflow-hidden border border-border group">
+      <Tabs defaultValue="details" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="final">Final Result</TabsTrigger>
+        </TabsList>
+        <TabsContent value="details" className="space-y-6 mt-0">
+          <button onClick={() => setLightbox(true)} className="block w-full rounded-2xl overflow-hidden border border-border group">
         <img src={project.image} alt={`${project.title} reference`} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
       </button>
 
-      <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
+          <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
         <div className="font-semibold mb-3">Skills practiced</div>
         <div className="flex flex-wrap gap-2">
           {project.skills.map((s) => (
@@ -98,7 +110,7 @@ function ProjectViewer() {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
+          <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
         <div className="font-semibold mb-3">Build steps</div>
         <ol className="space-y-2 text-sm">
           {project.steps.map((s, i) => (
@@ -110,7 +122,7 @@ function ProjectViewer() {
         </ol>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mt-6">
+          <div className="flex flex-col sm:flex-row gap-3">
         <Button
           onClick={() => { completeProject(project.id); toast.success(`Nice build! ${project.title} marked complete.`); }}
           className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
@@ -123,6 +135,25 @@ function ProjectViewer() {
           </Button>
         )}
       </div>
+        </TabsContent>
+        <TabsContent value="final" className="mt-0">
+          <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 space-y-3">
+            <div className="font-semibold">Final Result</div>
+            <ScreenshotCard
+              src={finalUrl}
+              alt={`${project.title} final result`}
+              lessonId={projectImageKey}
+              slot="final"
+              uploadable
+            />
+            {!finalUrl && (
+              <p className="text-sm text-muted-foreground">
+                Upload a final result image for this project.
+              </p>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
       </GuestGate>
 
       {lightbox && (
