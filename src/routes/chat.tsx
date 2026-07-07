@@ -62,10 +62,13 @@ function CoachPage() {
 }
 
 function AskAutoCoach() {
+  const { t, i18n: i18nHook } = useTranslation("chat");
+  const rawSuggestions = t("suggestions", { returnObjects: true }) as unknown;
+  const suggestions: string[] = Array.isArray(rawSuggestions) ? (rawSuggestions as string[]) : [];
   const [messages, setMessages] = useState<Msg[]>([
     {
       role: "assistant",
-      content: "Hi! I'm **AutoCoach**, your AutoCAD tutor. Ask me anything — TRIM, JOIN, EXTRUDE, LAYERS, you name it.",
+      content: t("greeting"),
     },
   ]);
   const [input, setInput] = useState("");
@@ -75,6 +78,12 @@ function AskAutoCoach() {
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
+
+  // Refresh the initial greeting when language toggles before first message.
+  useEffect(() => {
+    setMessages((m) => (m.length === 1 && m[0].role === "assistant" ? [{ role: "assistant", content: t("greeting") }] : m));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18nHook.language]);
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
@@ -91,23 +100,23 @@ function AskAutoCoach() {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ messages: newMsgs }),
+        body: JSON.stringify({ messages: newMsgs, language: i18nHook.language?.startsWith("es") ? "es" : "en" }),
       });
       if (!res.ok) {
         const raw = await res.text().catch(() => "");
         console.error("[chat] request failed", res.status, raw);
-        let message = "AutoCoach hit a snag — please try again.";
+        let message = t("errGeneric");
         if (res.status === 401) {
-          message = "Please sign in to chat with AutoCoach.";
+          message = t("errSignIn");
         } else if (res.status === 429) {
-          message = "AutoCoach is getting a lot of questions — try again shortly.";
+          message = t("errRate");
         } else if (res.status === 402) {
-          message = "AutoCoach is temporarily out of AI credits.";
+          message = t("errCredits");
         }
         toast.error(message);
         setMessages((m) => [
           ...m,
-          { role: "assistant", content: "Sorry, I couldn't reach AutoCoach right now. Try again in a moment." },
+          { role: "assistant", content: t("errReply") },
         ]);
       } else {
         const data = await res.json();
@@ -115,7 +124,7 @@ function AskAutoCoach() {
       }
     } catch (err) {
       console.error("[chat] network error", err);
-      toast.error("Network error.");
+      toast.error(t("errNetwork"));
     } finally {
       setLoading(false);
     }
@@ -181,14 +190,14 @@ function AskAutoCoach() {
                   style={{ animationDelay: "300ms" }}
                 />
               </span>
-              AutoCoach is thinking…
+              {t("thinking")}
             </div>
           </div>
         )}
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
-        {SUGGESTIONS.map((s) => (
+        {suggestions.map((s: string) => (
           <button
             key={s}
             onClick={() => send(s)}
@@ -210,8 +219,8 @@ function AskAutoCoach() {
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask AutoCoach…"
-          aria-label="Ask AutoCoach"
+          placeholder={t("placeholder")}
+          aria-label={t("placeholder")}
           className="bg-card border-border"
           disabled={loading}
         />
