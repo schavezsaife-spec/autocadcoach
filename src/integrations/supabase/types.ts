@@ -41,6 +41,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_progress: {
+        Row: {
+          completed_lessons: Json
+          completed_projects: Json
+          created_at: string
+          last_active_date: string | null
+          lesson_quiz_passed: Json
+          streak: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_lessons?: Json
+          completed_projects?: Json
+          created_at?: string
+          last_active_date?: string | null
+          lesson_quiz_passed?: Json
+          streak?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_lessons?: Json
+          completed_projects?: Json
+          created_at?: string
+          last_active_date?: string | null
+          lesson_quiz_passed?: Json
+          streak?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
