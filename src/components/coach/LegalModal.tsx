@@ -195,7 +195,7 @@ const TRUST_PILLARS = [
   { icon: Shield, title: "Storage Security", body: "Lesson images use Row Level Security (RLS). Only verified admin accounts can modify course content." },
   { icon: Eye, title: "No Tracking", body: "No advertising trackers, no analytics, no data brokers. We do not sell your personal data." },
   { icon: RefreshCw, title: "AI Conversations", body: "AutoCoach messages are processed in real time and not stored on our servers." },
-  { icon: Mail, title: "Security Reports", body: "Found a vulnerability? Email support@autocadcoach.lovable.app — we respond within 48 hours." },
+  { icon: Mail, title: "Security Reports", body: "Found a vulnerability? Email schavezsaife@gmail.com — we respond within 48 hours." },
 ];
 
 function TrustContent() {
