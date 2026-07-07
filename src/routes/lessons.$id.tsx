@@ -127,7 +127,7 @@ function LessonViewer() {
         <Badge variant="outline" className="border-primary/30 text-primary">Day {lesson.day}</Badge>
         <Badge variant="outline" className="border-border">{lesson.tag}</Badge>
         <Badge variant="outline" className="border-border">{lesson.xp} XP</Badge>
-        {done && <Badge className="bg-primary/20 text-primary border-primary/30"><CheckCircle2 className="size-3 mr-1" /> Completed</Badge>}
+        {done && <Badge className="bg-success/20 text-success border-success/30"><CheckCircle2 className="size-3 mr-1" /> Completed</Badge>}
       </div>
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{lesson.title}</h1>
       <p className="text-muted-foreground">{lesson.description}</p>
@@ -236,7 +236,12 @@ function LegacyLessonBody({
           <div className="font-semibold">Step {step + 1} of {lesson.steps.length}</div>
           <div className="text-sm text-muted-foreground">{stepPct}%</div>
         </div>
-        <Progress value={stepPct} className="h-1.5 mb-4" />
+        <Progress
+          value={stepPct}
+          className="h-1.5 mb-4"
+          trackClassName="bg-success/20"
+          indicatorClassName="bg-success"
+        />
         <p className="text-base">{lesson.steps[step]}</p>
         <div className="flex flex-col sm:flex-row justify-between gap-2 mt-5">
           <Button variant="outline" onClick={() => setStep(step - 1)} disabled={step === 0} className="w-full sm:w-auto">
@@ -647,7 +652,7 @@ function LessonQuiz({
         </div>
         <div className="flex items-center gap-2">
           {passed && (
-            <Badge className="bg-primary/20 text-primary border-primary/30">
+            <Badge className="bg-success/20 text-success border-success/30">
               <CheckCircle2 className="size-3 mr-1" /> Passed
             </Badge>
           )}
@@ -683,7 +688,7 @@ function LessonQuiz({
                       className={cn(
                         "text-left rounded-lg border px-3 py-2 text-sm transition-colors flex items-center justify-between gap-2",
                         !isRevealed && "border-border hover:border-primary/40 hover:bg-secondary",
-                        isRevealed && isAnswer && "border-primary/40 bg-primary/10 text-primary",
+                        isRevealed && isAnswer && "border-success/40 bg-success/10 text-success",
                         isRevealed && picked && !isAnswer && "border-destructive/40 bg-destructive/10 text-destructive",
                       )}
                     >
@@ -698,7 +703,7 @@ function LessonQuiz({
                 <div className={cn(
                   "mt-3 rounded-lg px-3 py-2 text-xs",
                   ans === q.answer
-                    ? "bg-primary/10 text-primary border border-primary/20"
+                    ? "bg-success/10 text-success border border-success/20"
                     : "bg-destructive/10 text-destructive border border-destructive/20",
                 )}>
                   {ans === q.answer ? "Correct — " : "Not quite — "}{q.explanation}
