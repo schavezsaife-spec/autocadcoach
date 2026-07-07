@@ -233,7 +233,7 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
         aria-hidden
       />
       {/* Animated orbs — more dynamic movement */}
-      <div className="orb-1 absolute -top-20 -left-20 sm:-top-32 sm:-left-32 size-[240px] sm:size-[420px] rounded-full bg-cyan-500 blur-[120px] -z-20" aria-hidden />
+      <div className="orb-1 absolute -top-20 -left-20 sm:-top-32 sm:-left-32 size-[240px] sm:size-[420px] rounded-full bg-primary blur-[120px] -z-20" aria-hidden />
       <div className="orb-2 absolute -bottom-20 -right-20 sm:-bottom-32 sm:-right-32 size-[260px] sm:size-[460px] rounded-full bg-indigo-500 blur-[120px] -z-20" aria-hidden />
       <div className="orb-3 absolute top-1/2 right-1/4 size-[160px] sm:size-[280px] rounded-full bg-violet-500 blur-[120px] -z-20" aria-hidden />
       {/* Subtle grid lines */}
@@ -298,7 +298,7 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
         <div className="fade-up mt-6 flex items-center justify-center gap-3 text-xs text-muted-foreground" style={{ animationDelay: "1100ms" }}>
           <div className="flex -space-x-2">
             {[
-              { i: "SC", c: "bg-cyan-500/80" },
+              { i: "SC", c: "bg-primary/80" },
               { i: "RJ", c: "bg-indigo-500/80" },
               { i: "AM", c: "bg-violet-500/80" },
             ].map((a) => (
@@ -408,7 +408,7 @@ function CommandMarquee() {
 function FinalCTA({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: string }) {
   return (
     <section className="py-24 text-center relative overflow-hidden px-4 sm:px-6">
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[520px] rounded-full bg-cyan-500 blur-[160px] opacity-15 -z-10" aria-hidden />
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[520px] rounded-full bg-primary blur-[160px] opacity-15 -z-10" aria-hidden />
       <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Ready to start drawing?</h2>
       <p className="mt-4 text-muted-foreground max-w-md mx-auto">
         Your first lesson is one click away.
