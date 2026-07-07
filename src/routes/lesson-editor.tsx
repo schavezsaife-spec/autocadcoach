@@ -7,11 +7,13 @@ import {
   useLessonImages,
   uploadLessonImage,
   clearLessonImage,
+  reprocessLessonImages,
+  type ReprocessResult,
 } from "@/lib/lesson-images";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, Trash2, ImageIcon, ArrowLeft } from "lucide-react";
+import { Upload, Trash2, ImageIcon, ArrowLeft, Scissors, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useCoach } from "@/lib/coach-store";
 import { GuestGate } from "@/components/coach/GuestGate";
@@ -142,6 +144,7 @@ function LessonEditor() {
         )}
         {adminCheck === "yes" && (
           <>
+        <ReprocessPanel />
         <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3">
           <label className="text-sm text-muted-foreground sm:w-32 shrink-0">Editing lesson</label>
           <Select value={lessonId} onValueChange={setLessonId}>
