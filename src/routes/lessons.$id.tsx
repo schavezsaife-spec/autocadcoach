@@ -381,7 +381,7 @@ function RichLessonBody({
           <ul className="space-y-2 text-sm">
             {rich.beforeYouStart.map((b, i) => (
               <li key={i} className="flex gap-2">
-                <CheckCircle2 className="size-4 text-primary mt-0.5 shrink-0" />
+                <CheckCircle2 className="size-4 text-success mt-0.5 shrink-0" />
                 <span>{b}</span>
               </li>
             ))}
@@ -717,7 +717,7 @@ function LessonQuiz({
         <div className={cn(
           "mt-4 rounded-lg px-3 py-2 text-sm",
           justPassed
-            ? "bg-primary/10 text-primary border border-primary/30"
+            ? "bg-success/10 text-success border border-success/30"
             : "bg-destructive/10 text-destructive border border-destructive/30",
         )}>
           {justPassed
