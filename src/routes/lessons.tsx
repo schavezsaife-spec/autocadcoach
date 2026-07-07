@@ -1,5 +1,8 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { lessons } from "@/lib/coach-data";
+import { useLocalizedLessons } from "@/lib/i18n/content";
+import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 import { useCoach } from "@/lib/coach-store";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Lock, Sparkles } from "lucide-react";
@@ -9,10 +12,10 @@ import { GuestGate } from "@/components/coach/GuestGate";
 export const Route = createFileRoute("/lessons")({
   head: () => ({
     meta: [
-      { title: "Lessons — AutoCAD Coach" },
-      { name: "description", content: "Sequential AutoCAD lessons covering the interface, core commands, and modeling — unlock each as you progress." },
-      { property: "og:title", content: "Lessons — AutoCAD Coach" },
-      { property: "og:description", content: "Sequential AutoCAD lessons covering the interface, core commands, and modeling — unlock each as you progress." },
+      { title: i18n.t("meta:lessonsTitle") },
+      { name: "description", content: i18n.t("meta:lessonsDesc") },
+      { property: "og:title", content: i18n.t("meta:lessonsTitle") },
+      { property: "og:description", content: i18n.t("meta:lessonsDesc") },
       { property: "og:url", content: "https://autocadcoach.lovable.app/lessons" },
       { property: "og:type", content: "website" },
     ],
@@ -48,13 +51,15 @@ function LessonsLayout() {
 
 function LessonList() {
   const { state, isUnlocked } = useCoach();
+  const { t } = useTranslation(["lessons", "common"]);
+  const localized = useLocalizedLessons();
   const isAuthed = state.profile.isAuthenticated;
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-10">
-      <p className="mb-6 text-sm text-muted-foreground">Complete each lesson to unlock the next.</p>
+      <p className="mb-6 text-sm text-muted-foreground">{t("lessons:listSubtitle")}</p>
       <GuestGate isAuthenticated={isAuthed}>
       <ol className="relative space-y-4 before:absolute before:left-5 sm:before:left-6 before:top-0 before:bottom-0 before:w-px before:bg-border">
-        {lessons.map((l) => {
+        {localized.map((l) => {
           const done = state.completedLessons.includes(l.id);
           const unlocked = isUnlocked(l.id);
           const cardCls = cn(
@@ -64,8 +69,8 @@ function LessonList() {
           const inner = (
             <>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <Badge variant="outline" className="border-primary/30 text-primary">Day {l.day}</Badge>
-                <Badge variant="outline" className="border-border">{l.xp} XP</Badge>
+                <Badge variant="outline" className="border-primary/30 text-primary">{t("common:day")} {l.day}</Badge>
+                <Badge variant="outline" className="border-border">{l.xp} {t("common:xp")}</Badge>
               </div>
               <div className="mt-2 font-semibold text-lg">{l.title}</div>
               <div className="text-sm text-muted-foreground mt-1">{l.description}</div>
