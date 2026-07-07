@@ -42,7 +42,7 @@ const PILLARS = [
   {
     icon: Mail,
     title: "Contact & Reports",
-    body: "If you discover a security vulnerability or have concerns about your data, please contact us immediately at support@autocadcoach.lovable.app. We take all reports seriously and aim to respond within 48 hours.",
+    body: "If you discover a security vulnerability or have concerns about your data, please contact us immediately at schavezsaife@gmail.com. We take all reports seriously and aim to respond within 48 hours.",
   },
 ];
 

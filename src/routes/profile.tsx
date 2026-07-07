@@ -87,7 +87,7 @@ function ProfilePage() {
       toast.success("Your account has been deleted.");
       navigate({ to: "/" });
     } catch {
-      toast.error("Could not delete account. Please contact support@autocadcoach.lovable.app.");
+      toast.error("Could not delete account. Please contact schavezsaife@gmail.com.");
       setDeleting(false);
       setShowDeleteModal(false);
       setDeleteInput("");

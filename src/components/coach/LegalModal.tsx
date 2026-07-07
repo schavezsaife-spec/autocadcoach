@@ -90,11 +90,11 @@ function PrivacyContent() {
       <Section title="Your Rights">
         <p>
           You may access, correct, or delete your personal data at any time. Contact us at{" "}
-          <strong>support@autocadcoach.lovable.app</strong>.
+          <a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a>.
         </p>
       </Section>
       <Section title="Contact">
-        <p>Questions? Email us at <strong>support@autocadcoach.lovable.app</strong>.</p>
+        <p>Questions? Email us at <a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a>.</p>
       </Section>
     </>
   );
@@ -145,7 +145,7 @@ function TermsContent() {
         </p>
       </Section>
       <Section title="Contact">
-        <p><strong>support@autocadcoach.lovable.app</strong></p>
+        <p><a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a></p>
       </Section>
     </>
   );
@@ -183,7 +183,7 @@ function CookiesContent() {
         </p>
       </Section>
       <Section title="Contact">
-        <p><strong>support@autocadcoach.lovable.app</strong></p>
+        <p><a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a></p>
       </Section>
     </>
   );
@@ -195,7 +195,7 @@ const TRUST_PILLARS = [
   { icon: Shield, title: "Storage Security", body: "Lesson images use Row Level Security (RLS). Only verified admin accounts can modify course content." },
   { icon: Eye, title: "No Tracking", body: "No advertising trackers, no analytics, no data brokers. We do not sell your personal data." },
   { icon: RefreshCw, title: "AI Conversations", body: "AutoCoach messages are processed in real time and not stored on our servers." },
-  { icon: Mail, title: "Security Reports", body: "Found a vulnerability? Email support@autocadcoach.lovable.app — we respond within 48 hours." },
+  { icon: Mail, title: "Security Reports", body: "Found a vulnerability? Email schavezsaife@gmail.com — we respond within 48 hours." },
 ];
 
 function TrustContent() {
