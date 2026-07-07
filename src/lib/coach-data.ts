@@ -2048,7 +2048,7 @@ export const projects: Project[] = [
       "Add a circle of radius 4 near one edge for the key ring hole.",
       "Save as Keychain.dwg.",
     ],
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200",
+    image: keychainHero.url,
   },
   {
     id: "wheel", title: "Wheel Sketch", difficulty: "Easy", time: "30 min",
