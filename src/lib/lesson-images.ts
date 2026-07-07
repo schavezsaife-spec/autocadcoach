@@ -358,3 +358,117 @@ export async function clearLessonImage(lessonId: string, slot: string): Promise<
   if (paths) paths.delete(slot);
   emitChange(lessonId);
 }
+
+// -----------------------------------------------------------------------------
+// One-time migration: re-trim already-uploaded lesson images in place.
+// -----------------------------------------------------------------------------
+
+export type ReprocessResult = {
+  lessonId: string;
+  slot: string;
+  before: [number, number];
+  after: [number, number];
+  trimmed: boolean;
+  skipped?: string;
+  error?: string;
+};
+
+export async function reprocessLessonImages(lessonIds: string[]): Promise<ReprocessResult[]> {
+  const { data, error } = await supabase
+    .from("lesson_images")
+    .select("lesson_id, slot, url, storage_path")
+    .in("lesson_id", lessonIds);
+  if (error) throw new Error(error.message);
+
+  const results: ReprocessResult[] = [];
+  for (const row of (data ?? []) as Row[]) {
+    try {
+      const trim = await autoTrimImageFromUrl(row.url);
+      if (!trim.trimmed) {
+        results.push({
+          lessonId: row.lesson_id,
+          slot: row.slot,
+          before: trim.before,
+          after: trim.after,
+          trimmed: false,
+          skipped: "already tight",
+        });
+        console.info(
+          `[lesson-images] reprocess skip ${row.lesson_id}/${row.slot}: ${trim.before[0]}x${trim.before[1]} (no trim needed)`,
+        );
+        continue;
+      }
+
+      const ext = trim.mime === "image/jpeg" ? "jpg" : "png";
+      const newPath = `${row.lesson_id}/${safeSlotPath(row.slot)}-${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from(BUCKET)
+        .upload(newPath, trim.blob, {
+          cacheControl: "31536000",
+          upsert: false,
+          contentType: trim.mime,
+        });
+      if (upErr) throw new Error(upErr.message);
+
+      const { data: signed, error: signErr } = await supabase.storage
+        .from(BUCKET)
+        .createSignedUrl(newPath, SIGNED_URL_TTL);
+      if (signErr || !signed?.signedUrl) {
+        await supabase.storage.from(BUCKET).remove([newPath]).catch(() => undefined);
+        throw new Error(signErr?.message ?? "Could not sign URL");
+      }
+
+      const { error: dbErr } = await supabase
+        .from("lesson_images")
+        .upsert(
+          {
+            lesson_id: row.lesson_id,
+            slot: row.slot,
+            url: signed.signedUrl,
+            storage_path: newPath,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "lesson_id,slot" },
+        );
+      if (dbErr) {
+        await supabase.storage.from(BUCKET).remove([newPath]).catch(() => undefined);
+        throw new Error(dbErr.message);
+      }
+
+      // Update caches
+      const next = { ...(cache.get(row.lesson_id) ?? {}), [row.slot]: signed.signedUrl };
+      cache.set(row.lesson_id, next);
+      const paths = pathCache.get(row.lesson_id) ?? new Map<string, string | null>();
+      paths.set(row.slot, newPath);
+      pathCache.set(row.lesson_id, paths);
+      emitChange(row.lesson_id);
+
+      if (row.storage_path && row.storage_path !== newPath) {
+        supabase.storage.from(BUCKET).remove([row.storage_path]).catch(() => undefined);
+      }
+
+      console.info(
+        `[lesson-images] reprocess ${row.lesson_id}/${row.slot}: ${trim.before[0]}x${trim.before[1]} → ${trim.after[0]}x${trim.after[1]}`,
+      );
+      results.push({
+        lessonId: row.lesson_id,
+        slot: row.slot,
+        before: trim.before,
+        after: trim.after,
+        trimmed: true,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`[lesson-images] reprocess failed ${row.lesson_id}/${row.slot}`, err);
+      results.push({
+        lessonId: row.lesson_id,
+        slot: row.slot,
+        before: [0, 0],
+        after: [0, 0],
+        trimmed: false,
+        error: message,
+      });
+    }
+  }
+  return results;
+}
