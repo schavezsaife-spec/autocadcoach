@@ -145,7 +145,7 @@ function TermsContent() {
         </p>
       </Section>
       <Section title="Contact">
-        <p><strong>support@autocadcoach.lovable.app</strong></p>
+        <p><a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a></p>
       </Section>
     </>
   );
