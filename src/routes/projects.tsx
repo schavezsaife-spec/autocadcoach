@@ -119,8 +119,8 @@ function ProjectList() {
                 className={cn(
                   "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                   difficulty === d
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/40"
+                    ? "bg-gradient-to-r from-primary to-success text-primary-foreground shadow-[0_0_16px_-4px_color-mix(in_oklab,var(--primary)_60%,transparent)]"
+                    : "bg-card border border-primary/25 text-muted-foreground hover:text-foreground hover:border-primary/50"
                 )}
               >
                 {t(`projects:difficulty.${d}`)}
