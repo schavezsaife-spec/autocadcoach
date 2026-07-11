@@ -10,14 +10,16 @@ import { lessons } from "@/lib/coach-data";
 import { cn } from "@/lib/utils";
 import { Logo, LogoMark } from "@/components/coach/Logo";
 import { LegalModal, useLegal } from "@/components/coach/LegalModal";
+import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "AutoCAD Coach — Learn AutoCAD step by step" },
-      { name: "description", content: "Beginner-friendly, gamified AutoCAD lessons, projects, quizzes, and an AI tutor." },
-      { property: "og:title", content: "AutoCAD Coach — Learn AutoCAD step by step" },
-      { property: "og:description", content: "Beginner-friendly, gamified AutoCAD lessons, projects, quizzes, and an AI tutor." },
+      { title: i18n.t("meta:homeTitle") },
+      { name: "description", content: i18n.t("meta:homeDesc") },
+      { property: "og:title", content: i18n.t("meta:homeTitle") },
+      { property: "og:description", content: i18n.t("meta:homeDesc") },
       { property: "og:url", content: "https://autocadcoach.lovable.app/" },
       { property: "og:type", content: "website" },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c34db357-66a1-4d0b-9678-b9c5ec020b31/id-preview-5fb7824d--8632cfb9-7250-4303-8743-52e798c5ee97.lovable.app-1780874944187.png" },
