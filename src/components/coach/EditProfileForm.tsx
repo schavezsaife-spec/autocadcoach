@@ -5,10 +5,12 @@ import { Label } from "@/components/ui/label";
 import { useCoach } from "@/lib/coach-store";
 import { toast } from "sonner";
 import { Pencil, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function EditProfileForm() {
   const { state, set } = useCoach();
   const p = state.profile;
+  const { t } = useTranslation(["profile", "common"]);
   const [editing, setEditing] = useState(false);
   const [firstName, setFirstName] = useState(p.firstName);
   const [lastName, setLastName] = useState(p.lastName);
@@ -23,7 +25,7 @@ export function EditProfileForm() {
   function save(e: React.FormEvent) {
     e.preventDefault();
     if (!firstName.trim() || !email.trim()) {
-      toast.error("First name and email are required");
+      toast.error(t("profile:firstNameEmailRequired"));
       return;
     }
     set({
@@ -34,7 +36,7 @@ export function EditProfileForm() {
         email: email.trim(),
       },
     });
-    toast.success("Profile updated");
+    toast.success(t("profile:profileUpdated"));
     setEditing(false);
   }
 
@@ -42,7 +44,7 @@ export function EditProfileForm() {
     return (
       <div className="rounded-2xl bg-card border border-border p-5">
         <div className="flex items-center justify-between mb-4">
-          <div className="font-semibold">Account details</div>
+          <div className="font-semibold">{t("profile:accountDetails")}</div>
           <Button
             type="button"
             variant="outline"
@@ -50,16 +52,16 @@ export function EditProfileForm() {
             onClick={() => setEditing(true)}
             className="border-border"
           >
-            <Pencil className="size-3.5 mr-1.5" /> Edit profile
+            <Pencil className="size-3.5 mr-1.5" /> {t("profile:editProfile")}
           </Button>
         </div>
         <dl className="grid sm:grid-cols-2 gap-4 text-sm">
-          <Row label="First name" value={p.firstName || "—"} />
-          <Row label="Last name" value={p.lastName || "—"} />
-          <Row label="Email" value={p.email || "—"} />
+          <Row label={t("profile:firstName")} value={p.firstName || "—"} />
+          <Row label={t("profile:lastName")} value={p.lastName || "—"} />
+          <Row label={t("profile:email")} value={p.email || "—"} />
           <Row
-            label="Sign-in method"
-            value={p.authProvider === "google" ? "Google" : "Email"}
+            label={t("profile:signInMethod")}
+            value={p.authProvider === "google" ? t("profile:signInGoogle") : t("profile:signInEmail")}
           />
         </dl>
       </div>
@@ -69,7 +71,7 @@ export function EditProfileForm() {
   return (
     <form onSubmit={save} className="rounded-2xl bg-card border border-border p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <div className="font-semibold">Edit profile</div>
+        <div className="font-semibold">{t("profile:editProfile")}</div>
         <Button
           type="button"
           variant="ghost"
@@ -84,21 +86,21 @@ export function EditProfileForm() {
       </div>
       <div className="grid sm:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label htmlFor="firstName">First name</Label>
+          <Label htmlFor="firstName">{t("profile:firstName")}</Label>
           <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="bg-secondary border-border" />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="lastName">Last name</Label>
+          <Label htmlFor="lastName">{t("profile:lastName")}</Label>
           <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} className="bg-secondary border-border" />
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t("profile:email")}</Label>
         <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-secondary border-border" />
       </div>
       <div className="flex gap-2">
-        <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">Save changes</Button>
-        <Button type="button" variant="outline" className="border-border" onClick={() => { reset(); setEditing(false); }}>Cancel</Button>
+        <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90">{t("common:saveChanges")}</Button>
+        <Button type="button" variant="outline" className="border-border" onClick={() => { reset(); setEditing(false); }}>{t("common:cancel")}</Button>
       </div>
     </form>
   );
