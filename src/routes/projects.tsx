@@ -155,7 +155,7 @@ function ProjectList() {
                   key={p.id}
                   to="/projects/$id"
                   params={{ id: p.id }}
-                  className="rounded-2xl bg-card border border-border overflow-hidden hover:border-primary/40 transition-all hover:-translate-y-0.5"
+                  className="rounded-2xl bg-card overflow-hidden border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_24px_-12px_color-mix(in_oklab,var(--primary)_60%,transparent)] transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_0_28px_-8px_color-mix(in_oklab,var(--primary)_70%,transparent)]"
                 >
                   <img src={p.image} alt={p.title} loading="lazy" decoding="async" width={800} height={450} className="w-full h-36 sm:h-40 object-cover" />
                   <div className="p-4 sm:p-5">
