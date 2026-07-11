@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, Compass, Send, User, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { troubleshooting } from "@/lib/coach-data";
+import { useLocalizedTroubleshooting } from "@/lib/i18n/content";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { useCoach } from "@/lib/coach-store";
 import { supabase } from "@/integrations/supabase/client";
@@ -238,6 +238,7 @@ function AskAutoCoach() {
 
 function TroubleshootGrid() {
   const { t: tc } = useTranslation("chat");
+  const troubleshooting = useLocalizedTroubleshooting();
   return (
     <div className="grid sm:grid-cols-2 gap-4">
       {troubleshooting.map((t) => (

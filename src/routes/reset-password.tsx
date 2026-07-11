@@ -7,14 +7,16 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Logo } from "@/components/coach/Logo";
+import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
-      { title: "Set a new password — AutoCAD Coach" },
-      { name: "description", content: "Choose a new password to regain access to your AutoCAD Coach account." },
+      { title: i18n.t("meta:resetTitle") },
+      { name: "description", content: i18n.t("meta:resetDesc") },
       { name: "robots", content: "noindex,nofollow" },
-      { property: "og:title", content: "Set a new password — AutoCAD Coach" },
+      { property: "og:title", content: i18n.t("meta:resetTitle") },
       { property: "og:url", content: "https://autocadcoach.lovable.app/reset-password" },
     ],
     links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/reset-password" }],
@@ -23,6 +25,7 @@ export const Route = createFileRoute("/reset-password")({
 });
 
 function ResetPasswordPage() {
+  const { t } = useTranslation(["auth", "common"]);
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
   const [pw, setPw] = useState("");
@@ -58,22 +61,22 @@ function ResetPasswordPage() {
     e.preventDefault();
     setError(null);
     if (pw.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError(t("auth:errPasswordShort"));
       return;
     }
     if (pw !== confirm) {
-      setError("Passwords do not match");
+      setError(t("auth:errPasswordsMismatch"));
       return;
     }
     setLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({ password: pw });
       if (error) throw error;
-      toast.success("Password updated — please sign in.");
+      toast.success(t("auth:toastPasswordUpdated"));
       await supabase.auth.signOut();
       navigate({ to: "/auth" });
     } catch (err) {
-      const m = err instanceof Error ? err.message : "Could not update password";
+      const m = err instanceof Error ? err.message : t("auth:errUpdateFailed");
       setError(m);
       toast.error(m);
     } finally {
@@ -91,14 +94,12 @@ function ResetPasswordPage() {
           <Logo size="md" />
         </div>
         <div className="rounded-2xl bg-card/80 backdrop-blur border border-border p-6 sm:p-8 shadow-[var(--shadow-glow)]">
-          <h1 className="text-2xl font-bold tracking-tight">Choose a new password</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Enter a new password for your AutoCAD Coach account.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("auth:chooseNewPassword")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("auth:chooseNewPasswordSubtitle")}</p>
 
           {!ready ? (
             <div className="mt-8 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="size-4 animate-spin" /> Verifying reset link…
+              <Loader2 className="size-4 animate-spin" /> {t("auth:verifyingLink")}
             </div>
           ) : (
             <form onSubmit={submit} className="mt-6 space-y-4">
@@ -109,7 +110,7 @@ function ResetPasswordPage() {
                 </div>
               )}
               <div className="space-y-1.5">
-                <Label htmlFor="pw">New password</Label>
+                <Label htmlFor="pw">{t("auth:newPassword")}</Label>
                 <div className="relative">
                   <Input
                     id="pw"
@@ -125,14 +126,14 @@ function ResetPasswordPage() {
                     type="button"
                     onClick={() => setShow((v) => !v)}
                     className="absolute inset-y-0 right-0 px-3 grid place-items-center text-muted-foreground hover:text-foreground"
-                    aria-label={show ? "Hide password" : "Show password"}
+                    aria-label={show ? t("common:hidePassword") : t("common:showPassword")}
                   >
                     {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="confirm">Confirm new password</Label>
+                <Label htmlFor="confirm">{t("auth:confirmNewPassword")}</Label>
                 <Input
                   id="confirm"
                   type={show ? "text" : "password"}
@@ -146,12 +147,12 @@ function ResetPasswordPage() {
               </div>
               <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                 {loading && <Loader2 className="size-4 mr-2 animate-spin" />}
-                Update password
+                {t("auth:updatePassword")}
               </Button>
             </form>
           )}
           <div className="mt-6 text-center text-sm">
-            <Link to="/auth" className="text-muted-foreground hover:text-foreground">Back to sign in</Link>
+            <Link to="/auth" className="text-muted-foreground hover:text-foreground">{t("auth:backToSignIn")}</Link>
           </div>
         </div>
       </div>

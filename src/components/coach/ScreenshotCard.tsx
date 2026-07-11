@@ -4,6 +4,7 @@ import { Lightbox } from "@/components/coach/Lightbox";
 import { cn } from "@/lib/utils";
 import { uploadLessonImage } from "@/lib/lesson-images";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 /**
  * Renders a lesson screenshot. When `lessonId` + `slot` are provided, a
@@ -26,6 +27,7 @@ export function ScreenshotCard({
   slot?: string;
   uploadable?: boolean;
 }) {
+  const { t } = useTranslation("screenshot");
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [localSrc, setLocalSrc] = useState<string | undefined>(undefined);
@@ -38,9 +40,9 @@ export function ScreenshotCard({
     try {
       const url = await uploadLessonImage(lessonId, slot, file);
       setLocalSrc(url);
-      toast.success("Screenshot updated");
+      toast.success(t("screenshot:replace"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      toast.error(err instanceof Error ? err.message : t("screenshot:upload"));
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -61,7 +63,7 @@ export function ScreenshotCard({
           type="button"
           onClick={() => setOpen(true)}
           className="block w-full relative focus:outline-none focus-visible:ring-2 focus-visible:ring-primary aspect-video"
-          aria-label={`Enlarge: ${alt}`}
+            aria-label={t("enlargeAria", { alt })}
         >
           <img
             src={displaySrc}
@@ -74,7 +76,7 @@ export function ScreenshotCard({
             aria-hidden
             className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-background/80 backdrop-blur px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground opacity-0 group-hover/screenshot:opacity-100 transition-opacity"
           >
-            <Maximize2 className="size-3" /> Enlarge
+              <Maximize2 className="size-3" /> {t("enlarge")}
           </span>
         </button>
       ) : (
@@ -100,14 +102,14 @@ export function ScreenshotCard({
             }}
             disabled={uploading}
             className="absolute bottom-2 left-2 inline-flex items-center gap-1.5 rounded-full bg-background/85 backdrop-blur border border-border px-2.5 py-1 text-[11px] font-medium text-foreground hover:bg-background transition-colors disabled:opacity-60"
-            aria-label={displaySrc ? "Replace screenshot" : "Upload screenshot"}
+            aria-label={displaySrc ? t("replaceAria") : t("uploadAria")}
           >
             {uploading ? (
               <Loader2 className="size-3 animate-spin" />
             ) : (
               <Upload className="size-3" />
             )}
-            {uploading ? "Uploading…" : displaySrc ? "Replace" : "Upload"}
+            {uploading ? t("uploading") : displaySrc ? t("replace") : t("upload")}
           </button>
         </>
       )}

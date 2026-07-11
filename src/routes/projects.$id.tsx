@@ -3,6 +3,7 @@ import { useState } from "react";
 import { projects } from "@/lib/coach-data";
 import { useLocalizedProject } from "@/lib/i18n/content";
 import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 import { useCoach } from "@/lib/coach-store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,8 +20,8 @@ export const Route = createFileRoute("/projects/$id")({
   head: ({ params }) => {
     const project = projects.find((p) => p.id === params.id);
     const url = `https://autocadcoach.lovable.app/projects/${params.id}`;
-    const title = project ? `${project.title} — AutoCAD Coach` : "Project — AutoCAD Coach";
-    const description = project?.description ?? "AutoCAD project on AutoCAD Coach.";
+    const title = project ? `${project.title} — AutoCAD Coach` : i18n.t("meta:projectFallbackTitle");
+    const description = project?.description ?? i18n.t("meta:projectFallbackDesc");
     return {
       meta: [
         { title },
@@ -102,7 +103,7 @@ function ProjectViewer() {
         </TabsList>
         <TabsContent value="details" className="space-y-6 mt-0">
           <button onClick={() => setLightbox(true)} className="block w-full rounded-2xl overflow-hidden border border-border group">
-            <img src={project.image} alt={`${project.title} reference`} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
+            <img src={project.image} alt={t("projects:referenceAlt", { title: project.title })} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
       </button>
 
           <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
@@ -150,7 +151,7 @@ function ProjectViewer() {
             <div className="font-semibold">{t("projects:tabs.final")}</div>
             <ScreenshotCard
               src={finalUrl}
-              alt={`${project.title} final result`}
+              alt={t("projects:finalResultAlt", { title: project.title })}
               lessonId={projectImageKey}
               slot="final"
               uploadable

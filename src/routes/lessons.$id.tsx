@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { lessons, getLessonQuiz, type RichLesson } from "@/lib/coach-data";
-import { useLocalizedLesson, useLocalizedLessons } from "@/lib/i18n/content";
+import { lessons, type RichLesson } from "@/lib/coach-data";
+import { useLocalizedLesson, useLocalizedLessons, useLocalizedLessonQuiz } from "@/lib/i18n/content";
 import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 import { useCoach } from "@/lib/coach-store";
 import { useLessonImages, type LessonImageMap } from "@/lib/lesson-images";
 import { Button } from "@/components/ui/button";
@@ -19,8 +20,8 @@ export const Route = createFileRoute("/lessons/$id")({
   head: ({ params }) => {
     const lesson = lessons.find((l) => l.id === params.id);
     const url = `https://autocadcoach.lovable.app/lessons/${params.id}`;
-    const title = lesson ? `${lesson.title} — AutoCAD Coach` : "Lesson — AutoCAD Coach";
-    const description = lesson?.description ?? "AutoCAD lesson on AutoCAD Coach.";
+    const title = lesson ? `${lesson.title} — AutoCAD Coach` : i18n.t("meta:lessonFallbackTitle");
+    const description = lesson?.description ?? i18n.t("meta:lessonFallbackDesc");
     return {
       meta: [
         { title },
@@ -70,7 +71,7 @@ function LessonViewer() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const { state, set, completeLesson, passLessonQuiz, isUnlocked } = useCoach();
-  const { t } = useTranslation(["lessons", "common"]);
+  const { t } = useTranslation(["lessons", "common", "dashboard"]);
   const localizedList = useLocalizedLessons();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const isAuthed = state.profile.isAuthenticated;
@@ -80,7 +81,7 @@ function LessonViewer() {
   if (!lesson) {
     return (
       <div className="p-10">
-        <p>{t("lessons:locked")}</p>
+        <p>{t("lessons:notFound")}</p>
         <Link to="/lessons" className="text-primary underline">{t("lessons:backToLessons")}</Link>
       </div>
     );
@@ -106,17 +107,17 @@ function LessonViewer() {
   const setStep = (n: number) =>
     set((s) => ({ lessonStep: { ...s.lessonStep, [lesson.id]: Math.max(0, Math.min(lesson.steps.length - 1, n)) } }));
 
-  const quizQuestions = getLessonQuiz(lesson.id);
+  const quizQuestions = useLocalizedLessonQuiz(lesson.id);
   const passed = !!state.lessonQuizPassed[lesson.id];
 
   const onComplete = () => {
     if (!passed) {
-      toast.error("Finish the lesson quiz with a passing score first.");
+      toast.error(t("lessons:finishQuizFirst"));
       return;
     }
     const alreadyDone = state.completedLessons.includes(lesson.id);
     completeLesson(lesson.id);
-    if (!alreadyDone) toast.success(`+${lesson.xp} XP — ${lesson.title} complete!`);
+    if (!alreadyDone) toast.success(t("lessons:xpToastComplete", { xp: lesson.xp, title: lesson.title }));
     if (next) navigate({ to: "/lessons/$id", params: { id: next.id } });
     else navigate({ to: "/dashboard" });
   };
@@ -124,10 +125,10 @@ function LessonViewer() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-20 md:pb-10 space-y-4 sm:space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <Badge variant="outline" className="border-primary/30 text-primary">Day {lesson.day}</Badge>
+        <Badge variant="outline" className="border-primary/30 text-primary">{t("common:day")} {lesson.day}</Badge>
         <Badge variant="outline" className="border-border">{lesson.tag}</Badge>
-        <Badge variant="outline" className="border-border">{lesson.xp} XP</Badge>
-        {done && <Badge className="bg-success/20 text-success border-success/30"><CheckCircle2 className="size-3 mr-1" /> Completed</Badge>}
+        <Badge variant="outline" className="border-border">{lesson.xp} {t("common:xp")}</Badge>
+        {done && <Badge className="bg-success/20 text-success border-success/30"><CheckCircle2 className="size-3 mr-1" /> {t("common:completed")}</Badge>}
       </div>
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{lesson.title}</h1>
       <p className="text-muted-foreground">{lesson.description}</p>
@@ -177,9 +178,9 @@ function LessonViewer() {
           onClick={onComplete}
           disabled={quizQuestions.length > 0 && !passed}
           className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
-          title={quizQuestions.length > 0 && !passed ? "Pass the lesson quiz to complete" : undefined}
+          title={quizQuestions.length > 0 && !passed ? t("lessons:passQuizToComplete") : undefined}
         >
-          <CheckCircle2 className="size-4 mr-1" /> {done ? "Mark complete again" : "Mark lesson complete"}
+          <CheckCircle2 className="size-4 mr-1" /> {done ? t("common:markCompleteAgain") : t("lessons:markLessonComplete")}
         </Button>
       </div>
       </GuestGate>
@@ -187,7 +188,7 @@ function LessonViewer() {
       {lightboxOpen && (
         <Lightbox
           src={lesson.image}
-          alt={`${lesson.title} reference image`}
+          alt={t("lessons:referenceAlt2", { title: lesson.title })}
           onClose={() => setLightboxOpen(false)}
         />
       )}
@@ -210,18 +211,19 @@ function LegacyLessonBody({
 }) {
   const media = lesson.media;
   const heroSrc = media?.hero ?? lesson.image;
+  const { t } = useTranslation(["lessons", "common"]);
   return (
     <>
       <button
         onClick={onOpenLightbox}
         className="block w-full rounded-2xl overflow-hidden border border-border group"
-        aria-label={`Enlarge image for ${lesson.title}`}
+        aria-label={t("lessons:enlargeAria", { title: lesson.title })}
       >
-        <img src={heroSrc} alt={`${lesson.title} reference`} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-contain bg-secondary/40 group-hover:scale-[1.02] transition-transform" />
+        <img src={heroSrc} alt={t("lessons:referenceAlt", { title: lesson.title })} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-contain bg-secondary/40 group-hover:scale-[1.02] transition-transform" />
       </button>
 
       <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
-        <div className="flex items-center gap-2 text-primary font-semibold"><Target className="size-4" /> Objective</div>
+        <div className="flex items-center gap-2 text-primary font-semibold"><Target className="size-4" /> {t("lessons:objective")}</div>
         <p className="mt-2 text-sm">{lesson.objective}</p>
       </div>
 
@@ -233,7 +235,7 @@ function LegacyLessonBody({
 
       <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
         <div className="flex items-center justify-between mb-3">
-          <div className="font-semibold">Step {step + 1} of {lesson.steps.length}</div>
+          <div className="font-semibold">{t("lessons:stepXofY", { current: step + 1, total: lesson.steps.length })}</div>
           <div className="text-sm text-muted-foreground">{stepPct}%</div>
         </div>
         <Progress
@@ -245,17 +247,17 @@ function LegacyLessonBody({
         <p className="text-base">{lesson.steps[step]}</p>
         <div className="flex flex-col sm:flex-row justify-between gap-2 mt-5">
           <Button variant="outline" onClick={() => setStep(step - 1)} disabled={step === 0} className="w-full sm:w-auto">
-            <ArrowLeft className="size-4 mr-1" /> Previous
+            <ArrowLeft className="size-4 mr-1" /> {t("common:previous")}
           </Button>
           <Button onClick={() => setStep(step + 1)} disabled={step === lesson.steps.length - 1} className="w-full sm:w-auto">
-            Next <ArrowRight className="size-4 ml-1" />
+            {t("common:next")} <ArrowRight className="size-4 ml-1" />
           </Button>
         </div>
       </div>
 
       {(media?.before || media?.after) && (
         <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
-          <div className="font-semibold mb-3">Before vs After</div>
+          <div className="font-semibold mb-3">{t("lessons:beforeVsAfter")}</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {media.before && (
               <ScreenshotCard src={media.before.src} alt={media.before.caption} />
@@ -269,7 +271,7 @@ function LegacyLessonBody({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         <div className="rounded-2xl bg-card border border-destructive/30 p-4 sm:p-5">
-          <div className="flex items-center gap-2 text-destructive font-semibold"><AlertCircle className="size-4" /> Common mistake</div>
+          <div className="flex items-center gap-2 text-destructive font-semibold"><AlertCircle className="size-4" /> {t("lessons:commonMistake")}</div>
           <p className="mt-2 text-sm">{lesson.mistake}</p>
           {media?.error && (
             <div className="mt-3">
@@ -278,7 +280,7 @@ function LegacyLessonBody({
           )}
         </div>
         <div className="rounded-2xl bg-card border border-primary/30 p-4 sm:p-5">
-          <div className="flex items-center gap-2 text-primary font-semibold"><Lightbulb className="size-4" /> Try this</div>
+          <div className="flex items-center gap-2 text-primary font-semibold"><Lightbulb className="size-4" /> {t("lessons:tryThis")}</div>
           <p className="mt-2 text-sm">{lesson.challenge}</p>
         </div>
       </div>
@@ -286,20 +288,20 @@ function LegacyLessonBody({
   );
 }
 
-const SECTIONS = [
-  { id: "objective", label: "Objective", icon: Target },
-  { id: "what", label: "What it is", icon: BookOpen },
-  { id: "why", label: "Why & when", icon: Compass },
-  { id: "where", label: "Where to find it", icon: MapPin },
-  { id: "vocab", label: "Vocabulary", icon: BookOpen },
-  { id: "before", label: "Before you start", icon: ListChecks },
-  { id: "steps", label: "Step-by-step", icon: ListChecks },
-  { id: "visual", label: "Visual reference", icon: ImageIcon },
-  { id: "mistakes", label: "Mistakes & fixes", icon: AlertCircle },
-  { id: "troubleshooting", label: "Troubleshooting", icon: Wrench },
-  { id: "practice", label: "Practice", icon: Dumbbell },
-  { id: "pro", label: "Pro tips & related", icon: Sparkles },
-];
+const SECTION_IDS = [
+  { id: "objective", icon: Target },
+  { id: "what", icon: BookOpen },
+  { id: "why", icon: Compass },
+  { id: "where", icon: MapPin },
+  { id: "vocab", icon: BookOpen },
+  { id: "before", icon: ListChecks },
+  { id: "steps", icon: ListChecks },
+  { id: "visual", icon: ImageIcon },
+  { id: "mistakes", icon: AlertCircle },
+  { id: "troubleshooting", icon: Wrench },
+  { id: "practice", icon: Dumbbell },
+  { id: "pro", icon: Sparkles },
+] as const;
 
 function RichLessonBody({
   rich,
@@ -314,13 +316,14 @@ function RichLessonBody({
   onOpenLightbox: () => void;
   lessonId: string;
 }) {
+  const { t } = useTranslation(["lessons", "common"]);
   const hideVisual = lessonId === "interface" || lessonId === "osnap" || lessonId === "layers" || lessonId === "dim-text" || lessonId === "hatch" || lessonId === "blocks" || lessonId === "join";
-  const sections = hideVisual ? SECTIONS.filter((s) => s.id !== "visual") : SECTIONS;
+  const sections = hideVisual ? SECTION_IDS.filter((s) => s.id !== "visual") : SECTION_IDS;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-6 lg:gap-8">
       {/* Anchored TOC */}
       <nav className="hidden lg:block sticky top-6 self-start text-sm">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">On this page</div>
+        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">{t("lessons:onThisPage")}</div>
         <ul className="space-y-1.5">
           {sections.map((s) => (
             <li key={s.id}>
@@ -329,7 +332,7 @@ function RichLessonBody({
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-1"
               >
                 <s.icon className="size-3.5 opacity-60" />
-                <span>{s.label}</span>
+                <span>{t(`lessons:sections.${s.id}`)}</span>
               </a>
             </li>
           ))}
@@ -337,36 +340,36 @@ function RichLessonBody({
       </nav>
 
       <div className="space-y-6 min-w-0">
-        <Section id="objective" icon={Target} title="Learning objective" accent="primary">
+        <Section id="objective" icon={Target} title={t("lessons:sectionHeadings.learningObjective")} accent="primary">
           <p className="text-base leading-relaxed">{rich.learningObjective}</p>
         </Section>
 
-        <Section id="what" icon={BookOpen} title={`What ${rich.commandName ?? "this"} is`}>
+        <Section id="what" icon={BookOpen} title={rich.commandName ? t("lessons:sectionHeadings.whatXIs", { command: rich.commandName }) : t("lessons:sectionHeadings.whatThisIs")}>
           <p className="text-sm leading-relaxed">{rich.whatItIs}</p>
         </Section>
 
-        <Section id="why" icon={Compass} title="Why and when you use it">
+        <Section id="why" icon={Compass} title={t("lessons:sectionHeadings.whyAndWhen")}>
           <p className="text-sm leading-relaxed">{rich.whyWhen}</p>
         </Section>
 
-        <Section id="where" icon={MapPin} title="Where to find it in the AutoCAD interface">
+        <Section id="where" icon={MapPin} title={t("lessons:sectionHeadings.whereToFind")}>
           <dl className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-y-2 gap-x-4 text-sm">
-            <dt className="text-muted-foreground">Ribbon</dt>
+            <dt className="text-muted-foreground">{t("lessons:labels.ribbon")}</dt>
             <dd>{rich.whereToFind.ribbon}</dd>
             {rich.whereToFind.menu && (<>
-              <dt className="text-muted-foreground">Menu</dt>
+              <dt className="text-muted-foreground">{t("lessons:labels.menu")}</dt>
               <dd>{rich.whereToFind.menu}</dd>
             </>)}
-            <dt className="text-muted-foreground">Command line</dt>
+            <dt className="text-muted-foreground">{t("lessons:labels.commandLine")}</dt>
             <dd className="font-mono text-primary">{rich.whereToFind.commandLine}</dd>
             {rich.whereToFind.alias && (<>
-              <dt className="text-muted-foreground">Alias / shortcut</dt>
+              <dt className="text-muted-foreground">{t("lessons:labels.aliasShortcut")}</dt>
               <dd className="font-mono text-primary">{rich.whereToFind.alias}</dd>
             </>)}
           </dl>
         </Section>
 
-        <Section id="vocab" icon={BookOpen} title="Key vocabulary">
+        <Section id="vocab" icon={BookOpen} title={t("lessons:sectionHeadings.keyVocabulary")}>
           <dl className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-y-3 gap-x-4 text-sm">
             {rich.vocab.map((v) => (
               <div key={v.term} className="contents">
@@ -377,7 +380,7 @@ function RichLessonBody({
           </dl>
         </Section>
 
-        <Section id="before" icon={ListChecks} title="Before you start">
+        <Section id="before" icon={ListChecks} title={t("lessons:sectionHeadings.beforeYouStart")}>
           <ul className="space-y-2 text-sm">
             {rich.beforeYouStart.map((b, i) => (
               <li key={i} className="flex gap-2">
@@ -388,7 +391,7 @@ function RichLessonBody({
           </ul>
         </Section>
 
-        <Section id="steps" icon={ListChecks} title="Step-by-step instructions">
+        <Section id="steps" icon={ListChecks} title={t("lessons:sectionHeadings.stepByStep")}>
           <ol className="space-y-5">
             {rich.detailedSteps.map((s, i) => (
               <li key={i} className="rounded-xl border border-border bg-secondary/30 p-4 sm:p-5">
@@ -414,7 +417,7 @@ function RichLessonBody({
         </Section>
 
         {!hideVisual && (
-        <Section id="visual" icon={ImageIcon} title="Visual reference">
+        <Section id="visual" icon={ImageIcon} title={t("lessons:sectionHeadings.visualReference")}>
           {rich.visualReference ? (
             <ScreenshotSlot
               shot={rich.visualReference}
@@ -427,77 +430,77 @@ function RichLessonBody({
               uploadable
             />
           ) : (
-            <p className="text-sm text-muted-foreground">No reference image required for this lesson.</p>
+            <p className="text-sm text-muted-foreground">{t("lessons:labels.noReference")}</p>
           )}
           {(uploaded.before || uploaded.after) && (
             <div className="mt-5">
               <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                Before vs After
+                {t("lessons:beforeVsAfter")}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <BeforeAfter label="Before" src={uploaded.before} />
-                <BeforeAfter label="After" src={uploaded.after} />
+                <BeforeAfter label={t("lessons:before")} src={uploaded.before} />
+                <BeforeAfter label={t("lessons:after")} src={uploaded.after} />
               </div>
             </div>
           )}
         </Section>
         )}
 
-        <Section id="mistakes" icon={AlertCircle} title="Common mistakes & fixes" accent="destructive">
+        <Section id="mistakes" icon={AlertCircle} title={t("lessons:sectionHeadings.commonMistakes")} accent="destructive">
           <ul className="space-y-3 text-sm">
             {rich.commonMistakes.map((m, i) => (
               <li key={i} className="rounded-lg border border-destructive/20 bg-destructive/5 p-3">
                 <div className="font-medium text-destructive">{m.mistake}</div>
-                <div className="mt-1 text-muted-foreground"><span className="text-foreground font-medium">Fix: </span>{m.fix}</div>
+                <div className="mt-1 text-muted-foreground"><span className="text-foreground font-medium">{t("lessons:labels.fix")}</span>{m.fix}</div>
               </li>
             ))}
           </ul>
         </Section>
 
-        <Section id="troubleshooting" icon={Wrench} title="Troubleshooting">
+        <Section id="troubleshooting" icon={Wrench} title={t("lessons:sectionHeadings.troubleshooting")}>
           <div className="space-y-3">
-            {rich.troubleshooting.map((t, i) => (
+            {rich.troubleshooting.map((item, i) => (
               <details key={i} className="group rounded-lg border border-border bg-secondary/30 p-3 open:bg-secondary/50">
                 <summary className="cursor-pointer font-medium text-sm flex items-center justify-between gap-2">
-                  <span>{t.problem}</span>
-                  <span className="text-xs text-muted-foreground group-open:hidden">Show</span>
-                  <span className="text-xs text-muted-foreground hidden group-open:inline">Hide</span>
+                  <span>{item.problem}</span>
+                  <span className="text-xs text-muted-foreground group-open:hidden">{t("lessons:labels.show")}</span>
+                  <span className="text-xs text-muted-foreground hidden group-open:inline">{t("lessons:labels.hide")}</span>
                 </summary>
                 <div className="mt-2 text-sm space-y-1">
-                  <div><span className="text-muted-foreground">Cause: </span>{t.cause}</div>
-                  <div><span className="text-muted-foreground">Fix: </span>{t.fix}</div>
+                  <div><span className="text-muted-foreground">{t("lessons:labels.cause")}</span>{item.cause}</div>
+                  <div><span className="text-muted-foreground">{t("lessons:labels.fix")}</span>{item.fix}</div>
                 </div>
               </details>
             ))}
           </div>
         </Section>
 
-        <Section id="practice" icon={Dumbbell} title="Practice exercise" accent="primary">
+        <Section id="practice" icon={Dumbbell} title={t("lessons:sectionHeadings.practiceExercise")} accent="primary">
           <div className="font-semibold">{rich.practiceExercise.title}</div>
           <ol className="mt-3 space-y-2 text-sm list-decimal list-inside marker:text-primary">
             {rich.practiceExercise.steps.map((s, i) => <li key={i}>{s}</li>)}
           </ol>
           <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
-            <span className="font-medium text-primary">Success looks like: </span>
+            <span className="font-medium text-primary">{t("lessons:labels.successLooksLike")}</span>
             <span>{rich.practiceExercise.success}</span>
           </div>
         </Section>
 
-        <Section id="pro" icon={Sparkles} title="Pro tips & related commands">
+        <Section id="pro" icon={Sparkles} title={t("lessons:sectionHeadings.proTipsRelated")}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Pro tips</div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">{t("lessons:labels.proTips")}</div>
               <ul className="space-y-2 text-sm">
-                {rich.proTips.map((t, i) => (
+                {rich.proTips.map((tip, i) => (
                   <li key={i} className="flex gap-2">
                     <Lightbulb className="size-4 text-primary mt-0.5 shrink-0" />
-                    <span>{t}</span>
+                    <span>{tip}</span>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Related commands</div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">{t("lessons:labels.relatedCommands")}</div>
               <ul className="space-y-2 text-sm">
                 {rich.relatedCommands.map((c) => (
                   <li key={c.name} className="rounded-lg border border-border bg-secondary/30 px-3 py-2">
@@ -573,6 +576,7 @@ function ScreenshotSlot({
   uploadable?: boolean;
 }) {
   const src = uploadedUrl ?? shot.imageUrl;
+  const { t } = useTranslation("lessons");
   // `fallback`, `onOpen`, `large` are intentionally unused — ScreenshotCard
   // owns its own lightbox and sizes itself to the available card width.
   void fallback;
@@ -582,7 +586,7 @@ function ScreenshotSlot({
     <div className="mt-3">
       <ScreenshotCard
         src={src}
-        alt="Lesson screenshot"
+        alt={t("screenshotAlt")}
         lessonId={lessonId}
         slot={slot}
         uploadable={uploadable}
@@ -601,12 +605,12 @@ function BeforeAfter({
   return (
     <ScreenshotCard
       src={src}
-      alt={`${label} — annotated AutoCAD screenshot`}
+      alt={label}
     />
   );
 }
 
-type Q = ReturnType<typeof getLessonQuiz>[number];
+type Q = ReturnType<typeof useLocalizedLessonQuiz>[number];
 
 function LessonQuiz({
   lessonId,
@@ -619,6 +623,7 @@ function LessonQuiz({
   passed: boolean;
   onPass: () => void;
 }) {
+  const { t } = useTranslation(["lessons", "common"]);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
 
@@ -648,26 +653,26 @@ function LessonQuiz({
     <div className="rounded-2xl bg-card border border-border p-4 sm:p-6 mt-6" id={`quiz-${lessonId}`}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2 font-semibold">
-          <Trophy className="size-4 text-primary" /> Lesson quiz
+          <Trophy className="size-4 text-primary" /> {t("lessons:lessonQuiz")}
         </div>
         <div className="flex items-center gap-2">
           {passed && (
             <Badge className="bg-success/20 text-success border-success/30">
-              <CheckCircle2 className="size-3 mr-1" /> Passed
+              <CheckCircle2 className="size-3 mr-1" /> {t("lessons:quizPassed")}
             </Badge>
           )}
           <Badge variant="outline" className="border-border">
-            {correctCount}/{questions.length} correct
+            {t("lessons:correctCount", { correct: correctCount, total: questions.length })}
           </Badge>
           {(allAnswered || passed) && (
             <Button variant="outline" size="sm" onClick={retry}>
-              <RotateCcw className="size-3.5 mr-1" /> Retry
+              <RotateCcw className="size-3.5 mr-1" /> {t("common:retry")}
             </Button>
           )}
         </div>
       </div>
       <p className="text-sm text-muted-foreground mb-4">
-        Score at least {passingScore}/{questions.length} to unlock lesson completion.
+        {t("lessons:quizPassNeeded", { needed: passingScore, total: questions.length })}
       </p>
       <div className="space-y-4">
         {questions.map((q, i) => {
@@ -706,7 +711,7 @@ function LessonQuiz({
                     ? "bg-success/10 text-success border border-success/20"
                     : "bg-destructive/10 text-destructive border border-destructive/20",
                 )}>
-                  {ans === q.answer ? "Correct — " : "Not quite — "}{q.explanation}
+                  {ans === q.answer ? t("lessons:correctPrefix") : t("lessons:notQuitePrefix")}{q.explanation}
                 </div>
               )}
             </div>
@@ -721,8 +726,8 @@ function LessonQuiz({
             : "bg-destructive/10 text-destructive border border-destructive/30",
         )}>
           {justPassed
-            ? `Nice work — you scored ${correctCount}/${questions.length}. You can now mark this lesson complete.`
-            : `You scored ${correctCount}/${questions.length}. Hit Retry and aim for ${passingScore}+.`}
+            ? t("lessons:quizPassResult", { correct: correctCount, total: questions.length })
+            : t("lessons:quizFailResult", { correct: correctCount, total: questions.length, needed: passingScore })}
         </div>
       )}
     </div>

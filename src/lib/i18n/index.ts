@@ -32,7 +32,7 @@ if (!i18n.isInitialized) {
       lng: detectInitialLanguage(),
       fallbackLng: "en",
       defaultNS: "common",
-      ns: ["common", "nav", "gate", "auth", "dashboard", "lessons", "projects", "chat", "profile", "trust", "lessonEditor", "meta"],
+      ns: ["common", "nav", "gate", "auth", "dashboard", "lessons", "projects", "chat", "profile", "trust", "lessonEditor", "screenshot", "landing", "legal", "meta"],
       interpolation: { escapeValue: false },
       returnObjects: true,
       returnNull: false,

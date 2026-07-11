@@ -7,14 +7,16 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { AlertCircle, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { Logo } from "@/components/coach/Logo";
+import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
     meta: [
-      { title: "Reset your password — AutoCAD Coach" },
-      { name: "description", content: "Send a password reset link to your email." },
+      { title: i18n.t("meta:forgotTitle") },
+      { name: "description", content: i18n.t("meta:forgotDesc") },
       { name: "robots", content: "noindex,nofollow" },
-      { property: "og:title", content: "Reset your password — AutoCAD Coach" },
+      { property: "og:title", content: i18n.t("meta:forgotTitle") },
       { property: "og:url", content: "https://autocadcoach.lovable.app/forgot-password" },
     ],
     links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/forgot-password" }],
@@ -23,6 +25,7 @@ export const Route = createFileRoute("/forgot-password")({
 });
 
 function ForgotPasswordPage() {
+  const { t } = useTranslation(["auth", "common"]);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -32,7 +35,7 @@ function ForgotPasswordPage() {
     e.preventDefault();
     setError(null);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Please enter a valid email");
+      setError(t("auth:errInvalidEmail"));
       return;
     }
     setLoading(true);
@@ -42,9 +45,9 @@ function ForgotPasswordPage() {
       });
       if (error) throw error;
       setSent(true);
-      toast.success("Reset link sent — check your inbox.");
+      toast.success(t("auth:toastResetLinkSent"));
     } catch (err) {
-      const m = err instanceof Error ? err.message : "Could not send reset email";
+      const m = err instanceof Error ? err.message : t("auth:errResetFailed");
       setError(m);
       toast.error(m);
     } finally {
@@ -63,21 +66,16 @@ function ForgotPasswordPage() {
         </div>
 
         <div className="rounded-2xl bg-card/80 backdrop-blur border border-border p-6 sm:p-8 shadow-[var(--shadow-glow)]">
-          <h1 className="text-2xl font-bold tracking-tight">Reset your password</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            We'll email you a secure link to choose a new password.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("auth:resetTitle")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("auth:resetSubtitle")}</p>
 
           {sent ? (
             <div className="mt-6 rounded-lg border border-success/30 bg-success/10 p-4 text-sm">
               <div className="flex items-start gap-2 text-success">
                 <CheckCircle2 className="size-4 mt-0.5" />
                 <div>
-                  <div className="font-medium">Check your email</div>
-                  <p className="text-muted-foreground mt-1">
-                    If an account exists for <span className="text-foreground">{email}</span>,
-                    you'll get a reset link shortly.
-                  </p>
+                  <div className="font-medium">{t("auth:resetSent")}</div>
+                  <p className="text-muted-foreground mt-1">{t("auth:resetSentBody", { email })}</p>
                 </div>
               </div>
             </div>
@@ -90,7 +88,7 @@ function ForgotPasswordPage() {
                 </div>
               )}
               <div className="space-y-1.5">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email">{t("auth:emailAddress")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -103,14 +101,14 @@ function ForgotPasswordPage() {
               </div>
               <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                 {loading && <Loader2 className="size-4 mr-2 animate-spin" />}
-                Send reset link
+                {t("auth:sendResetLink")}
               </Button>
             </form>
           )}
 
           <div className="mt-6 text-center text-sm">
             <Link to="/auth" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="size-3.5" /> Back to sign in
+              <ArrowLeft className="size-3.5" /> {t("auth:backToSignIn")}
             </Link>
           </div>
         </div>

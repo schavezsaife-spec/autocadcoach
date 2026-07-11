@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Logo } from "@/components/coach/Logo";
 import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 
 /**
  * Setup checklist for the developer:
@@ -28,10 +29,10 @@ import { useTranslation } from "react-i18next";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — AutoCAD Coach" },
-      { name: "description", content: "Create your account or sign in to AutoCAD Coach." },
-      { property: "og:title", content: "Sign in — AutoCAD Coach" },
-      { property: "og:description", content: "Create your account or sign in to AutoCAD Coach." },
+      { title: i18n.t("meta:authTitle") },
+      { name: "description", content: i18n.t("meta:authDesc") },
+      { property: "og:title", content: i18n.t("meta:authTitle") },
+      { property: "og:description", content: i18n.t("meta:authDesc") },
       { property: "og:url", content: "https://autocadcoach.lovable.app/auth" },
     ],
     links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/auth" }],
@@ -70,15 +71,15 @@ function AuthPage() {
     e.preventDefault();
     setErrorMsg(null);
     if (mode === "signup" && !firstName.trim()) {
-      setErrorMsg("Please enter your first name");
+      setErrorMsg(t("auth:errFirstNameRequired"));
       return;
     }
     if (!emailValid(email)) {
-      setErrorMsg("Please enter a valid email");
+      setErrorMsg(t("auth:errInvalidEmail"));
       return;
     }
     if (password.length < 6) {
-      setErrorMsg("Password must be at least 6 characters");
+      setErrorMsg(t("auth:errPasswordShort"));
       return;
     }
     setLoading(true);
@@ -97,23 +98,23 @@ function AuthPage() {
         });
         if (error) throw error;
         if (!data.session) {
-          toast.success("Account created — check your email to confirm.");
+          toast.success(t("auth:toastAccountCreatedCheckEmail"));
           setMode("signin");
           setPassword("");
           return;
         }
-        toast.success("Account created!");
+        toast.success(t("auth:toastAccountCreated"));
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password,
         });
         if (error) throw error;
-        toast.success("Welcome back!");
+        toast.success(t("auth:toastWelcomeBack"));
       }
       navigate({ to: "/dashboard" });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Authentication failed";
+      const message = err instanceof Error ? err.message : t("auth:errAuthFailed");
       setErrorMsg(message);
       toast.error(message);
     } finally {
@@ -133,10 +134,10 @@ function AuthPage() {
       });
       if (result.error) throw result.error;
       if (result.redirected) return; // browser is navigating to Google
-      toast.success("Signed in with Google");
+      toast.success(t("auth:toastSignedInGoogle"));
       navigate({ to: "/dashboard" });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Google sign-in failed";
+      const message = err instanceof Error ? err.message : t("auth:errGoogleFailed");
       setErrorMsg(message);
       toast.error(message);
     } finally {
@@ -166,9 +167,7 @@ function AuthPage() {
             {mode === "signup" ? t("auth:createAccount") : t("auth:signInTitle")}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {mode === "signup"
-              ? "Start learning AutoCAD — track XP, projects, and quizzes."
-              : "Sign in to continue your learning streak."}
+            {mode === "signup" ? t("auth:signUpSubtitle") : t("auth:signInSubtitle")}
           </p>
 
           <Button
@@ -265,7 +264,7 @@ function AuthPage() {
                   type="button"
                   onClick={() => setShowPw((v) => !v)}
                   className="absolute inset-y-0 right-0 px-3 grid place-items-center text-muted-foreground hover:text-foreground"
-                  aria-label={showPw ? "Hide password" : "Show password"}
+                  aria-label={showPw ? t("common:hidePassword") : t("common:showPassword")}
                 >
                   {showPw ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
