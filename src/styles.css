@@ -64,47 +64,51 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  /* Dark navy + cyan engineering theme */
-  --background: oklch(0.18 0.04 250);
-  --foreground: oklch(0.97 0.01 240);
-  --card: oklch(0.23 0.045 255);
-  --card-foreground: oklch(0.97 0.01 240);
-  --popover: oklch(0.23 0.045 255);
-  --popover-foreground: oklch(0.97 0.01 240);
-  --primary: oklch(0.82 0.14 210);
-  --primary-foreground: oklch(0.15 0.05 255);
-  --secondary: oklch(0.28 0.04 255);
-  --secondary-foreground: oklch(0.97 0.01 240);
-  --muted: oklch(0.26 0.035 255);
-  --muted-foreground: oklch(0.72 0.03 240);
-  --accent: oklch(0.55 0.18 220);
-  --accent-foreground: oklch(0.98 0.01 240);
-  --destructive: oklch(0.6 0.22 25);
-  --destructive-foreground: oklch(0.98 0.01 240);
-  /* Teal — semantic success/progress accent (paired with primary blue for contrast) */
-  --success: oklch(0.78 0.13 180);
-  --success-foreground: oklch(0.18 0.05 200);
-  --border: oklch(0.32 0.04 255);
-  --input: oklch(0.28 0.04 255);
-  --ring: oklch(0.75 0.14 215);
-  --chart-1: oklch(0.78 0.15 210);
-  --chart-2: oklch(0.68 0.18 160);
-  --chart-3: oklch(0.7 0.18 80);
-  --chart-4: oklch(0.65 0.22 300);
-  --chart-5: oklch(0.65 0.24 20);
-  --sidebar: oklch(0.15 0.04 255);
-  --sidebar-foreground: oklch(0.92 0.01 240);
-  --sidebar-primary: oklch(0.82 0.14 210);
-  --sidebar-primary-foreground: oklch(0.15 0.05 255);
-  --sidebar-accent: oklch(0.25 0.045 255);
-  --sidebar-accent-foreground: oklch(0.98 0.01 240);
-  --sidebar-border: oklch(0.28 0.04 255);
-  --sidebar-ring: oklch(0.75 0.14 215);
-  --cyan-glow: oklch(0.82 0.14 210);
-  --gradient-hero: linear-gradient(135deg, oklch(0.25 0.07 255), oklch(0.18 0.04 250));
-  --shadow-glow: 0 10px 40px -10px oklch(0.6 0.18 215 / 0.4);
-  --shadow-logo-glow: drop-shadow(0 2px 8px color-mix(in oklab, var(--primary) 35%, transparent));
+  --radius: 0.875rem;
+  /* Dark navy + aqua/teal/blue polished theme */
+  --background: #070B1A;
+  --foreground: #F8FAFC;
+  --card: #0F172A;
+  --card-foreground: #F8FAFC;
+  --popover: #111827;
+  --popover-foreground: #F8FAFC;
+  --primary: #22D3EE;
+  --primary-foreground: #052235;
+  --secondary: #111C33;
+  --secondary-foreground: #F8FAFC;
+  --muted: #101a2e;
+  --muted-foreground: #A7C7E7;
+  --accent: #60A5FA;
+  --accent-foreground: #04132A;
+  --destructive: #F87171;
+  --destructive-foreground: #1B0A0A;
+  /* Teal — semantic success/progress accent */
+  --success: #14B8A6;
+  --success-foreground: #04201C;
+  --border: #1E3A5F;
+  --input: #16233d;
+  --ring: #22D3EE;
+  --chart-1: #22D3EE;
+  --chart-2: #2DD4BF;
+  --chart-3: #60A5FA;
+  --chart-4: #A78BFA;
+  --chart-5: #F472B6;
+  --sidebar: #0A1024;
+  --sidebar-foreground: #CBD9EC;
+  --sidebar-primary: #22D3EE;
+  --sidebar-primary-foreground: #04202B;
+  --sidebar-accent: #132241;
+  --sidebar-accent-foreground: #F8FAFC;
+  --sidebar-border: #17274A;
+  --sidebar-ring: #22D3EE;
+  --cyan-glow: #22D3EE;
+  --gradient-primary: linear-gradient(135deg, #22D3EE 0%, #2DD4BF 100%);
+  --gradient-blue-teal: linear-gradient(135deg, #60A5FA 0%, #22D3EE 50%, #2DD4BF 100%);
+  --gradient-hero: linear-gradient(135deg, #0F172A 0%, #070B1A 60%, #0A1F2E 100%);
+  --gradient-sidebar-active: linear-gradient(135deg, color-mix(in oklab, #22D3EE 22%, transparent), color-mix(in oklab, #2DD4BF 18%, transparent));
+  --shadow-glow: 0 10px 40px -10px color-mix(in oklab, #22D3EE 45%, transparent);
+  --shadow-glow-soft: 0 8px 30px -12px color-mix(in oklab, #2DD4BF 40%, transparent);
+  --shadow-logo-glow: drop-shadow(0 2px 10px color-mix(in oklab, #22D3EE 45%, transparent));
 }
 
 .dark {
@@ -152,5 +156,56 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    background-image:
+      radial-gradient(1200px 600px at 10% -10%, color-mix(in oklab, #22D3EE 8%, transparent), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, color-mix(in oklab, #2DD4BF 6%, transparent), transparent 60%);
+    background-attachment: fixed;
   }
+}
+
+/* Soft aqua/teal focus ring for inputs */
+@utility focus-aqua {
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px color-mix(in oklab, var(--primary) 55%, transparent),
+      0 0 18px -4px color-mix(in oklab, var(--primary) 55%, transparent);
+    border-color: color-mix(in oklab, var(--primary) 60%, transparent);
+  }
+}
+
+/* Subtle aqua hover glow for cards */
+@utility hover-glow {
+  transition: box-shadow 260ms ease, transform 260ms ease, border-color 260ms ease;
+  &:hover {
+    border-color: color-mix(in oklab, var(--primary) 45%, var(--border));
+    box-shadow: var(--shadow-glow-soft);
+    transform: translateY(-1px);
+  }
+}
+
+/* Blue → teal gradient fill (progress bars, badges) */
+@utility bg-gradient-progress {
+  background-image: var(--gradient-blue-teal);
+}
+
+/* Sidebar active pill: soft blue/teal gradient + glow, replaces gray */
+[data-sidebar="menu-button"][data-active="true"],
+[data-slot="sidebar-menu-button"][data-active="true"] {
+  background-image: var(--gradient-sidebar-active) !important;
+  color: #E6FBFF !important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, #22D3EE 40%, transparent),
+    0 6px 20px -10px color-mix(in oklab, #22D3EE 55%, transparent);
+}
+
+/* Aqua focus outline for form inputs globally */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--primary) 55%, transparent),
+    0 0 20px -6px color-mix(in oklab, var(--primary) 55%, transparent);
+  border-color: color-mix(in oklab, var(--primary) 60%, transparent);
 }
