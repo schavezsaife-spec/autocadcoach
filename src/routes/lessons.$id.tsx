@@ -459,13 +459,16 @@ function RichLessonBody({
 
         <Section id="troubleshooting" icon={Wrench} title={t("lessons:sectionHeadings.troubleshooting")}>
           <div className="space-y-3">
-            {rich.troubleshooting.map((t, i) => (
+            {rich.troubleshooting.map((item, i) => (
               <details key={i} className="group rounded-lg border border-border bg-secondary/30 p-3 open:bg-secondary/50">
                 <summary className="cursor-pointer font-medium text-sm flex items-center justify-between gap-2">
-                  <span>{t.problem}</span>
+                  <span>{item.problem}</span>
+                  <span className="text-xs text-muted-foreground group-open:hidden">{t("lessons:labels.show")}</span>
+                  <span className="text-xs text-muted-foreground hidden group-open:inline">{t("lessons:labels.hide")}</span>
                 </summary>
                 <div className="mt-2 text-sm space-y-1">
-                  <div><span className="text-muted-foreground">{tt.cause}</span></div>
+                  <div><span className="text-muted-foreground">{t("lessons:labels.cause")}</span>{item.cause}</div>
+                  <div><span className="text-muted-foreground">{t("lessons:labels.fix")}</span>{item.fix}</div>
                 </div>
               </details>
             ))}
@@ -488,10 +491,10 @@ function RichLessonBody({
             <div>
               <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">{t("lessons:labels.proTips")}</div>
               <ul className="space-y-2 text-sm">
-                {rich.proTips.map((t, i) => (
+                {rich.proTips.map((tip, i) => (
                   <li key={i} className="flex gap-2">
                     <Lightbulb className="size-4 text-primary mt-0.5 shrink-0" />
-                    <span>{t}</span>
+                    <span>{tip}</span>
                   </li>
                 ))}
               </ul>
