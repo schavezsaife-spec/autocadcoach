@@ -157,8 +157,10 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     background-image:
-      radial-gradient(1200px 600px at 10% -10%, color-mix(in oklab, #22D3EE 8%, transparent), transparent 60%),
-      radial-gradient(900px 500px at 100% 0%, color-mix(in oklab, #2DD4BF 6%, transparent), transparent 60%);
+      radial-gradient(1200px 700px at 8% -10%, color-mix(in oklab, #22D3EE 18%, transparent), transparent 60%),
+      radial-gradient(1000px 600px at 100% 10%, color-mix(in oklab, #2DD4BF 14%, transparent), transparent 60%),
+      radial-gradient(900px 700px at 50% 110%, color-mix(in oklab, #60A5FA 12%, transparent), transparent 60%),
+      linear-gradient(180deg, #020617 0%, #071426 60%, #051a26 100%);
     background-attachment: fixed;
   }
 }
