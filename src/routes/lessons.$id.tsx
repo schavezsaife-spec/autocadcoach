@@ -211,18 +211,19 @@ function LegacyLessonBody({
 }) {
   const media = lesson.media;
   const heroSrc = media?.hero ?? lesson.image;
+  const { t } = useTranslation(["lessons", "common"]);
   return (
     <>
       <button
         onClick={onOpenLightbox}
         className="block w-full rounded-2xl overflow-hidden border border-border group"
-        aria-label={`Enlarge image for ${lesson.title}`}
+        aria-label={t("lessons:enlargeAria", { title: lesson.title })}
       >
-        <img src={heroSrc} alt={`${lesson.title} reference`} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-contain bg-secondary/40 group-hover:scale-[1.02] transition-transform" />
+        <img src={heroSrc} alt={t("lessons:referenceAlt", { title: lesson.title })} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-contain bg-secondary/40 group-hover:scale-[1.02] transition-transform" />
       </button>
 
       <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
-        <div className="flex items-center gap-2 text-primary font-semibold"><Target className="size-4" /> Objective</div>
+        <div className="flex items-center gap-2 text-primary font-semibold"><Target className="size-4" /> {t("lessons:objective")}</div>
         <p className="mt-2 text-sm">{lesson.objective}</p>
       </div>
 
@@ -234,7 +235,7 @@ function LegacyLessonBody({
 
       <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
         <div className="flex items-center justify-between mb-3">
-          <div className="font-semibold">Step {step + 1} of {lesson.steps.length}</div>
+          <div className="font-semibold">{t("lessons:stepXofY", { current: step + 1, total: lesson.steps.length })}</div>
           <div className="text-sm text-muted-foreground">{stepPct}%</div>
         </div>
         <Progress
@@ -246,17 +247,17 @@ function LegacyLessonBody({
         <p className="text-base">{lesson.steps[step]}</p>
         <div className="flex flex-col sm:flex-row justify-between gap-2 mt-5">
           <Button variant="outline" onClick={() => setStep(step - 1)} disabled={step === 0} className="w-full sm:w-auto">
-            <ArrowLeft className="size-4 mr-1" /> Previous
+            <ArrowLeft className="size-4 mr-1" /> {t("common:previous")}
           </Button>
           <Button onClick={() => setStep(step + 1)} disabled={step === lesson.steps.length - 1} className="w-full sm:w-auto">
-            Next <ArrowRight className="size-4 ml-1" />
+            {t("common:next")} <ArrowRight className="size-4 ml-1" />
           </Button>
         </div>
       </div>
 
       {(media?.before || media?.after) && (
         <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">
-          <div className="font-semibold mb-3">Before vs After</div>
+          <div className="font-semibold mb-3">{t("lessons:beforeVsAfter")}</div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {media.before && (
               <ScreenshotCard src={media.before.src} alt={media.before.caption} />
@@ -270,7 +271,7 @@ function LegacyLessonBody({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
         <div className="rounded-2xl bg-card border border-destructive/30 p-4 sm:p-5">
-          <div className="flex items-center gap-2 text-destructive font-semibold"><AlertCircle className="size-4" /> Common mistake</div>
+          <div className="flex items-center gap-2 text-destructive font-semibold"><AlertCircle className="size-4" /> {t("lessons:commonMistake")}</div>
           <p className="mt-2 text-sm">{lesson.mistake}</p>
           {media?.error && (
             <div className="mt-3">
@@ -279,7 +280,7 @@ function LegacyLessonBody({
           )}
         </div>
         <div className="rounded-2xl bg-card border border-primary/30 p-4 sm:p-5">
-          <div className="flex items-center gap-2 text-primary font-semibold"><Lightbulb className="size-4" /> Try this</div>
+          <div className="flex items-center gap-2 text-primary font-semibold"><Lightbulb className="size-4" /> {t("lessons:tryThis")}</div>
           <p className="mt-2 text-sm">{lesson.challenge}</p>
         </div>
       </div>
@@ -287,20 +288,20 @@ function LegacyLessonBody({
   );
 }
 
-const SECTIONS = [
-  { id: "objective", label: "Objective", icon: Target },
-  { id: "what", label: "What it is", icon: BookOpen },
-  { id: "why", label: "Why & when", icon: Compass },
-  { id: "where", label: "Where to find it", icon: MapPin },
-  { id: "vocab", label: "Vocabulary", icon: BookOpen },
-  { id: "before", label: "Before you start", icon: ListChecks },
-  { id: "steps", label: "Step-by-step", icon: ListChecks },
-  { id: "visual", label: "Visual reference", icon: ImageIcon },
-  { id: "mistakes", label: "Mistakes & fixes", icon: AlertCircle },
-  { id: "troubleshooting", label: "Troubleshooting", icon: Wrench },
-  { id: "practice", label: "Practice", icon: Dumbbell },
-  { id: "pro", label: "Pro tips & related", icon: Sparkles },
-];
+const SECTION_IDS = [
+  { id: "objective", icon: Target },
+  { id: "what", icon: BookOpen },
+  { id: "why", icon: Compass },
+  { id: "where", icon: MapPin },
+  { id: "vocab", icon: BookOpen },
+  { id: "before", icon: ListChecks },
+  { id: "steps", icon: ListChecks },
+  { id: "visual", icon: ImageIcon },
+  { id: "mistakes", icon: AlertCircle },
+  { id: "troubleshooting", icon: Wrench },
+  { id: "practice", icon: Dumbbell },
+  { id: "pro", icon: Sparkles },
+] as const;
 
 function RichLessonBody({
   rich,
