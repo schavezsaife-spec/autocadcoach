@@ -1,5 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 import { Badge } from "@/components/ui/badge";
 import { useCoach } from "@/lib/coach-store";
 import { lessons, projects } from "@/lib/coach-data";
@@ -13,10 +15,10 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "Profile — AutoCAD Coach" },
-      { name: "description", content: "Manage your AutoCAD Coach account, profile details, and learning preferences." },
+      { title: i18n.t("meta:profileTitle") },
+      { name: "description", content: i18n.t("meta:profileDesc") },
       { name: "robots", content: "noindex,nofollow" },
-      { property: "og:title", content: "Profile — AutoCAD Coach" },
+      { property: "og:title", content: i18n.t("meta:profileTitle") },
       { property: "og:url", content: "https://autocadcoach.lovable.app/profile" },
     ],
     links: [{ rel: "canonical", href: "https://autocadcoach.lovable.app/profile" }],
@@ -28,6 +30,7 @@ const MAX_BYTES = 2 * 1024 * 1024; // 2MB
 
 function ProfilePage() {
   const { state, set, totalXp, progressPct, hydrated, signOut } = useCoach();
+  const { t } = useTranslation(["profile", "common", "nav"]);
   const navigate = useNavigate();
   const p = state.profile;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -57,24 +60,24 @@ function ProfilePage() {
   function handleFile(file: File | undefined) {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      toast.error("Please choose an image file");
+      toast.error(t("profile:errPhotoImageOnly"));
       return;
     }
     if (file.size > MAX_BYTES) {
-      toast.error("Image must be under 2MB");
+      toast.error(t("profile:errPhotoTooLarge"));
       return;
     }
     const reader = new FileReader();
     reader.onload = () => {
       set({ profile: { ...p, profileImage: reader.result as string } });
-      toast.success("Profile photo updated");
+      toast.success(t("profile:photoUpdated"));
     };
     reader.readAsDataURL(file);
   }
 
   function handleRemovePhoto() {
     set({ profile: { ...p, profileImage: null } });
-    toast("Photo removed");
+    toast(t("profile:photoRemoved"));
   }
 
   async function handleDeleteAccount() {
@@ -84,10 +87,10 @@ function ProfilePage() {
       const { error } = await supabase.rpc("delete_account");
       if (error) throw error;
       await signOut();
-      toast.success("Your account has been deleted.");
+      toast.success(t("profile:accountDeleted"));
       navigate({ to: "/" });
     } catch {
-      toast.error("Could not delete account. Please contact schavezsaife@gmail.com.");
+      toast.error(t("profile:deleteFailed"));
       setDeleting(false);
       setShowDeleteModal(false);
       setDeleteInput("");
@@ -107,7 +110,7 @@ function ProfilePage() {
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              aria-label="Change profile photo"
+              aria-label={t("profile:changeProfilePhotoAria")}
               className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
             >
               <Camera className="size-5 text-white" />
@@ -116,7 +119,7 @@ function ProfilePage() {
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              aria-label="Change profile photo"
+              aria-label={t("profile:changeProfilePhotoAria")}
               className="absolute -bottom-1 -right-1 size-7 rounded-full bg-primary text-primary-foreground grid place-items-center ring-2 ring-background hover:bg-primary/90 transition-colors"
             >
               <Camera className="size-3.5" />
@@ -136,15 +139,15 @@ function ProfilePage() {
           {/* Name, email, badges */}
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold tracking-tight truncate">
-              {`${p.firstName} ${p.lastName}`.trim() || "AutoCAD Learner"}
+              {`${p.firstName} ${p.lastName}`.trim() || t("nav:defaultLearner")}
             </h1>
             <div className="text-sm text-muted-foreground truncate mt-0.5">{p.email}</div>
             <div className="mt-3 flex flex-wrap gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-success/15 text-success border border-success/30 px-3 py-1 text-xs font-semibold">
-                <Trophy className="size-3" /> {totalXp} XP earned
+                <Trophy className="size-3" /> {t("profile:xpEarned", { xp: totalXp })}
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-card border border-border px-3 py-1 text-xs font-semibold text-muted-foreground">
-                <Flame className="size-3 text-success" /> {state.streak} day streak
+                <Flame className="size-3 text-success" /> {t("profile:dayStreak", { count: state.streak })}
               </span>
             </div>
             {/* Photo actions — only shown when a photo exists or as a subtle hint */}
@@ -154,7 +157,7 @@ function ProfilePage() {
                 onClick={() => inputRef.current?.click()}
                 className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
               >
-                {p.profileImage ? "Change photo" : "Upload photo"}
+                {p.profileImage ? t("profile:changePhoto") : t("profile:uploadPhoto")}
               </button>
               {p.profileImage && (
                 <>
@@ -165,7 +168,7 @@ function ProfilePage() {
                     className="text-xs text-destructive/70 hover:text-destructive transition-colors underline underline-offset-2"
                   >
                     <Trash2 className="size-3 inline mr-1" />
-                    Remove
+                    {t("profile:removePhoto")}
                   </button>
                 </>
               )}
@@ -176,28 +179,28 @@ function ProfilePage() {
 
       {/* Stats row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard label="Total XP" value={totalXp} icon={Trophy} accent />
-        <StatCard label="Lessons" value={`${state.completedLessons.length}/${lessons.length}`} icon={BookOpen} />
-        <StatCard label="Projects" value={`${completedProjectsCount}/${projects.length}`} icon={Wrench} />
-        <StatCard label="Progress" value={`${progressPct}%`} icon={Target} />
+        <StatCard label={t("profile:totalXp")} value={totalXp} icon={Trophy} accent />
+        <StatCard label={t("profile:lessons")} value={`${state.completedLessons.length}/${lessons.length}`} icon={BookOpen} />
+        <StatCard label={t("profile:projects")} value={`${completedProjectsCount}/${projects.length}`} icon={Wrench} />
+        <StatCard label={t("profile:progress")} value={`${progressPct}%`} icon={Target} />
       </div>
 
       {/* Account details */}
       <div className="rounded-2xl bg-card border border-border p-5">
-        <div className="text-sm font-semibold mb-4 text-muted-foreground uppercase tracking-wide">Account details</div>
+        <div className="text-sm font-semibold mb-4 text-muted-foreground uppercase tracking-wide">{t("profile:accountDetails")}</div>
         <EditProfileForm />
       </div>
 
       {/* Completed lessons */}
       <div className="rounded-2xl bg-card border border-border p-5">
         <div className="flex items-center justify-between mb-4">
-          <div className="font-semibold">Completed lessons</div>
+          <div className="font-semibold">{t("profile:completedLessons")}</div>
           <span className="text-xs bg-success/15 text-success border border-success/30 rounded-full px-2.5 py-0.5 font-semibold">
             {state.completedLessons.length} / {lessons.length}
           </span>
         </div>
         {state.completedLessons.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nothing yet — start your first lesson!</p>
+          <p className="text-sm text-muted-foreground">{t("profile:nothingYet")}</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {state.completedLessons.map((id) => {
@@ -217,10 +220,8 @@ function ProfilePage() {
       {/* Danger zone */}
       <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-destructive">Delete account</div>
-          <p className="text-sm text-muted-foreground mt-1">
-            Permanently delete your account and all associated data. This cannot be undone.
-          </p>
+          <div className="font-semibold text-destructive">{t("profile:deleteAccount")}</div>
+          <p className="text-sm text-muted-foreground mt-1">{t("profile:deleteAccountBody")}</p>
         </div>
         <button
           type="button"
@@ -228,7 +229,7 @@ function ProfilePage() {
           className="shrink-0 inline-flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground px-4 py-2 text-sm font-medium transition-colors"
         >
           <Trash2 className="size-4" />
-          Delete account
+          {t("profile:deleteAccount")}
         </button>
       </div>
 
@@ -241,28 +242,24 @@ function ProfilePage() {
                 <AlertTriangle className="size-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-semibold">Delete your account?</h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  This action is permanent and cannot be reversed.
-                </p>
+                <h2 className="text-lg font-semibold">{t("profile:deleteConfirmTitle")}</h2>
+                <p className="text-sm text-muted-foreground mt-1">{t("profile:deleteConfirmSubtitle")}</p>
               </div>
             </div>
 
             <ul className="text-sm text-muted-foreground space-y-1.5">
-              <li>• Your profile and account will be permanently deleted</li>
-              <li>• All learning progress and XP will be lost</li>
-              <li>• You will be signed out immediately</li>
+              <li>• {t("profile:deleteBullet1")}</li>
+              <li>• {t("profile:deleteBullet2")}</li>
+              <li>• {t("profile:deleteBullet3")}</li>
             </ul>
 
             <div className="space-y-2">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Type DELETE to confirm
-              </label>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("profile:typeDeleteToConfirm")}</label>
               <input
                 type="text"
                 value={deleteInput}
                 onChange={(e) => setDeleteInput(e.target.value)}
-                placeholder="Type DELETE here"
+                placeholder={t("profile:typeDeleteHere")}
                 className="w-full rounded-lg bg-background border border-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-destructive/50 focus:border-destructive"
                 autoComplete="off"
               />
@@ -275,7 +272,7 @@ function ProfilePage() {
                 disabled={deleting}
                 className="flex-1 rounded-lg border border-border bg-card hover:bg-accent px-4 py-2 text-sm font-medium transition-colors"
               >
-                Cancel
+                {t("common:cancel")}
               </button>
               <button
                 type="button"
@@ -286,12 +283,12 @@ function ProfilePage() {
                 {deleting ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
-                    Deleting…
+                    {t("profile:deleting")}
                   </>
                 ) : (
                   <>
                     <Trash2 className="size-4" />
-                    Delete my account
+                    {t("profile:deleteMyAccount")}
                   </>
                 )}
               </button>
