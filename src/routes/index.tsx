@@ -135,6 +135,7 @@ function Index() {
 
 function PublicNavbar({ isAuthed }: { isAuthed: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useTranslation(["landing", "nav", "common"]);
   return (
     <header
       className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50 fade-up"
@@ -143,21 +144,21 @@ function PublicNavbar({ isAuthed }: { isAuthed: boolean }) {
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 sm:px-6 h-14">
         <Logo size="sm" />
         <nav className="hidden md:flex items-center gap-1">
-          <NavLink to="/lessons">Lessons</NavLink>
-          <NavLink to="/projects">Projects</NavLink>
-          <NavLink to="/chat">AI Coach</NavLink>
+          <NavLink to="/lessons">{t("nav:lessons")}</NavLink>
+          <NavLink to="/projects">{t("nav:projects")}</NavLink>
+          <NavLink to="/chat">{t("nav:chat")}</NavLink>
           <div className="mx-2 h-5 w-px bg-border" />
           {isAuthed ? (
             <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link to="/dashboard">Dashboard →</Link>
+              <Link to="/dashboard">{t("landing:dashboardArrow")}</Link>
             </Button>
           ) : (
             <>
               <Button asChild size="sm" variant="outline" className="border-border">
-                <Link to="/auth">Sign in</Link>
+                <Link to="/auth">{t("landing:signIn")}</Link>
               </Button>
               <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link to="/auth">Get started</Link>
+                <Link to="/auth">{t("landing:getStarted")}</Link>
               </Button>
             </>
           )}
@@ -165,22 +166,22 @@ function PublicNavbar({ isAuthed }: { isAuthed: boolean }) {
         <button
           className="md:hidden rounded-md p-2 hover:bg-accent"
           onClick={() => setMobileOpen((v) => !v)}
-          aria-label="Toggle menu"
+          aria-label={t("common:toggleMenu")}
         >
           {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </div>
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-background/95 backdrop-blur px-4 py-3 flex flex-col gap-1">
-          <MobileLink to="/lessons" onClick={() => setMobileOpen(false)}>Lessons</MobileLink>
-          <MobileLink to="/projects" onClick={() => setMobileOpen(false)}>Projects</MobileLink>
-          <MobileLink to="/chat" onClick={() => setMobileOpen(false)}>AI Coach</MobileLink>
+          <MobileLink to="/lessons" onClick={() => setMobileOpen(false)}>{t("nav:lessons")}</MobileLink>
+          <MobileLink to="/projects" onClick={() => setMobileOpen(false)}>{t("nav:projects")}</MobileLink>
+          <MobileLink to="/chat" onClick={() => setMobileOpen(false)}>{t("nav:chat")}</MobileLink>
           {isAuthed ? (
-            <MobileLink to="/dashboard" onClick={() => setMobileOpen(false)} highlight>Dashboard →</MobileLink>
+            <MobileLink to="/dashboard" onClick={() => setMobileOpen(false)} highlight>{t("landing:dashboardArrow")}</MobileLink>
           ) : (
             <>
-              <MobileLink to="/auth" onClick={() => setMobileOpen(false)}>Sign in</MobileLink>
-              <MobileLink to="/auth" onClick={() => setMobileOpen(false)} highlight>Get started</MobileLink>
+              <MobileLink to="/auth" onClick={() => setMobileOpen(false)}>{t("landing:signIn")}</MobileLink>
+              <MobileLink to="/auth" onClick={() => setMobileOpen(false)} highlight>{t("landing:getStarted")}</MobileLink>
             </>
           )}
         </div>
@@ -220,6 +221,7 @@ function MobileLink({
 }
 
 function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: string }) {
+  const { t } = useTranslation("landing");
   const primaryTo = isAuthed ? "/lessons/$id" : "/auth";
   return (
     <section className="relative min-h-[80vh] sm:min-h-[90vh] flex flex-col items-center justify-center text-center px-4 sm:px-6 overflow-hidden">
@@ -252,19 +254,18 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
       <div className="relative max-w-3xl mx-auto py-20 md:py-24 w-full">
         {/* Badge */}
         <div className="badge-pop inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-sm text-primary" style={{ animationDelay: "200ms" }}>
-          <Sparkles className="size-3.5 spin-slow" /> Beginner-friendly CAD learning
+          <Sparkles className="size-3.5 spin-slow" /> {t("badge")}
         </div>
         {/* Headline */}
         <h1 className="mt-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter leading-[1.05]">
-          <span className="fade-up block" style={{ animationDelay: "400ms" }}>Master AutoCAD</span>
+          <span className="fade-up block" style={{ animationDelay: "400ms" }}>{t("heroLine1")}</span>
           <span className="fade-up shimmer-text block" style={{ animationDelay: "600ms" }}>
-            from zero to fluent.
+            {t("heroLine2")}
           </span>
         </h1>
         {/* Subheading */}
         <p className="fade-up mt-6 max-w-xl mx-auto text-base sm:text-lg text-muted-foreground" style={{ animationDelay: "800ms" }}>
-          AutoCAD Coach turns engineering software into a step-by-step game. Lessons, projects, quizzes,
-          and an AI tutor — all in one place.
+          {t("heroSub")}
         </p>
 
         {/* Floating command chips */}
@@ -283,16 +284,16 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
           <Button asChild size="lg" className="cta-btn bg-primary text-primary-foreground hover:bg-primary/90 glow-pulse">
             {isAuthed ? (
               <Link to={primaryTo} params={{ id: nextLessonId }}>
-                Start Learning free <ArrowRight className="ml-1 size-4 cta-arrow" />
+                {t("ctaPrimary")} <ArrowRight className="ml-1 size-4 cta-arrow" />
               </Link>
             ) : (
               <Link to="/auth">
-                Start Learning free <ArrowRight className="ml-1 size-4 cta-arrow" />
+                {t("ctaPrimary")} <ArrowRight className="ml-1 size-4 cta-arrow" />
               </Link>
             )}
           </Button>
           <Button asChild size="lg" variant="outline" className="border-border bg-card/40 hover:bg-card">
-            <Link to="/dashboard">View Dashboard</Link>
+            <Link to="/dashboard">{t("ctaSecondary")}</Link>
           </Button>
         </div>
 
@@ -312,7 +313,7 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
               </div>
             ))}
           </div>
-          <span>Join learners mastering AutoCAD one command at a time.</span>
+          <span>{t("socialProof")}</span>
         </div>
       </div>
     </section>
@@ -320,17 +321,18 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
 }
 
 function Features() {
+  const { t } = useTranslation("landing");
   const items = [
-    { icon: BookOpen, title: "15 Guided Lessons", desc: "Sequential lessons unlock as you progress. Each one ends with XP and a challenge." },
-    { icon: Wrench, title: "6 Real Projects", desc: "Build real CAD drawings from scratch — mechanical, architectural, and 3D." },
-    { icon: Compass, title: "AI Tutor + Quiz", desc: "Test yourself, then ask AutoCoach anything when you get stuck." },
+    { icon: BookOpen, title: t("feature1Title"), desc: t("feature1Desc") },
+    { icon: Wrench, title: t("feature2Title"), desc: t("feature2Desc") },
+    { icon: Compass, title: t("feature3Title"), desc: t("feature3Desc") },
   ];
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 py-24">
       <div className="text-center">
-        <div className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">Everything you need</div>
+        <div className="text-xs uppercase tracking-[0.2em] text-primary font-semibold">{t("featuresKicker")}</div>
         <h2 className="mt-3 text-3xl md:text-5xl font-bold tracking-tight">
-          Learn by doing,<br />not just watching.
+          {t("featuresHeadline1")}<br />{t("featuresHeadline2")}
         </h2>
       </div>
       <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -346,7 +348,7 @@ function Features() {
             <div className="mt-4 font-semibold text-lg">{f.title}</div>
             <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
             <div className="mt-4 text-primary text-sm font-medium opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-              Learn more →
+              {t("learnMore")}
             </div>
           </article>
         ))}
@@ -356,15 +358,16 @@ function Features() {
 }
 
 function HowItWorks() {
+  const { t } = useTranslation("landing");
   const steps = [
-    { n: 1, icon: Compass, title: "Pick a lesson", desc: "Sequential lessons unlock as you progress." },
-    { n: 2, icon: Target, title: "Follow the steps", desc: "Each lesson walks you through commands with objectives and tips." },
-    { n: 3, icon: Trophy, title: "Build & earn XP", desc: "Complete projects, pass the quiz, climb the leaderboard." },
+    { n: 1, icon: Compass, title: t("how1Title"), desc: t("how1Desc") },
+    { n: 2, icon: Target, title: t("how2Title"), desc: t("how2Desc") },
+    { n: 3, icon: Trophy, title: t("how3Title"), desc: t("how3Desc") },
   ];
   return (
     <section className="bg-card/30 border-y border-border py-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <h2 className="text-center text-3xl md:text-5xl font-bold tracking-tight">How AutoCAD Coach works</h2>
+        <h2 className="text-center text-3xl md:text-5xl font-bold tracking-tight">{t("howTitle")}</h2>
         <div className="relative mt-14 grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6">
           <div className="hidden md:block absolute top-6 left-[16%] right-[16%] border-t-2 border-dashed border-border" aria-hidden />
           {steps.map((s) => (
@@ -385,11 +388,12 @@ function HowItWorks() {
 }
 
 function CommandMarquee() {
+  const { t } = useTranslation("landing");
   const list = [...ALL_COMMANDS, ...ALL_COMMANDS];
   return (
     <section className="bg-background border-y border-border py-12 overflow-hidden">
       <div className="text-center text-xs uppercase tracking-[0.2em] text-muted-foreground font-semibold">
-        Commands you'll master
+        {t("marqueeKicker")}
       </div>
       <div className="mt-6 overflow-hidden relative">
         <div className="marquee-track flex w-max">
@@ -408,34 +412,32 @@ function CommandMarquee() {
 }
 
 function FinalCTA({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: string }) {
+  const { t } = useTranslation("landing");
   return (
     <section className="py-24 text-center relative overflow-hidden px-4 sm:px-6">
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[520px] rounded-full bg-primary blur-[160px] opacity-15 -z-10" aria-hidden />
-      <h2 className="text-4xl md:text-6xl font-black tracking-tighter">Ready to start drawing?</h2>
-      <p className="mt-4 text-muted-foreground max-w-md mx-auto">
-        Your first lesson is one click away.
-      </p>
+      <h2 className="text-4xl md:text-6xl font-black tracking-tighter">{t("finalTitle")}</h2>
+      <p className="mt-4 text-muted-foreground max-w-md mx-auto">{t("finalSub")}</p>
       <div className="mt-8 flex justify-center">
         <Button asChild size="lg" className="cta-btn bg-primary text-primary-foreground hover:bg-primary/90 glow-pulse">
           {isAuthed ? (
             <Link to="/lessons/$id" params={{ id: nextLessonId }}>
-              Begin your first lesson <ArrowRight className="ml-1 size-4 cta-arrow" />
+              {t("finalCta")} <ArrowRight className="ml-1 size-4 cta-arrow" />
             </Link>
           ) : (
             <Link to="/auth">
-              Begin your first lesson <ArrowRight className="ml-1 size-4 cta-arrow" />
+              {t("finalCta")} <ArrowRight className="ml-1 size-4 cta-arrow" />
             </Link>
           )}
         </Button>
       </div>
-      <p className="mt-4 text-xs text-muted-foreground">
-        No sign-up required to explore — create an account to save progress.
-      </p>
+      <p className="mt-4 text-xs text-muted-foreground">{t("finalDisclaimer")}</p>
     </section>
   );
 }
 
 function Footer({ legal }: { legal: ReturnType<typeof useLegal> }) {
+  const { t } = useTranslation("landing");
   return (
     <footer className="border-t border-border py-12 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
@@ -446,47 +448,45 @@ function Footer({ legal }: { legal: ReturnType<typeof useLegal> }) {
               <LogoMark size="sm" />
               <span className="font-semibold">AutoCAD Coach</span>
             </div>
-            <p className="text-sm text-muted-foreground">
-              Beginner-friendly AutoCAD learning — lessons, projects, quizzes, and an AI tutor.
-            </p>
+            <p className="text-sm text-muted-foreground">{t("footerBrand")}</p>
           </div>
 
           {/* Links */}
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold">Product</h3>
+            <h3 className="text-sm font-semibold">{t("footerProduct")}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/lessons" className="hover:text-foreground">Lessons</Link></li>
-              <li><Link to="/projects" className="hover:text-foreground">Projects</Link></li>
-              <li><Link to="/chat" className="hover:text-foreground">AI Coach</Link></li>
+              <li><Link to="/lessons" className="hover:text-foreground">{t("nav:lessons", { ns: "nav" })}</Link></li>
+              <li><Link to="/projects" className="hover:text-foreground">{t("nav:projects", { ns: "nav" })}</Link></li>
+              <li><Link to="/chat" className="hover:text-foreground">{t("nav:chat", { ns: "nav" })}</Link></li>
             </ul>
           </div>
 
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold">Account</h3>
+            <h3 className="text-sm font-semibold">{t("footerAccount")}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/auth" className="hover:text-foreground">Sign in</Link></li>
-              <li><Link to="/dashboard" className="hover:text-foreground">Dashboard</Link></li>
+              <li><Link to="/auth" className="hover:text-foreground">{t("signIn")}</Link></li>
+              <li><Link to="/dashboard" className="hover:text-foreground">{t("nav:dashboard", { ns: "nav" })}</Link></li>
             </ul>
           </div>
 
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold">Legal</h3>
+            <h3 className="text-sm font-semibold">{t("footerLegal")}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><button onClick={() => legal.show("privacy")} className="hover:text-foreground text-left">Privacy Policy</button></li>
-              <li><button onClick={() => legal.show("terms")} className="hover:text-foreground text-left">Terms of Service</button></li>
-              <li><button onClick={() => legal.show("cookies")} className="hover:text-foreground text-left">Cookie Policy</button></li>
-              <li><button onClick={() => legal.show("trust")} className="hover:text-foreground text-left">Trust & Security</button></li>
+              <li><button onClick={() => legal.show("privacy")} className="hover:text-foreground text-left">{t("footerPrivacyPolicy")}</button></li>
+              <li><button onClick={() => legal.show("terms")} className="hover:text-foreground text-left">{t("footerTermsOfService")}</button></li>
+              <li><button onClick={() => legal.show("cookies")} className="hover:text-foreground text-left">{t("footerCookiePolicy")}</button></li>
+              <li><button onClick={() => legal.show("trust")} className="hover:text-foreground text-left">{t("footerTrust")}</button></li>
             </ul>
           </div>
         </div>
 
         <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-          <div>© {new Date().getFullYear()} AutoCAD Coach. All rights reserved.</div>
+          <div>{t("footerCopyright", { year: new Date().getFullYear() })}</div>
           <div className="flex items-center gap-4">
-            <button onClick={() => legal.show("privacy")} className="hover:text-foreground">Privacy</button>
-            <button onClick={() => legal.show("terms")} className="hover:text-foreground">Terms</button>
-            <button onClick={() => legal.show("cookies")} className="hover:text-foreground">Cookies</button>
-            <Link to="/trust" className="hover:text-foreground">Trust</Link>
+            <button onClick={() => legal.show("privacy")} className="hover:text-foreground">{t("footerShortPrivacy")}</button>
+            <button onClick={() => legal.show("terms")} className="hover:text-foreground">{t("footerShortTerms")}</button>
+            <button onClick={() => legal.show("cookies")} className="hover:text-foreground">{t("footerShortCookies")}</button>
+            <Link to="/trust" className="hover:text-foreground">{t("footerShortTrust")}</Link>
           </div>
         </div>
       </div>
