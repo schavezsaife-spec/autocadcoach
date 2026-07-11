@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { lessons, getLessonQuiz, type RichLesson } from "@/lib/coach-data";
-import { useLocalizedLesson, useLocalizedLessons } from "@/lib/i18n/content";
+import { lessons, type RichLesson } from "@/lib/coach-data";
+import { useLocalizedLesson, useLocalizedLessons, useLocalizedLessonQuiz } from "@/lib/i18n/content";
 import { useTranslation } from "react-i18next";
+import i18n from "@/lib/i18n";
 import { useCoach } from "@/lib/coach-store";
 import { useLessonImages, type LessonImageMap } from "@/lib/lesson-images";
 import { Button } from "@/components/ui/button";
@@ -19,8 +20,8 @@ export const Route = createFileRoute("/lessons/$id")({
   head: ({ params }) => {
     const lesson = lessons.find((l) => l.id === params.id);
     const url = `https://autocadcoach.lovable.app/lessons/${params.id}`;
-    const title = lesson ? `${lesson.title} — AutoCAD Coach` : "Lesson — AutoCAD Coach";
-    const description = lesson?.description ?? "AutoCAD lesson on AutoCAD Coach.";
+    const title = lesson ? `${lesson.title} — AutoCAD Coach` : i18n.t("meta:lessonFallbackTitle");
+    const description = lesson?.description ?? i18n.t("meta:lessonFallbackDesc");
     return {
       meta: [
         { title },
@@ -70,7 +71,7 @@ function LessonViewer() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const { state, set, completeLesson, passLessonQuiz, isUnlocked } = useCoach();
-  const { t } = useTranslation(["lessons", "common"]);
+  const { t } = useTranslation(["lessons", "common", "dashboard"]);
   const localizedList = useLocalizedLessons();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const isAuthed = state.profile.isAuthenticated;
@@ -80,7 +81,7 @@ function LessonViewer() {
   if (!lesson) {
     return (
       <div className="p-10">
-        <p>{t("lessons:locked")}</p>
+        <p>{t("lessons:notFound")}</p>
         <Link to="/lessons" className="text-primary underline">{t("lessons:backToLessons")}</Link>
       </div>
     );
@@ -106,17 +107,17 @@ function LessonViewer() {
   const setStep = (n: number) =>
     set((s) => ({ lessonStep: { ...s.lessonStep, [lesson.id]: Math.max(0, Math.min(lesson.steps.length - 1, n)) } }));
 
-  const quizQuestions = getLessonQuiz(lesson.id);
+  const quizQuestions = useLocalizedLessonQuiz(lesson.id);
   const passed = !!state.lessonQuizPassed[lesson.id];
 
   const onComplete = () => {
     if (!passed) {
-      toast.error("Finish the lesson quiz with a passing score first.");
+      toast.error(t("lessons:finishQuizFirst"));
       return;
     }
     const alreadyDone = state.completedLessons.includes(lesson.id);
     completeLesson(lesson.id);
-    if (!alreadyDone) toast.success(`+${lesson.xp} XP — ${lesson.title} complete!`);
+    if (!alreadyDone) toast.success(t("lessons:xpToastComplete", { xp: lesson.xp, title: lesson.title }));
     if (next) navigate({ to: "/lessons/$id", params: { id: next.id } });
     else navigate({ to: "/dashboard" });
   };
@@ -124,10 +125,10 @@ function LessonViewer() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-20 md:pb-10 space-y-4 sm:space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <Badge variant="outline" className="border-primary/30 text-primary">Day {lesson.day}</Badge>
+        <Badge variant="outline" className="border-primary/30 text-primary">{t("common:day")} {lesson.day}</Badge>
         <Badge variant="outline" className="border-border">{lesson.tag}</Badge>
-        <Badge variant="outline" className="border-border">{lesson.xp} XP</Badge>
-        {done && <Badge className="bg-success/20 text-success border-success/30"><CheckCircle2 className="size-3 mr-1" /> Completed</Badge>}
+        <Badge variant="outline" className="border-border">{lesson.xp} {t("common:xp")}</Badge>
+        {done && <Badge className="bg-success/20 text-success border-success/30"><CheckCircle2 className="size-3 mr-1" /> {t("common:completed")}</Badge>}
       </div>
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{lesson.title}</h1>
       <p className="text-muted-foreground">{lesson.description}</p>
@@ -177,9 +178,9 @@ function LessonViewer() {
           onClick={onComplete}
           disabled={quizQuestions.length > 0 && !passed}
           className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
-          title={quizQuestions.length > 0 && !passed ? "Pass the lesson quiz to complete" : undefined}
+          title={quizQuestions.length > 0 && !passed ? t("lessons:passQuizToComplete") : undefined}
         >
-          <CheckCircle2 className="size-4 mr-1" /> {done ? "Mark complete again" : "Mark lesson complete"}
+          <CheckCircle2 className="size-4 mr-1" /> {done ? t("common:markCompleteAgain") : t("lessons:markLessonComplete")}
         </Button>
       </div>
       </GuestGate>
@@ -187,7 +188,7 @@ function LessonViewer() {
       {lightboxOpen && (
         <Lightbox
           src={lesson.image}
-          alt={`${lesson.title} reference image`}
+          alt={t("lessons:referenceAlt2", { title: lesson.title })}
           onClose={() => setLightboxOpen(false)}
         />
       )}
