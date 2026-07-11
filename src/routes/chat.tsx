@@ -132,7 +132,7 @@ function AskAutoCoach() {
 
   return (
     <div className="flex flex-col h-full">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-2xl bg-card border border-border p-4 space-y-4">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-2xl bg-card border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_28px_-14px_color-mix(in_oklab,var(--primary)_60%,transparent)] p-4 space-y-4">
         {messages.map((m, i) => (
           <div key={i} className={cn("flex gap-3", m.role === "user" && "flex-row-reverse")}>
             <div
@@ -221,13 +221,13 @@ function AskAutoCoach() {
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("placeholder")}
           aria-label={t("placeholder")}
-          className="bg-card border-border"
+          className="bg-card border-primary/30 focus-visible:border-primary/60"
           disabled={loading}
         />
         <Button
           type="submit"
           disabled={loading || !input.trim()}
-          className="bg-primary text-primary-foreground hover:bg-primary/90"
+          className="bg-gradient-to-r from-primary to-success text-primary-foreground hover:opacity-90 shadow-[0_0_18px_-4px_color-mix(in_oklab,var(--primary)_60%,transparent)]"
         >
           <Send className="size-4" />
         </Button>
@@ -244,7 +244,7 @@ function TroubleshootGrid() {
       {troubleshooting.map((t) => (
         <article
           key={t.title}
-          className="rounded-2xl bg-card border border-border p-5 hover:border-primary/40 transition-colors"
+          className="rounded-2xl bg-card border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_20px_-12px_color-mix(in_oklab,var(--primary)_55%,transparent)] p-5 hover:border-primary/50 hover:shadow-[0_0_24px_-8px_color-mix(in_oklab,var(--primary)_70%,transparent)] transition-all"
         >
           <div className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="size-4" />

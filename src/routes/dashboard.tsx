@@ -68,13 +68,12 @@ function DashboardPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           <Stat icon={BookOpen} label={t("dashboard:lessons")} value={`${state.completedLessons.length}/${lessons.length}`} />
-          <Stat icon={Trophy} label={t("dashboard:totalXp")} value={`${totalXp}`} accent />
+          <Stat icon={Trophy} label={t("dashboard:totalXp")} value={`${totalXp}`} />
           <Stat icon={Wrench} label={t("dashboard:projects")} value={`${state.completedProjects.length}`} />
           <Stat
             icon={Flame}
             label={t("dashboard:streak")}
             value={`${state.streak} ${t("dashboard:days", { count: state.streak })}`}
-            accent
           />
         </div>
 
@@ -163,21 +162,20 @@ function Stat({
   icon: Icon,
   label,
   value,
-  accent,
 }: {
   icon: typeof BookOpen;
   label: string;
   value: string;
-  accent?: boolean;
 }) {
   return (
-    <div className={cn("rounded-2xl bg-card border border-border p-5", accent && "ring-1 ring-success/30")}>
-      <div
-        className={cn(
-          "size-9 rounded-lg grid place-items-center",
-          accent ? "bg-success/20 text-success" : "bg-secondary text-foreground",
-        )}
-      >
+    <div
+      className={cn(
+        "rounded-2xl bg-card p-5 border border-primary/25",
+        "ring-1 ring-primary/15 shadow-[0_0_24px_-10px_color-mix(in_oklab,var(--primary)_60%,transparent)]",
+        "transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_0_28px_-8px_color-mix(in_oklab,var(--primary)_70%,transparent)]",
+      )}
+    >
+      <div className="size-9 rounded-lg grid place-items-center bg-gradient-to-br from-primary/25 to-success/20 text-primary ring-1 ring-primary/30">
         <Icon className="size-4" />
       </div>
       <div className="mt-3 text-sm text-muted-foreground">{label}</div>
