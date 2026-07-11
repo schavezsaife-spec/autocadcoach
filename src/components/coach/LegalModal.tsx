@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Shield, Lock, Server, Eye, RefreshCw, Mail } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export type LegalPage = "privacy" | "terms" | "cookies" | "trust" | null;
 
@@ -11,17 +12,18 @@ interface LegalModalProps {
 }
 
 export function LegalModal({ open, onClose }: LegalModalProps) {
+  const { t } = useTranslation("legal");
+  const title =
+    open === "privacy" ? t("privacyTitle") :
+    open === "terms" ? t("termsTitle") :
+    open === "cookies" ? t("cookiesTitle") :
+    open === "trust" ? t("trustTitle") : "";
   return (
     <Sheet open={open !== null} onOpenChange={(v) => !v && onClose()}>
       <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col">
         <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
-          <SheetTitle className="text-2xl">
-            {open === "privacy" && "Privacy Policy"}
-            {open === "terms" && "Terms of Service"}
-            {open === "cookies" && "Cookie Policy"}
-            {open === "trust" && "Trust & Security"}
-          </SheetTitle>
-          <p className="text-xs text-muted-foreground">Last updated: 1 June 2025</p>
+          <SheetTitle className="text-2xl">{title}</SheetTitle>
+          <p className="text-xs text-muted-foreground">{t("lastUpdated")}</p>
         </SheetHeader>
         <ScrollArea className="flex-1 px-6 py-6">
           {open === "privacy" && <PrivacyContent />}
@@ -53,98 +55,80 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 function PrivacyContent() {
+  const { t } = useTranslation("legal");
   return (
     <>
-      <p className="text-sm text-muted-foreground mb-6">
-        AutoCAD Coach is committed to protecting your privacy. This policy explains how we collect,
-        use, and safeguard your information.
-      </p>
-      <Section title="Information We Collect">
+      <p className="text-sm text-muted-foreground mb-6">{t("privacyIntro")}</p>
+      <Section title={t("sectionInfoWeCollect")}>
         <ul className="list-disc pl-5 space-y-1">
-          <li>Account data: name, email, and profile photo when you register.</li>
-          <li>Usage data: lessons completed, XP earned, quiz results stored locally in your browser.</li>
-          <li>Technical data: browser type, device type, IP address collected via standard web logs.</li>
-          <li>AI conversations: messages to AutoCoach are processed in real time and not permanently stored.</li>
+          <li>{t("privacyCollect1")}</li>
+          <li>{t("privacyCollect2")}</li>
+          <li>{t("privacyCollect3")}</li>
+          <li>{t("privacyCollect4")}</li>
         </ul>
       </Section>
-      <Section title="How We Use Your Information">
+      <Section title={t("sectionHowWeUse")}>
         <ul className="list-disc pl-5 space-y-1">
-          <li>To provide and maintain the AutoCAD Coach platform.</li>
-          <li>To personalize your learning experience and track progress.</li>
-          <li>To communicate with you about your account.</li>
-          <li>To improve content, features, and AI tutor responses.</li>
+          <li>{t("privacyUse1")}</li>
+          <li>{t("privacyUse2")}</li>
+          <li>{t("privacyUse3")}</li>
+          <li>{t("privacyUse4")}</li>
         </ul>
       </Section>
-      <Section title="Data Storage">
+      <Section title={t("sectionDataStorage")}>
+        <p>{t("privacyStorageBody")}</p>
+      </Section>
+      <Section title={t("sectionThirdParty")}>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>{t("privacyThird1")}</li>
+          <li>{t("privacyThird2")}</li>
+        </ul>
+      </Section>
+      <Section title={t("sectionYourRights")}>
         <p>
-          Your progress is stored in browser localStorage and not transmitted to our servers unless
-          signed in. Account data is stored securely with encryption at rest.
-        </p>
-      </Section>
-      <Section title="Third-Party Services">
-        <ul className="list-disc pl-5 space-y-1">
-          <li>Lovable Cloud — authentication and database.</li>
-          <li>Lovable AI Gateway — powers AutoCoach (messages not stored).</li>
-        </ul>
-      </Section>
-      <Section title="Your Rights">
-        <p>
-          You may access, correct, or delete your personal data at any time. Contact us at{" "}
+          {t("privacyRights")}
           <a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a>.
         </p>
       </Section>
-      <Section title="Contact">
-        <p>Questions? Email us at <a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a>.</p>
+      <Section title={t("sectionContact")}>
+        <p>{t("privacyContact")}<a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a>.</p>
       </Section>
     </>
   );
 }
 
 function TermsContent() {
+  const { t } = useTranslation("legal");
   return (
     <>
-      <p className="text-sm text-muted-foreground mb-6">
-        By using AutoCAD Coach you agree to these Terms. If you do not agree, please do not use the service.
-      </p>
-      <Section title="Service Description">
-        <p>
-          AutoCAD Coach provides AutoCAD lessons, projects, quizzes, and an AI tutor for educational
-          purposes only.
-        </p>
+      <p className="text-sm text-muted-foreground mb-6">{t("termsIntro")}</p>
+      <Section title={t("termsServiceTitle")}>
+        <p>{t("termsServiceBody")}</p>
       </Section>
-      <Section title="Your Account">
+      <Section title={t("termsAccountTitle")}>
         <ul className="list-disc pl-5 space-y-1">
-          <li>Provide accurate information when registering.</li>
-          <li>You are responsible for your account credentials and all activity under your account.</li>
-          <li>You must be at least 13 years old to create an account.</li>
+          <li>{t("termsAccount1")}</li>
+          <li>{t("termsAccount2")}</li>
+          <li>{t("termsAccount3")}</li>
         </ul>
       </Section>
-      <Section title="Acceptable Use">
+      <Section title={t("termsUseTitle")}>
         <ul className="list-disc pl-5 space-y-1">
-          <li>Do not use the service for unlawful purposes.</li>
-          <li>Do not attempt to gain unauthorized access to any part of the service.</li>
-          <li>Do not scrape or redistribute lesson content without permission.</li>
+          <li>{t("termsUse1")}</li>
+          <li>{t("termsUse2")}</li>
+          <li>{t("termsUse3")}</li>
         </ul>
       </Section>
-      <Section title="Intellectual Property">
-        <p>
-          All content including lessons, projects, and the AutoCoach AI system is owned by AutoCAD
-          Coach and protected by copyright.
-        </p>
+      <Section title={t("termsIpTitle")}>
+        <p>{t("termsIpBody")}</p>
       </Section>
-      <Section title="AI Disclaimer">
-        <p>
-          AutoCoach responses may not always be accurate. Verify critical information against
-          official Autodesk documentation. We are not liable for AI errors.
-        </p>
+      <Section title={t("termsAiTitle")}>
+        <p>{t("termsAiBody")}</p>
       </Section>
-      <Section title="Limitation of Liability">
-        <p>
-          AutoCAD Coach is not liable for indirect, incidental, or consequential damages arising
-          from use of the service.
-        </p>
+      <Section title={t("termsLiabilityTitle")}>
+        <p>{t("termsLiabilityBody")}</p>
       </Section>
-      <Section title="Contact">
+      <Section title={t("sectionContact")}>
         <p><a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a></p>
       </Section>
     </>
@@ -152,56 +136,49 @@ function TermsContent() {
 }
 
 function CookiesContent() {
+  const { t } = useTranslation("legal");
   return (
     <>
-      <p className="text-sm text-muted-foreground mb-6">
-        Cookies are small text files placed on your device. We use a minimal set.
-      </p>
-      <Section title="What We Use">
+      <p className="text-sm text-muted-foreground mb-6">{t("cookiesIntro")}</p>
+      <Section title={t("cookiesUseTitle")}>
         <ul className="list-disc pl-5 space-y-1">
-          <li>Authentication cookies: set when you sign in. Strictly necessary to keep you logged in.</li>
-          <li>Preference storage: sidebar open/closed state in localStorage — never transmitted to our servers.</li>
+          <li>{t("cookiesUse1")}</li>
+          <li>{t("cookiesUse2")}</li>
         </ul>
       </Section>
-      <Section title="What We Don't Use">
+      <Section title={t("cookiesDontTitle")}>
         <ul className="list-disc pl-5 space-y-1">
-          <li>No advertising or tracking cookies.</li>
-          <li>No analytics cookies (e.g. Google Analytics).</li>
-          <li>No third-party marketing data sharing.</li>
+          <li>{t("cookiesDont1")}</li>
+          <li>{t("cookiesDont2")}</li>
+          <li>{t("cookiesDont3")}</li>
         </ul>
       </Section>
-      <Section title="Your Control">
-        <p>
-          You can control cookies in your browser settings. Disabling auth cookies will prevent you
-          from staying signed in.
-        </p>
+      <Section title={t("cookiesControlTitle")}>
+        <p>{t("cookiesControlBody")}</p>
       </Section>
-      <Section title="Local Storage">
-        <p>
-          Learning progress is stored in localStorage on your device only. Clear it anytime via
-          your browser's site data settings.
-        </p>
+      <Section title={t("cookiesLocalTitle")}>
+        <p>{t("cookiesLocalBody")}</p>
       </Section>
-      <Section title="Contact">
+      <Section title={t("sectionContact")}>
         <p><a href="mailto:schavezsaife@gmail.com" className="text-primary hover:underline"><strong>schavezsaife@gmail.com</strong></a></p>
       </Section>
     </>
   );
 }
 
-const TRUST_PILLARS = [
-  { icon: Lock, title: "Authentication", body: "Accounts secured via managed auth. Passwords hashed with bcrypt. Session tokens stored in secure HTTP-only cookies." },
-  { icon: Server, title: "Data Storage", body: "Account data in Postgres with encryption at rest. Learning progress stays in your browser's localStorage." },
-  { icon: Shield, title: "Storage Security", body: "Lesson images use Row Level Security (RLS). Only verified admin accounts can modify course content." },
-  { icon: Eye, title: "No Tracking", body: "No advertising trackers, no analytics, no data brokers. We do not sell your personal data." },
-  { icon: RefreshCw, title: "AI Conversations", body: "AutoCoach messages are processed in real time and not stored on our servers." },
-  { icon: Mail, title: "Security Reports", body: "Found a vulnerability? Email schavezsaife@gmail.com — we respond within 48 hours." },
-];
-
 function TrustContent() {
+  const { t } = useTranslation("legal");
+  const pillars = [
+    { icon: Lock, title: t("trustAuthTitle"), body: t("trustAuthBody") },
+    { icon: Server, title: t("trustStorageTitle"), body: t("trustStorageBody") },
+    { icon: Shield, title: t("trustAssetsTitle"), body: t("trustAssetsBody") },
+    { icon: Eye, title: t("trustTrackingTitle"), body: t("trustTrackingBody") },
+    { icon: RefreshCw, title: t("trustAiTitle"), body: t("trustAiBody") },
+    { icon: Mail, title: t("trustReportsTitle"), body: t("trustReportsBody") },
+  ];
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      {TRUST_PILLARS.map((p) => (
+      {pillars.map((p) => (
         <div key={p.title} className="rounded-xl border border-border bg-card p-4">
           <div className="size-9 rounded-lg bg-primary/10 text-primary grid place-items-center mb-3">
             <p.icon className="size-4" />
