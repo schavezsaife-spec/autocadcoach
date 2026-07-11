@@ -607,7 +607,7 @@ function BeforeAfter({
   );
 }
 
-type Q = ReturnType<typeof getLessonQuiz>[number];
+type Q = ReturnType<typeof useLocalizedLessonQuiz>[number];
 
 function LessonQuiz({
   lessonId,
