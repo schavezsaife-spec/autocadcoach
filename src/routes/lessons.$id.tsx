@@ -316,13 +316,14 @@ function RichLessonBody({
   onOpenLightbox: () => void;
   lessonId: string;
 }) {
+  const { t } = useTranslation(["lessons", "common"]);
   const hideVisual = lessonId === "interface" || lessonId === "osnap" || lessonId === "layers" || lessonId === "dim-text" || lessonId === "hatch" || lessonId === "blocks" || lessonId === "join";
-  const sections = hideVisual ? SECTIONS.filter((s) => s.id !== "visual") : SECTIONS;
+  const sections = hideVisual ? SECTION_IDS.filter((s) => s.id !== "visual") : SECTION_IDS;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-6 lg:gap-8">
       {/* Anchored TOC */}
       <nav className="hidden lg:block sticky top-6 self-start text-sm">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">On this page</div>
+        <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">{t("lessons:onThisPage")}</div>
         <ul className="space-y-1.5">
           {sections.map((s) => (
             <li key={s.id}>
@@ -331,7 +332,7 @@ function RichLessonBody({
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-1"
               >
                 <s.icon className="size-3.5 opacity-60" />
-                <span>{s.label}</span>
+                <span>{t(`lessons:sections.${s.id}`)}</span>
               </a>
             </li>
           ))}
@@ -339,36 +340,36 @@ function RichLessonBody({
       </nav>
 
       <div className="space-y-6 min-w-0">
-        <Section id="objective" icon={Target} title="Learning objective" accent="primary">
+        <Section id="objective" icon={Target} title={t("lessons:sectionHeadings.learningObjective")} accent="primary">
           <p className="text-base leading-relaxed">{rich.learningObjective}</p>
         </Section>
 
-        <Section id="what" icon={BookOpen} title={`What ${rich.commandName ?? "this"} is`}>
+        <Section id="what" icon={BookOpen} title={rich.commandName ? t("lessons:sectionHeadings.whatXIs", { command: rich.commandName }) : t("lessons:sectionHeadings.whatThisIs")}>
           <p className="text-sm leading-relaxed">{rich.whatItIs}</p>
         </Section>
 
-        <Section id="why" icon={Compass} title="Why and when you use it">
+        <Section id="why" icon={Compass} title={t("lessons:sectionHeadings.whyAndWhen")}>
           <p className="text-sm leading-relaxed">{rich.whyWhen}</p>
         </Section>
 
-        <Section id="where" icon={MapPin} title="Where to find it in the AutoCAD interface">
+        <Section id="where" icon={MapPin} title={t("lessons:sectionHeadings.whereToFind")}>
           <dl className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-y-2 gap-x-4 text-sm">
-            <dt className="text-muted-foreground">Ribbon</dt>
+            <dt className="text-muted-foreground">{t("lessons:labels.ribbon")}</dt>
             <dd>{rich.whereToFind.ribbon}</dd>
             {rich.whereToFind.menu && (<>
-              <dt className="text-muted-foreground">Menu</dt>
+              <dt className="text-muted-foreground">{t("lessons:labels.menu")}</dt>
               <dd>{rich.whereToFind.menu}</dd>
             </>)}
-            <dt className="text-muted-foreground">Command line</dt>
+            <dt className="text-muted-foreground">{t("lessons:labels.commandLine")}</dt>
             <dd className="font-mono text-primary">{rich.whereToFind.commandLine}</dd>
             {rich.whereToFind.alias && (<>
-              <dt className="text-muted-foreground">Alias / shortcut</dt>
+              <dt className="text-muted-foreground">{t("lessons:labels.aliasShortcut")}</dt>
               <dd className="font-mono text-primary">{rich.whereToFind.alias}</dd>
             </>)}
           </dl>
         </Section>
 
-        <Section id="vocab" icon={BookOpen} title="Key vocabulary">
+        <Section id="vocab" icon={BookOpen} title={t("lessons:sectionHeadings.keyVocabulary")}>
           <dl className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-y-3 gap-x-4 text-sm">
             {rich.vocab.map((v) => (
               <div key={v.term} className="contents">
@@ -379,7 +380,7 @@ function RichLessonBody({
           </dl>
         </Section>
 
-        <Section id="before" icon={ListChecks} title="Before you start">
+        <Section id="before" icon={ListChecks} title={t("lessons:sectionHeadings.beforeYouStart")}>
           <ul className="space-y-2 text-sm">
             {rich.beforeYouStart.map((b, i) => (
               <li key={i} className="flex gap-2">
@@ -390,7 +391,7 @@ function RichLessonBody({
           </ul>
         </Section>
 
-        <Section id="steps" icon={ListChecks} title="Step-by-step instructions">
+        <Section id="steps" icon={ListChecks} title={t("lessons:sectionHeadings.stepByStep")}>
           <ol className="space-y-5">
             {rich.detailedSteps.map((s, i) => (
               <li key={i} className="rounded-xl border border-border bg-secondary/30 p-4 sm:p-5">
@@ -416,7 +417,7 @@ function RichLessonBody({
         </Section>
 
         {!hideVisual && (
-        <Section id="visual" icon={ImageIcon} title="Visual reference">
+        <Section id="visual" icon={ImageIcon} title={t("lessons:sectionHeadings.visualReference")}>
           {rich.visualReference ? (
             <ScreenshotSlot
               shot={rich.visualReference}
@@ -429,66 +430,63 @@ function RichLessonBody({
               uploadable
             />
           ) : (
-            <p className="text-sm text-muted-foreground">No reference image required for this lesson.</p>
+            <p className="text-sm text-muted-foreground">{t("lessons:labels.noReference")}</p>
           )}
           {(uploaded.before || uploaded.after) && (
             <div className="mt-5">
               <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                Before vs After
+                {t("lessons:beforeVsAfter")}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <BeforeAfter label="Before" src={uploaded.before} />
-                <BeforeAfter label="After" src={uploaded.after} />
+                <BeforeAfter label={t("lessons:before")} src={uploaded.before} />
+                <BeforeAfter label={t("lessons:after")} src={uploaded.after} />
               </div>
             </div>
           )}
         </Section>
         )}
 
-        <Section id="mistakes" icon={AlertCircle} title="Common mistakes & fixes" accent="destructive">
+        <Section id="mistakes" icon={AlertCircle} title={t("lessons:sectionHeadings.commonMistakes")} accent="destructive">
           <ul className="space-y-3 text-sm">
             {rich.commonMistakes.map((m, i) => (
               <li key={i} className="rounded-lg border border-destructive/20 bg-destructive/5 p-3">
                 <div className="font-medium text-destructive">{m.mistake}</div>
-                <div className="mt-1 text-muted-foreground"><span className="text-foreground font-medium">Fix: </span>{m.fix}</div>
+                <div className="mt-1 text-muted-foreground"><span className="text-foreground font-medium">{t("lessons:labels.fix")}</span>{m.fix}</div>
               </li>
             ))}
           </ul>
         </Section>
 
-        <Section id="troubleshooting" icon={Wrench} title="Troubleshooting">
+        <Section id="troubleshooting" icon={Wrench} title={t("lessons:sectionHeadings.troubleshooting")}>
           <div className="space-y-3">
             {rich.troubleshooting.map((t, i) => (
               <details key={i} className="group rounded-lg border border-border bg-secondary/30 p-3 open:bg-secondary/50">
                 <summary className="cursor-pointer font-medium text-sm flex items-center justify-between gap-2">
                   <span>{t.problem}</span>
-                  <span className="text-xs text-muted-foreground group-open:hidden">Show</span>
-                  <span className="text-xs text-muted-foreground hidden group-open:inline">Hide</span>
                 </summary>
                 <div className="mt-2 text-sm space-y-1">
-                  <div><span className="text-muted-foreground">Cause: </span>{t.cause}</div>
-                  <div><span className="text-muted-foreground">Fix: </span>{t.fix}</div>
+                  <div><span className="text-muted-foreground">{tt.cause}</span></div>
                 </div>
               </details>
             ))}
           </div>
         </Section>
 
-        <Section id="practice" icon={Dumbbell} title="Practice exercise" accent="primary">
+        <Section id="practice" icon={Dumbbell} title={t("lessons:sectionHeadings.practiceExercise")} accent="primary">
           <div className="font-semibold">{rich.practiceExercise.title}</div>
           <ol className="mt-3 space-y-2 text-sm list-decimal list-inside marker:text-primary">
             {rich.practiceExercise.steps.map((s, i) => <li key={i}>{s}</li>)}
           </ol>
           <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm">
-            <span className="font-medium text-primary">Success looks like: </span>
+            <span className="font-medium text-primary">{t("lessons:labels.successLooksLike")}</span>
             <span>{rich.practiceExercise.success}</span>
           </div>
         </Section>
 
-        <Section id="pro" icon={Sparkles} title="Pro tips & related commands">
+        <Section id="pro" icon={Sparkles} title={t("lessons:sectionHeadings.proTipsRelated")}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Pro tips</div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">{t("lessons:labels.proTips")}</div>
               <ul className="space-y-2 text-sm">
                 {rich.proTips.map((t, i) => (
                   <li key={i} className="flex gap-2">
@@ -499,7 +497,7 @@ function RichLessonBody({
               </ul>
             </div>
             <div>
-              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">Related commands</div>
+              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">{t("lessons:labels.relatedCommands")}</div>
               <ul className="space-y-2 text-sm">
                 {rich.relatedCommands.map((c) => (
                   <li key={c.name} className="rounded-lg border border-border bg-secondary/30 px-3 py-2">
