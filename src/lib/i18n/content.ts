@@ -1,21 +1,44 @@
-// Hooks that return lesson/project content in the user's active language,
-// falling back field-by-field to English when a Spanish translation is missing.
+// Hooks that return lesson/project/quiz/troubleshooting content in the
+// user's active language, falling back field-by-field to English when a
+// Spanish translation is missing.
 
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { lessons as lessonsEn, projects as projectsEn, type Lesson, type Project } from "@/lib/coach-data";
-import { lessonsEs, projectsEs, mergeLesson, mergeProject } from "@/lib/coach-data.es";
+import {
+  lessons as lessonsEn,
+  projects as projectsEn,
+  lessonQuizzes as lessonQuizzesEn,
+  troubleshooting as troubleshootingEn,
+  type Lesson,
+  type Project,
+  type LessonQuizQ,
+  type TroubleshootItem,
+} from "@/lib/coach-data";
+import {
+  lessonsEs,
+  projectsEs,
+  richLessonsEs,
+  lessonQuizzesEs,
+  troubleshootingEs,
+  mergeLesson,
+  mergeProject,
+  mergeQuiz,
+} from "@/lib/coach-data.es";
 
 function activeLang(lng: string | undefined): "en" | "es" {
   return (lng ?? "en").startsWith("es") ? "es" : "en";
 }
 
-export function useLocalizedLessons(): Lesson[] {
+export function useActiveLanguage(): "en" | "es" {
   const { i18n } = useTranslation();
-  const lang = activeLang(i18n.language);
+  return activeLang(i18n.language);
+}
+
+export function useLocalizedLessons(): Lesson[] {
+  const lang = useActiveLanguage();
   return useMemo(() => {
     if (lang === "en") return lessonsEn;
-    return lessonsEn.map((l) => mergeLesson(l, lessonsEs[l.id]));
+    return lessonsEn.map((l) => mergeLesson(l, lessonsEs[l.id], richLessonsEs[l.id]));
   }, [lang]);
 }
 
@@ -25,8 +48,7 @@ export function useLocalizedLesson(id: string): Lesson | undefined {
 }
 
 export function useLocalizedProjects(): Project[] {
-  const { i18n } = useTranslation();
-  const lang = activeLang(i18n.language);
+  const lang = useActiveLanguage();
   return useMemo(() => {
     if (lang === "en") return projectsEn;
     return projectsEn.map((p) => mergeProject(p, projectsEs[p.id]));
@@ -36,4 +58,29 @@ export function useLocalizedProjects(): Project[] {
 export function useLocalizedProject(id: string): Project | undefined {
   const list = useLocalizedProjects();
   return list.find((p) => p.id === id);
+}
+
+export function useLocalizedLessonQuiz(id: string): LessonQuizQ[] {
+  const lang = useActiveLanguage();
+  return useMemo(() => {
+    const base = lessonQuizzesEn[id] ?? [];
+    if (lang === "en") return base;
+    return mergeQuiz(base, lessonQuizzesEs[id]);
+  }, [lang, id]);
+}
+
+export function useLocalizedTroubleshooting(): TroubleshootItem[] {
+  const lang = useActiveLanguage();
+  return useMemo(() => {
+    if (lang === "en") return troubleshootingEn;
+    return troubleshootingEn.map((t, i) => {
+      const es = troubleshootingEs[i];
+      if (!es) return t;
+      return {
+        title: es.title ?? t.title,
+        cause: es.cause ?? t.cause,
+        fix: es.fix ?? t.fix,
+      };
+    });
+  }, [lang]);
 }
