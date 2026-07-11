@@ -576,6 +576,7 @@ function ScreenshotSlot({
   uploadable?: boolean;
 }) {
   const src = uploadedUrl ?? shot.imageUrl;
+  const { t } = useTranslation("lessons");
   // `fallback`, `onOpen`, `large` are intentionally unused — ScreenshotCard
   // owns its own lightbox and sizes itself to the available card width.
   void fallback;
@@ -585,7 +586,7 @@ function ScreenshotSlot({
     <div className="mt-3">
       <ScreenshotCard
         src={src}
-        alt="Lesson screenshot"
+        alt={t("screenshotAlt")}
         lessonId={lessonId}
         slot={slot}
         uploadable={uploadable}
@@ -604,7 +605,7 @@ function BeforeAfter({
   return (
     <ScreenshotCard
       src={src}
-      alt={`${label} — annotated AutoCAD screenshot`}
+      alt={label}
     />
   );
 }
@@ -622,6 +623,7 @@ function LessonQuiz({
   passed: boolean;
   onPass: () => void;
 }) {
+  const { t } = useTranslation(["lessons", "common"]);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
 
@@ -651,26 +653,26 @@ function LessonQuiz({
     <div className="rounded-2xl bg-card border border-border p-4 sm:p-6 mt-6" id={`quiz-${lessonId}`}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <div className="flex items-center gap-2 font-semibold">
-          <Trophy className="size-4 text-primary" /> Lesson quiz
+          <Trophy className="size-4 text-primary" /> {t("lessons:lessonQuiz")}
         </div>
         <div className="flex items-center gap-2">
           {passed && (
             <Badge className="bg-success/20 text-success border-success/30">
-              <CheckCircle2 className="size-3 mr-1" /> Passed
+              <CheckCircle2 className="size-3 mr-1" /> {t("lessons:quizPassed")}
             </Badge>
           )}
           <Badge variant="outline" className="border-border">
-            {correctCount}/{questions.length} correct
+            {t("lessons:correctCount", { correct: correctCount, total: questions.length })}
           </Badge>
           {(allAnswered || passed) && (
             <Button variant="outline" size="sm" onClick={retry}>
-              <RotateCcw className="size-3.5 mr-1" /> Retry
+              <RotateCcw className="size-3.5 mr-1" /> {t("common:retry")}
             </Button>
           )}
         </div>
       </div>
       <p className="text-sm text-muted-foreground mb-4">
-        Score at least {passingScore}/{questions.length} to unlock lesson completion.
+        {t("lessons:quizPassNeeded", { needed: passingScore, total: questions.length })}
       </p>
       <div className="space-y-4">
         {questions.map((q, i) => {
@@ -709,7 +711,7 @@ function LessonQuiz({
                     ? "bg-success/10 text-success border border-success/20"
                     : "bg-destructive/10 text-destructive border border-destructive/20",
                 )}>
-                  {ans === q.answer ? "Correct — " : "Not quite — "}{q.explanation}
+                  {ans === q.answer ? t("lessons:correctPrefix") : t("lessons:notQuitePrefix")}{q.explanation}
                 </div>
               )}
             </div>
@@ -724,8 +726,8 @@ function LessonQuiz({
             : "bg-destructive/10 text-destructive border border-destructive/30",
         )}>
           {justPassed
-            ? `Nice work — you scored ${correctCount}/${questions.length}. You can now mark this lesson complete.`
-            : `You scored ${correctCount}/${questions.length}. Hit Retry and aim for ${passingScore}+.`}
+            ? t("lessons:quizPassResult", { correct: correctCount, total: questions.length })
+            : t("lessons:quizFailResult", { correct: correctCount, total: questions.length, needed: passingScore })}
         </div>
       )}
     </div>
