@@ -44,18 +44,24 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [open, mounted]);
 
   return (
-    <div className="h-dvh flex w-full bg-background text-foreground overflow-hidden">
+    <div className="relative h-dvh flex w-full bg-background text-foreground overflow-hidden">
+      {/* Ambient aqua/teal glow blobs */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 -left-24 h-[420px] w-[420px] rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 h-[520px] w-[520px] rounded-full bg-success/15 blur-3xl" />
+        <div className="absolute -bottom-40 left-1/3 h-[420px] w-[420px] rounded-full bg-accent/15 blur-3xl" />
+      </div>
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden md:flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-200 overflow-hidden h-dvh",
+          "relative z-10 hidden md:flex flex-col bg-sidebar/85 backdrop-blur-xl border-r border-sidebar-border transition-all duration-200 overflow-hidden h-dvh",
           open ? "w-64" : "w-16",
         )}
       >
         <SidebarInner collapsed={!open} pathname={pathname} onToggle={() => setOpen((v) => !v)} />
       </aside>
 
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="relative z-10 flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Page content */}
         <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">
@@ -63,7 +69,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </main>
 
         {/* Mobile bottom nav */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-sidebar border-t border-sidebar-border flex items-center justify-around h-16 px-2">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-sidebar/90 backdrop-blur-xl border-t border-sidebar-border flex items-center justify-around h-16 px-2">
           <MobileNavItems pathname={pathname} />
           <LanguageToggle variant="mobile" />
           <MobileAuthBadge />
@@ -86,8 +92,10 @@ function MobileNavItems({ pathname }: { pathname: string }) {
                 to={to}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-lg transition-colors text-xs font-medium",
-                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                  "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-xl transition-all text-xs font-medium",
+                  active
+                    ? "text-primary bg-gradient-to-b from-primary/20 to-success/15 shadow-[0_0_18px_-4px_color-mix(in_oklab,var(--primary)_55%,transparent)]"
+                    : "text-muted-foreground hover:text-primary",
                 )}
               >
                 <Icon className={cn("size-5", active && "drop-shadow-[0_0_6px_currentColor]")} />
@@ -145,14 +153,19 @@ function SidebarInner({
               aria-current={active ? "page" : undefined}
               title={collapsed ? label : undefined}
               className={cn(
-                "flex items-center rounded-lg text-sm font-medium transition-colors",
+                "group flex items-center rounded-xl text-sm font-medium transition-all",
                 collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2.5",
                 active
-                  ? "bg-primary/15 text-primary ring-1 ring-primary/30"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent",
+                  ? "bg-gradient-to-r from-primary/25 via-primary/15 to-success/20 text-primary ring-1 ring-primary/40 shadow-[0_0_20px_-4px_color-mix(in_oklab,var(--primary)_55%,transparent)]"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-primary",
               )}
             >
-              <Icon className="size-4 shrink-0" />
+              <Icon
+                className={cn(
+                  "size-4 shrink-0 transition-colors",
+                  active ? "text-primary drop-shadow-[0_0_6px_color-mix(in_oklab,var(--primary)_70%,transparent)]" : "text-primary/70 group-hover:text-primary",
+                )}
+              />
               <span className={cn("truncate transition-opacity", collapsed && "opacity-0 w-0 overflow-hidden")}>
                 {label}
               </span>
