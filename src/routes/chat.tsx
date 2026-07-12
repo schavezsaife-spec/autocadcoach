@@ -131,8 +131,8 @@ function AskAutoCoach() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-2xl bg-card border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_28px_-14px_color-mix(in_oklab,var(--primary)_60%,transparent)] p-4 space-y-4">
+    <div className="flex flex-col h-full pb-2">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-2xl bg-card border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_28px_-14px_color-mix(in_oklab,var(--primary)_60%,transparent)] p-4 pb-8 space-y-4">
         {messages.map((m, i) => (
           <div key={i} className={cn("flex gap-3", m.role === "user" && "flex-row-reverse")}>
             <div
