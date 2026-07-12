@@ -342,12 +342,12 @@ function RichLessonBody({
                   const main = document.getElementById("main-scrollable-area");
                   const target = document.getElementById(s.id);
                   if (!target) return;
-                  const OFFSET = 24;
                   if (main) {
-                    const top = target.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop - OFFSET;
-                    main.scrollTo({ top, behavior: "smooth" });
+                    const top = target.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop;
+                    main.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
                   } else {
-                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+                    const top = target.getBoundingClientRect().top + window.scrollY;
+                    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
                   }
                   if (typeof window !== "undefined" && window.history.replaceState) {
                     window.history.replaceState(null, "", `#${s.id}`);
