@@ -2036,6 +2036,7 @@ export type Project = {
   skills: string[];
   steps: string[];
   image: string;
+  coverImage?: string;
 };
 
 export const projects: Project[] = [
