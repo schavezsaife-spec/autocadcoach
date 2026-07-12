@@ -64,7 +64,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="relative z-10 flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Page content */}
-        <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">
+        <main id="main-scrollable-area" className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">
           {children}
         </main>
 
