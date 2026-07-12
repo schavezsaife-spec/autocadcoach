@@ -344,10 +344,10 @@ function RichLessonBody({
                   if (!target) return;
                   if (main) {
                     const top = target.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop;
-                    main.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+                    main.scrollTo({ top: Math.max(0, Math.ceil(top)), behavior: "smooth" });
                   } else {
                     const top = target.getBoundingClientRect().top + window.scrollY;
-                    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+                    window.scrollTo({ top: Math.max(0, Math.ceil(top)), behavior: "smooth" });
                   }
                   if (typeof window !== "undefined" && window.history.replaceState) {
                     window.history.replaceState(null, "", `#${s.id}`);
