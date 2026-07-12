@@ -35,7 +35,10 @@
     "learnMore": "Saber más →",
     "toggleMenu": "Mostrar menú",
     "hidePassword": "Ocultar contraseña",
-    "showPassword": "Mostrar contraseña"
+    "showPassword": "Mostrar contraseña",
+    "backToDashboard": "Volver al panel",
+    "backToLessonsScreen": "Volver a lecciones",
+    "backToProjectsScreen": "Volver a proyectos"
   },
   "nav": {
     "dashboard": "Panel",
