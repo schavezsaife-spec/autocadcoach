@@ -96,7 +96,14 @@ export function CoachProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) setState({ ...DEFAULT, ...JSON.parse(raw) });
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        setState({ ...DEFAULT, ...parsed });
+      } else {
+        // No saved preference: respect the browser language once on first load.
+        const nav = navigator.language?.toLowerCase() ?? "";
+        if (nav.startsWith("es")) setState((s) => ({ ...s, language: "es" }));
+      }
     } catch {}
     setHydrated(true);
   }, []);
