@@ -73,6 +73,7 @@ export const Route = createFileRoute("/lessons/$id")({
 
 function LessonViewer() {
   const { id } = Route.useParams();
+  const search = Route.useSearch();
   const navigate = useNavigate();
   const { state, set, completeLesson, passLessonQuiz, isUnlocked } = useCoach();
   const { t } = useTranslation(["lessons", "common", "dashboard"]);
@@ -136,6 +137,16 @@ function LessonViewer() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-20 md:pb-10 space-y-4 sm:space-y-6">
+      <div className="flex justify-end">
+        <BackLink
+          to={search.from === "dashboard" ? "/dashboard" : "/lessons"}
+          label={
+            search.from === "dashboard"
+              ? t("common:backToDashboard")
+              : t("common:backToLessonsScreen")
+          }
+        />
+      </div>
       <div className="flex flex-wrap items-center gap-3">
         <Badge variant="outline" className="border-primary/30 text-primary">{t("common:day")} {lesson.day}</Badge>
         <Badge variant="outline" className="border-border">{lesson.tag}</Badge>
