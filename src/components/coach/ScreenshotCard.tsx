@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { Image as ImageIcon, Maximize2, Upload, Loader2 } from "lucide-react";
 import { Lightbox } from "@/components/coach/Lightbox";
+import { LogoOverlay } from "@/components/coach/LogoOverlay";
 import { cn } from "@/lib/utils";
 import { uploadLessonImage } from "@/lib/lesson-images";
 import { toast } from "sonner";
@@ -32,6 +33,8 @@ export function ScreenshotCard({
   const [uploading, setUploading] = useState(false);
   const [localSrc, setLocalSrc] = useState<string | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const btnRef = useRef<HTMLButtonElement | null>(null);
   const canUpload = uploadable && Boolean(lessonId && slot);
 
   const onPick = async (file: File | null) => {
@@ -61,17 +64,20 @@ export function ScreenshotCard({
       {displaySrc ? (
         <button
           type="button"
+          ref={btnRef}
           onClick={() => setOpen(true)}
           className="block w-full relative focus:outline-none focus-visible:ring-2 focus-visible:ring-primary aspect-video"
             aria-label={t("enlargeAria", { alt })}
         >
           <img
+            ref={imgRef}
             src={displaySrc}
             alt={alt}
             loading="lazy"
             decoding="async"
             className="absolute inset-0 w-full h-full object-contain bg-black/40"
           />
+          <LogoOverlay imgRef={imgRef} containerRef={btnRef} />
           <span
             aria-hidden
             className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-background/80 backdrop-blur px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground opacity-0 group-hover/screenshot:opacity-100 transition-opacity"
