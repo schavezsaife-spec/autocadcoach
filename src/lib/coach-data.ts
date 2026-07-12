@@ -2051,7 +2051,7 @@ export const projects: Project[] = [
     image: keychainHero.url,
   },
   {
-    id: "wheel", title: "Wheel Sketch", difficulty: "Easy", time: "30 min",
+    id: "wheel", title: "Wheel Outline", difficulty: "Easy", time: "30 min",
     description: "Sketch a wheel using circles and array.",
     skills: ["CIRCLE", "ARRAY", "OFFSET"],
     steps: [
