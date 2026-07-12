@@ -264,7 +264,7 @@ export const lessonsEs: Record<string, LessonEs> = {
 
 export const projectsEs: Record<string, ProjectEs> = {
   keychain: {
-    title: "Llavero inicial",
+    title: "Llavero",
     description: "Construye tu primera forma 2D — el contorno simple de un llavero.",
     steps: [
       "Dibuja un rectángulo de 60×25 con REC.",
@@ -274,7 +274,7 @@ export const projectsEs: Record<string, ProjectEs> = {
     ],
   },
   wheel: {
-    title: "Boceto de rueda",
+    title: "Silueta de rueda",
     description: "Boceta una rueda usando círculos y ARRAY.",
     steps: [
       "Dibuja un círculo central de radio 50.",
