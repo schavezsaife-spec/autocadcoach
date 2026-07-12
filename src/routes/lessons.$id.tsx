@@ -563,7 +563,7 @@ function Section({
     <section
       id={id}
       className={cn(
-        "scroll-mt-24 rounded-2xl border bg-card p-4 sm:p-6",
+        "rounded-2xl border bg-card p-4 sm:p-6",
         accent === "primary" && "border-primary/30",
         accent === "destructive" && "border-destructive/30",
         accent === "default" && "border-border",
