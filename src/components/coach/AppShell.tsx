@@ -95,6 +95,8 @@ function MobileNavItems({ pathname }: { pathname: string }) {
               <Link
                 key={to}
                 to={to}
+                resetScroll={to === "/lessons"}
+                onClick={() => { if (to === "/lessons") scrollLessonsTop(); }}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-xl transition-all text-xs font-medium",
