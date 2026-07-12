@@ -36,7 +36,7 @@ function CoachPage() {
   const { t } = useTranslation(["chat", "gate"]);
   const isAuthed = state.profile.isAuthenticated;
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-10 py-4 md:py-6 pb-4 md:pb-0 flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-dvh">
+    <div className="w-full px-4 sm:px-6 lg:px-10 py-4 md:py-6 pb-6 md:pb-8 flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-dvh" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
       
 
       <Tabs defaultValue="ask" className="flex-1 flex flex-col min-h-0">
@@ -131,8 +131,8 @@ function AskAutoCoach() {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-2xl bg-card border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_28px_-14px_color-mix(in_oklab,var(--primary)_60%,transparent)] p-4 space-y-4">
+    <div className="flex flex-col h-full pb-2">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto rounded-2xl bg-card border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_28px_-14px_color-mix(in_oklab,var(--primary)_60%,transparent)] p-4 pb-8 space-y-4">
         {messages.map((m, i) => (
           <div key={i} className={cn("flex gap-3", m.role === "user" && "flex-row-reverse")}>
             <div
