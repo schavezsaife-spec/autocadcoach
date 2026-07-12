@@ -17,6 +17,11 @@ const NAV = [
 
 const STORAGE_KEY = "sidebar_open";
 
+function scrollLessonsTop() {
+  const main = document.getElementById("main-scrollable-area");
+  if (main) main.scrollTo({ top: 0, behavior: "instant" });
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(true);
