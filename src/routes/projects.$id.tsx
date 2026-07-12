@@ -11,12 +11,16 @@ import { Lightbox } from "@/components/coach/Lightbox";
 import { ScreenshotCard } from "@/components/coach/ScreenshotCard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useLessonImages } from "@/lib/lesson-images";
-import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
+import { ArrowLeft, CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects/$id")({
+  validateSearch: (search: Record<string, unknown>) => {
+    const from = search.from;
+    return { from: from === "projects" ? from : undefined };
+  },
   head: ({ params }) => {
     const project = projects.find((p) => p.id === params.id);
     const url = `https://autocadcoach.lovable.app/projects/${params.id}`;
@@ -87,6 +91,15 @@ function ProjectViewer() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-6">
+      <div className="flex justify-end">
+        <Link
+          to="/projects"
+          className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-card px-4 py-1.5 text-sm font-medium text-primary shadow-[0_0_16px_-8px_color-mix(in_oklab,var(--primary)_60%,transparent)] transition-all hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-[0_0_20px_-6px_color-mix(in_oklab,var(--primary)_70%,transparent)]"
+        >
+          <ArrowLeft className="size-4" />
+          {t("common:backToProjectsScreen")}
+        </Link>
+      </div>
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="outline" className="border-primary/30 text-primary">{t(`projects:difficulty.${project.difficulty}`)}</Badge>
         <Badge variant="outline" className="border-border"><Clock className="size-3 mr-1" /> {project.time}</Badge>

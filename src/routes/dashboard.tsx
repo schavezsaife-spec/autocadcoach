@@ -142,7 +142,7 @@ function DashboardPage() {
                 </>
               );
               return unlocked ? (
-                <Link key={l.id} to="/lessons/$id" params={{ id: l.id }} className={cardCls}>
+                <Link key={l.id} to="/lessons/$id" params={{ id: l.id }} search={{ from: "dashboard" }} className={cardCls}>
                   {inner}
                 </Link>
               ) : (
