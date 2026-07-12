@@ -16,6 +16,18 @@ import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { cn } from "@/lib/utils";
 
+function BackLink({ to, label }: { to: "/dashboard" | "/lessons" | "/projects"; label: string }) {
+  return (
+    <Link
+      to={to}
+      className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-card px-4 py-1.5 text-sm font-medium text-primary shadow-[0_0_16px_-8px_color-mix(in_oklab,var(--primary)_60%,transparent)] transition-all hover:-translate-y-0.5 hover:border-primary/60 hover:text-primary hover:shadow-[0_0_20px_-6px_color-mix(in_oklab,var(--primary)_70%,transparent)]"
+    >
+      <ArrowLeft className="size-4" />
+      {label}
+    </Link>
+  );
+}
+
 export const Route = createFileRoute("/lessons/$id")({
   validateSearch: (search: Record<string, unknown>) => {
     const from = search.from;
