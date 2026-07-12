@@ -86,6 +86,7 @@ function LessonViewer() {
   }, [id]);
 
   const lesson = useLocalizedLesson(id);
+  const quizQuestions = useLocalizedLessonQuiz(id);
   if (!lesson) {
     return (
       <div className="p-10">
@@ -115,7 +116,6 @@ function LessonViewer() {
   const setStep = (n: number) =>
     set((s) => ({ lessonStep: { ...s.lessonStep, [lesson.id]: Math.max(0, Math.min(lesson.steps.length - 1, n)) } }));
 
-  const quizQuestions = useLocalizedLessonQuiz(lesson.id);
   const passed = !!state.lessonQuizPassed[lesson.id];
 
   const onComplete = () => {
