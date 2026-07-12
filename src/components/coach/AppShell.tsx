@@ -157,6 +157,8 @@ function SidebarInner({
             <Link
               key={to}
               to={to}
+              resetScroll={to === "/lessons"}
+              onClick={() => { if (to === "/lessons") scrollLessonsTop(); }}
               aria-current={active ? "page" : undefined}
               title={collapsed ? label : undefined}
               className={cn(
