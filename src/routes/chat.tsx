@@ -36,7 +36,7 @@ function CoachPage() {
   const { t } = useTranslation(["chat", "gate"]);
   const isAuthed = state.profile.isAuthenticated;
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-10 py-4 md:py-6 pb-4 md:pb-0 flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-dvh">
+    <div className="w-full px-4 sm:px-6 lg:px-10 py-4 md:py-6 pb-6 md:pb-8 flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-dvh" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
       
 
       <Tabs defaultValue="ask" className="flex-1 flex flex-col min-h-0">
