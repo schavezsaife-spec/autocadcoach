@@ -17,6 +17,10 @@ import { GuestGate } from "@/components/coach/GuestGate";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/lessons/$id")({
+  validateSearch: (search: Record<string, unknown>) => {
+    const from = search.from;
+    return { from: from === "dashboard" || from === "lessons" ? from : undefined };
+  },
   head: ({ params }) => {
     const lesson = lessons.find((l) => l.id === params.id);
     const url = `https://autocadcoach.lovable.app/lessons/${params.id}`;
