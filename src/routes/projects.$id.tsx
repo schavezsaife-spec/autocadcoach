@@ -11,12 +11,16 @@ import { Lightbox } from "@/components/coach/Lightbox";
 import { ScreenshotCard } from "@/components/coach/ScreenshotCard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useLessonImages } from "@/lib/lesson-images";
-import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
+import { ArrowLeft, CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects/$id")({
+  validateSearch: (search: Record<string, unknown>) => {
+    const from = search.from;
+    return { from: from === "projects" ? from : undefined };
+  },
   head: ({ params }) => {
     const project = projects.find((p) => p.id === params.id);
     const url = `https://autocadcoach.lovable.app/projects/${params.id}`;
