@@ -1,5 +1,6 @@
 import extrudeAction from "@/assets/extrude_action.png.asset.json";
 import keychainHero from "@/assets/keychain-hero.jpg.asset.json";
+import roomLayoutCover from "@/assets/room-layout-cover.png.asset.json";
 import extrudeBefore from "@/assets/extrude_before.png.asset.json";
 import extrudeAfter from "@/assets/extrude_after.png.asset.json";
 import joinAction from "@/assets/join_before.png.asset.json";
