@@ -2098,6 +2098,7 @@ export const projects: Project[] = [
       "Use DIM to add measurements around the room.",
     ],
     image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200",
+    coverImage: roomLayoutCover.url,
   },
   {
     id: "bracket", title: "Bracket Plate", difficulty: "Medium", time: "45 min",
