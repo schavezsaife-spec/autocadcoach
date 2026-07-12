@@ -1,9 +1,12 @@
 import { X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { LogoOverlay } from "@/components/coach/LogoOverlay";
 
 export function Lightbox({
   src, alt, onClose,
 }: { src: string; alt: string; onClose: () => void }) {
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -24,8 +27,18 @@ export function Lightbox({
       >
         <X className="size-5" />
       </button>
-      <div className="max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
-        <img src={src} alt={alt} className="w-full max-h-[80vh] object-contain rounded-xl" />
+      <div
+        ref={wrapRef}
+        className="relative max-w-5xl w-full max-h-[80vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <img
+          ref={imgRef}
+          src={src}
+          alt={alt}
+          className="w-full max-h-[80vh] object-contain rounded-xl"
+        />
+        <LogoOverlay imgRef={imgRef} containerRef={wrapRef} />
       </div>
     </div>
   );
