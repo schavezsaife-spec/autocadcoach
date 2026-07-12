@@ -327,6 +327,23 @@ function RichLessonBody({
   const { t } = useTranslation(["lessons", "common"]);
   const hideVisual = lessonId === "interface" || lessonId === "osnap" || lessonId === "layers" || lessonId === "dim-text" || lessonId === "hatch" || lessonId === "blocks" || lessonId === "join";
   const sections = hideVisual ? SECTION_IDS.filter((s) => s.id !== "visual") : SECTION_IDS;
+
+  const scrollToSection = (sectionId: string) => {
+    const main = document.getElementById("main-scrollable-area");
+    const target = document.getElementById(sectionId);
+    if (!target) return;
+    if (main) {
+      const top = target.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop;
+      main.scrollTo({ top: Math.max(0, Math.ceil(top)), behavior: "smooth" });
+    } else {
+      const top = target.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: Math.max(0, Math.ceil(top)), behavior: "smooth" });
+    }
+    if (typeof window !== "undefined" && window.history.replaceState) {
+      window.history.replaceState(null, "", `#${sectionId}`);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-6 lg:gap-8">
       {/* Anchored TOC */}
@@ -335,29 +352,14 @@ function RichLessonBody({
         <ul className="space-y-1.5">
           {sections.map((s) => (
             <li key={s.id}>
-              <a
-                href={`#${s.id}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  const main = document.getElementById("main-scrollable-area");
-                  const target = document.getElementById(s.id);
-                  if (!target) return;
-                  if (main) {
-                    const top = target.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop;
-                    main.scrollTo({ top: Math.max(0, Math.ceil(top)), behavior: "smooth" });
-                  } else {
-                    const top = target.getBoundingClientRect().top + window.scrollY;
-                    window.scrollTo({ top: Math.max(0, Math.ceil(top)), behavior: "smooth" });
-                  }
-                  if (typeof window !== "undefined" && window.history.replaceState) {
-                    window.history.replaceState(null, "", `#${s.id}`);
-                  }
-                }}
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-1"
+              <button
+                type="button"
+                onClick={() => scrollToSection(s.id)}
+                className="flex w-full items-center gap-2 text-left text-muted-foreground hover:text-foreground transition-colors py-1"
               >
                 <s.icon className="size-3.5 opacity-60" />
                 <span>{t(`lessons:sections.${s.id}`)}</span>
-              </a>
+              </button>
             </li>
           ))}
         </ul>
