@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { lessons } from "@/lib/coach-data";
 import { useLocalizedLessons } from "@/lib/i18n/content";
 import { useTranslation } from "react-i18next";
@@ -45,6 +46,14 @@ export const Route = createFileRoute("/lessons")({
 function LessonsLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isList = pathname === "/lessons" || pathname === "/lessons/";
+
+  useEffect(() => {
+    if (isList) {
+      const main = document.getElementById("main-scrollable-area");
+      if (main) main.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [isList]);
+
   if (!isList) return <Outlet />;
   return <LessonList />;
 }

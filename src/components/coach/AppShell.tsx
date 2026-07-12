@@ -17,6 +17,11 @@ const NAV = [
 
 const STORAGE_KEY = "sidebar_open";
 
+function scrollLessonsTop() {
+  const main = document.getElementById("main-scrollable-area");
+  if (main) main.scrollTo({ top: 0, behavior: "instant" });
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(true);
@@ -64,7 +69,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="relative z-10 flex-1 flex flex-col min-w-0 overflow-hidden">
 
         {/* Page content */}
-        <main className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">
+        <main id="main-scrollable-area" className="flex-1 min-w-0 overflow-y-auto pb-16 md:pb-0">
           {children}
         </main>
 
@@ -90,6 +95,8 @@ function MobileNavItems({ pathname }: { pathname: string }) {
               <Link
                 key={to}
                 to={to}
+                resetScroll={to === "/lessons"}
+                onClick={() => { if (to === "/lessons") scrollLessonsTop(); }}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-xl transition-all text-xs font-medium",
@@ -150,6 +157,8 @@ function SidebarInner({
             <Link
               key={to}
               to={to}
+              resetScroll={to === "/lessons"}
+              onClick={() => { if (to === "/lessons") scrollLessonsTop(); }}
               aria-current={active ? "page" : undefined}
               title={collapsed ? label : undefined}
               className={cn(
