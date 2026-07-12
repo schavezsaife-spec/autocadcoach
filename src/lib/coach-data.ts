@@ -1,5 +1,6 @@
 import extrudeAction from "@/assets/extrude_action.png.asset.json";
 import keychainHero from "@/assets/keychain-hero.jpg.asset.json";
+import roomLayoutCover from "@/assets/room-layout-cover.png.asset.json";
 import extrudeBefore from "@/assets/extrude_before.png.asset.json";
 import extrudeAfter from "@/assets/extrude_after.png.asset.json";
 import joinAction from "@/assets/join_before.png.asset.json";
@@ -2035,6 +2036,7 @@ export type Project = {
   skills: string[];
   steps: string[];
   image: string;
+  coverImage?: string;
 };
 
 export const projects: Project[] = [
@@ -2096,6 +2098,7 @@ export const projects: Project[] = [
       "Use DIM to add measurements around the room.",
     ],
     image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200",
+    coverImage: roomLayoutCover.url,
   },
   {
     id: "bracket", title: "Bracket Plate", difficulty: "Medium", time: "45 min",

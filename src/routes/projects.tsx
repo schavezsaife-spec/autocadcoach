@@ -157,7 +157,7 @@ function ProjectList() {
                   params={{ id: p.id }}
                   className="rounded-2xl bg-card overflow-hidden border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_24px_-12px_color-mix(in_oklab,var(--primary)_60%,transparent)] transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_0_28px_-8px_color-mix(in_oklab,var(--primary)_70%,transparent)]"
                 >
-                  <img src={p.image} alt={p.title} loading="lazy" decoding="async" width={800} height={450} className="w-full h-36 sm:h-40 object-cover" />
+                  <img src={p.coverImage ?? p.image} alt={p.title} loading="lazy" decoding="async" width={800} height={450} className="w-full h-36 sm:h-40 object-cover" />
                   <div className="p-4 sm:p-5">
                     <div className="flex items-center justify-between">
                       <Badge variant="outline" className="border-primary/30 text-primary">{t(`projects:difficulty.${p.difficulty}`)}</Badge>

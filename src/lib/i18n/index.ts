@@ -7,17 +7,10 @@ export type AppLanguage = "en" | "es";
 
 export const SUPPORTED_LANGUAGES: AppLanguage[] = ["en", "es"];
 
-function detectInitialLanguage(): AppLanguage {
-  if (typeof window === "undefined") return "en";
-  try {
-    const raw = localStorage.getItem("autocad-coach-state-v1");
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed?.language === "es" || parsed?.language === "en") return parsed.language;
-    }
-  } catch {}
-  const nav = navigator.language?.toLowerCase() ?? "";
-  if (nav.startsWith("es")) return "es";
+// Always start with English during SSR/hydration so the server and client render
+// identical markup. The user's saved/browser language is applied client-side after
+// hydration by CoachProvider, avoiding React hydration mismatches.
+function initialLanguage(): AppLanguage {
   return "en";
 }
 
@@ -29,7 +22,7 @@ if (!i18n.isInitialized) {
         en: flatten(en),
         es: flatten(es),
       },
-      lng: detectInitialLanguage(),
+      lng: initialLanguage(),
       fallbackLng: "en",
       defaultNS: "common",
       ns: ["common", "nav", "gate", "auth", "dashboard", "lessons", "projects", "chat", "profile", "trust", "lessonEditor", "screenshot", "landing", "legal", "meta"],
