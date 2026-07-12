@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { lessons, type RichLesson } from "@/lib/coach-data";
 import { useLocalizedLesson, useLocalizedLessons, useLocalizedLessonQuiz } from "@/lib/i18n/content";
 import { useTranslation } from "react-i18next";
@@ -76,6 +76,14 @@ function LessonViewer() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const isAuthed = state.profile.isAuthenticated;
   const uploadedImages = useLessonImages(id);
+
+  // Always start a lesson at the top, regardless of previous scroll position
+  // (dashboard, lesson list, prev/next nav, or a different lesson).
+  useEffect(() => {
+    const main = document.getElementById("main-scrollable-area");
+    if (main) main.scrollTo({ top: 0, behavior: "instant" });
+    else window.scrollTo({ top: 0, behavior: "instant" });
+  }, [id]);
 
   const lesson = useLocalizedLesson(id);
   if (!lesson) {
@@ -329,6 +337,22 @@ function RichLessonBody({
             <li key={s.id}>
               <a
                 href={`#${s.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const main = document.getElementById("main-scrollable-area");
+                  const target = document.getElementById(s.id);
+                  if (!target) return;
+                  const OFFSET = 24;
+                  if (main) {
+                    const top = target.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop - OFFSET;
+                    main.scrollTo({ top, behavior: "smooth" });
+                  } else {
+                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                  if (typeof window !== "undefined" && window.history.replaceState) {
+                    window.history.replaceState(null, "", `#${s.id}`);
+                  }
+                }}
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors py-1"
               >
                 <s.icon className="size-3.5 opacity-60" />
