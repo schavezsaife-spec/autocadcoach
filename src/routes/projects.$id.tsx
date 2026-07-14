@@ -44,7 +44,7 @@ export const Route = createFileRoute("/projects/$id")({
                 url,
                 inLanguage: "en",
                 totalTime: project.time,
-                image: project.image,
+                image: project.coverImage ?? project.image,
                 tool: [
                   { "@type": "HowToTool", name: "AutoCAD" },
                   ...project.skills.map((s) => ({ "@type": "HowToTool", name: s })),
