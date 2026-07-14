@@ -36,8 +36,6 @@
     "toggleMenu": "Toggle menu",
     "hidePassword": "Hide password",
     "showPassword": "Show password",
-    "backToDashboard": "Back to Dashboard",
-    "backToLessonsScreen": "Back to Lessons",
     "backToProjectsScreen": "Back to Projects"
   },
   "nav": {
