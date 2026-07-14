@@ -340,7 +340,7 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
         </p>
 
         {/* Floating command chips */}
-        <div className="fade-up mt-8 overflow-x-auto" style={{ animationDelay: "900ms" }}>
+        <div className="fade-up mt-8 overflow-x-auto py-3" style={{ animationDelay: "900ms" }}>
           <div className="flex gap-2 justify-start md:justify-center min-w-max px-1">
             {HERO_COMMANDS.map((c) => (
               <span
