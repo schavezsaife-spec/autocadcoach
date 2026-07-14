@@ -398,6 +398,7 @@
     "finalCta": "Begin your first lesson",
     "finalDisclaimer": "No sign-up required to explore — create an account to save progress.",
     "footerBrand": "Beginner-friendly AutoCAD learning — lessons, projects, quizzes, and an AI tutor.",
+    "footerStartLearning": "Start learning free",
     "footerProduct": "Product",
     "footerAccount": "Account",
     "footerLegal": "Legal",
@@ -405,11 +406,7 @@
     "footerTermsOfService": "Terms of Service",
     "footerCookiePolicy": "Cookie Policy",
     "footerTrust": "Trust & Security",
-    "footerCopyright": "© {{year}} AutoCAD Coach. All rights reserved.",
-    "footerShortPrivacy": "Privacy",
-    "footerShortTerms": "Terms",
-    "footerShortCookies": "Cookies",
-    "footerShortTrust": "Trust"
+    "footerCopyright": "© {{year}} AutoCAD Coach. All rights reserved."
   },
   "legal": {
     "lastUpdated": "Last updated: 1 June 2025",
