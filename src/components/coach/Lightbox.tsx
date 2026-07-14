@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 
 export function Lightbox({
   src, alt, onClose,
@@ -10,7 +11,9 @@ export function Lightbox({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm p-4"
       onClick={onClose}
@@ -27,6 +30,7 @@ export function Lightbox({
       <div className="max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
         <img src={src} alt={alt} className="w-full max-h-[80vh] object-contain rounded-xl" />
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
