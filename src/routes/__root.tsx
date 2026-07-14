@@ -170,12 +170,18 @@ function AppRouter() {
       {/* App shell — always in DOM, hidden on public routes */}
       <div className={isPublic ? "hidden" : "contents"}>
         <AppShell>
-          <Outlet />
+          <div key={pathname} className="route-transition">
+            <Outlet />
+          </div>
         </AppShell>
       </div>
 
       {/* Public pages — rendered outside AppShell */}
-      {isPublic && <Outlet />}
+      {isPublic && (
+        <div key={pathname} className="route-transition">
+          <Outlet />
+        </div>
+      )}
     </>
   );
 }
