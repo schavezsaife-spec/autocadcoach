@@ -398,6 +398,7 @@
     "finalCta": "Empezar tu primera lección",
     "finalDisclaimer": "No hace falta registrarse para explorar — crea una cuenta para guardar tu progreso.",
     "footerBrand": "Aprendizaje de AutoCAD para principiantes — lecciones, proyectos, cuestionarios y un tutor de IA.",
+    "footerStartLearning": "Empieza a aprender gratis",
     "footerProduct": "Producto",
     "footerAccount": "Cuenta",
     "footerLegal": "Legal",
@@ -405,11 +406,7 @@
     "footerTermsOfService": "Términos del servicio",
     "footerCookiePolicy": "Política de cookies",
     "footerTrust": "Confianza y seguridad",
-    "footerCopyright": "© {{year}} AutoCAD Coach. Todos los derechos reservados.",
-    "footerShortPrivacy": "Privacidad",
-    "footerShortTerms": "Términos",
-    "footerShortCookies": "Cookies",
-    "footerShortTrust": "Confianza"
+    "footerCopyright": "© {{year}} AutoCAD Coach. Todos los derechos reservados."
   },
   "legal": {
     "lastUpdated": "Última actualización: 1 de junio de 2025",
