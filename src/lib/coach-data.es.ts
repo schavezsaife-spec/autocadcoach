@@ -671,8 +671,8 @@ export const richLessonsEs: Record<string, RichLessonEs> = {
       "Pulsa Esc dos veces para limpiar cualquier selección previa antes de empezar.",
     ],
     detailedSteps: [
-      { title: "Selecciona el objeto que quieres mover", instruction: "Haz clic en el objeto una vez para que muestre los grips azules.", explanation: "Seleccionar primero hace que MOVE use el conjunto actual en vez de pedir uno." },
       { title: "Inicia el comando MOVE", instruction: "Escribe M y pulsa Enter.", explanation: "La línea de comandos dice 'Precise punto base o [Desplazamiento]:'. AutoCAD espera el asa." },
+      { title: "Selecciona el objeto que quieres mover", instruction: "Haz clic en el objeto una vez para que muestre los grips azules.", explanation: "Seleccionar primero hace que MOVE use el conjunto actual en vez de pedir uno." },
       { title: "Elige un punto base enganchado", instruction: "Pasa el cursor sobre una esquina o endpoint hasta que aparezca el marcador verde y haz clic.", explanation: "Enganchar a geometría real te da un desplazamiento preciso y repetible — no un ajuste visual." },
       { title: "Especifica el destino", instruction: "Haz clic en la nueva ubicación, o escribe una coordenada relativa como @100,0 y pulsa Enter.", explanation: "Las coordenadas escritas mueven una distancia exacta; los puntos clicados te dejan enganchar a geometría existente." },
       { title: "Duplica con COPY", instruction: "Pulsa Esc, selecciona el objeto otra vez, escribe CO, Enter. Repite los pasos 3 y 4 — COPY sigue pidiendo más destinos hasta que pulses Enter.", explanation: "COPY replica el flujo de MOVE pero sin destruir el original y puede colocar múltiples copias en un mismo comando." },
