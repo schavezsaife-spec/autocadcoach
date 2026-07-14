@@ -668,19 +668,19 @@ const richMoveCopy: RichLesson = {
   ],
   detailedSteps: [
     {
-      title: "Select the object you want to move",
-      instruction: "Click the object once so it shows blue grips.",
-      explanation: "Picking first means MOVE will use the current selection set instead of asking for one.",
-      screenshot: {
-        imageUrl: movecopyStep1SelectObject.url,
-      },
-    },
-    {
       title: "Start the MOVE command",
       instruction: "Type M and press Enter.",
       explanation: "The command line now reads 'Specify base point or [Displacement]:'. AutoCAD is waiting for the grab handle.",
       screenshot: {
         imageUrl: movecopyStep2StartMove.url,
+      },
+    },
+    {
+      title: "Select the object you want to move",
+      instruction: "Click the object once so it shows blue grips.",
+      explanation: "Picking first means MOVE will use the current selection set instead of asking for one.",
+      screenshot: {
+        imageUrl: movecopyStep1SelectObject.url,
       },
     },
     {
