@@ -438,44 +438,88 @@ function FinalCTA({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId:
 
 function Footer({ legal }: { legal: ReturnType<typeof useLegal> }) {
   const { t } = useTranslation("landing");
+  const { state, set } = useCoach();
+  const currentLang = state.language;
+
+  const legalLinkBase =
+    "text-sm text-muted-foreground hover:text-foreground transition-colors " +
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm";
+
   return (
-    <footer className="border-t border-border py-12 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto">
+    <footer className="border-t border-border bg-card py-12 px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center gap-2">
               <LogoMark size="sm" />
               <span className="font-semibold">AutoCAD Coach</span>
             </div>
             <p className="text-sm text-muted-foreground">{t("footerBrand")}</p>
+            <div className="flex items-center gap-3">
+              <a
+                href="https://x.com"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="X (Twitter)"
+                className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+              >
+                <Twitter className="size-4" />
+              </a>
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="YouTube"
+                className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+              >
+                <Youtube className="size-4" />
+              </a>
+              <a
+                href="https://discord.com"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Discord"
+                className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+              >
+                <MessageCircle className="size-4" />
+              </a>
+            </div>
+            <div>
+              <Link
+                to="/auth"
+                className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+              >
+                {t("footerStartLearning")} <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
           </div>
 
           {/* Links */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold">{t("footerProduct")}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/lessons" className="hover:text-foreground">{t("nav:lessons", { ns: "nav" })}</Link></li>
-              <li><Link to="/projects" className="hover:text-foreground">{t("nav:projects", { ns: "nav" })}</Link></li>
-              <li><Link to="/chat" className="hover:text-foreground">{t("nav:chat", { ns: "nav" })}</Link></li>
+              <li><Link to="/lessons" className="hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm">{t("nav:lessons", { ns: "nav" })}</Link></li>
+              <li><Link to="/projects" className="hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm">{t("nav:projects", { ns: "nav" })}</Link></li>
+              <li><Link to="/chat" className="hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm">{t("nav:chat", { ns: "nav" })}</Link></li>
             </ul>
           </div>
 
           <div className="space-y-3">
             <h3 className="text-sm font-semibold">{t("footerAccount")}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/auth" className="hover:text-foreground">{t("signIn")}</Link></li>
-              <li><Link to="/dashboard" className="hover:text-foreground">{t("nav:dashboard", { ns: "nav" })}</Link></li>
+              <li><Link to="/auth" className="hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm">{t("signIn")}</Link></li>
+              <li><Link to="/dashboard" className="hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm">{t("nav:dashboard", { ns: "nav" })}</Link></li>
             </ul>
           </div>
 
           <div className="space-y-3">
             <h3 className="text-sm font-semibold">{t("footerLegal")}</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><button onClick={() => legal.show("privacy")} className="hover:text-foreground text-left">{t("footerPrivacyPolicy")}</button></li>
-              <li><button onClick={() => legal.show("terms")} className="hover:text-foreground text-left">{t("footerTermsOfService")}</button></li>
-              <li><button onClick={() => legal.show("cookies")} className="hover:text-foreground text-left">{t("footerCookiePolicy")}</button></li>
-              <li><button onClick={() => legal.show("trust")} className="hover:text-foreground text-left">{t("footerTrust")}</button></li>
+              <li><button onClick={() => legal.show("privacy")} className={legalLinkBase}>{t("footerPrivacyPolicy")}</button></li>
+              <li><button onClick={() => legal.show("terms")} className={legalLinkBase}>{t("footerTermsOfService")}</button></li>
+              <li><button onClick={() => legal.show("cookies")} className={legalLinkBase}>{t("footerCookiePolicy")}</button></li>
+              <li><button onClick={() => legal.show("trust")} className={legalLinkBase}>{t("footerTrust")}</button></li>
             </ul>
           </div>
         </div>
@@ -483,10 +527,24 @@ function Footer({ legal }: { legal: ReturnType<typeof useLegal> }) {
         <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <div>{t("footerCopyright", { year: new Date().getFullYear() })}</div>
           <div className="flex items-center gap-4">
-            <button onClick={() => legal.show("privacy")} className="hover:text-foreground">{t("footerShortPrivacy")}</button>
-            <button onClick={() => legal.show("terms")} className="hover:text-foreground">{t("footerShortTerms")}</button>
-            <button onClick={() => legal.show("cookies")} className="hover:text-foreground">{t("footerShortCookies")}</button>
-            <Link to="/trust" className="hover:text-foreground">{t("footerShortTrust")}</Link>
+            <div className="inline-flex items-center rounded-full border border-border bg-background/60 p-0.5">
+              {(["en", "es"] as const).map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => set({ language: lang })}
+                  className={cn(
+                    "px-2 py-0.5 rounded-full text-[11px] font-medium uppercase tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                    currentLang === lang
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                  aria-pressed={currentLang === lang}
+                >
+                  {lang}
+                </button>
+              ))}
+            </div>
+            <span className="text-[11px] tabular-nums">v1.0</span>
           </div>
         </div>
       </div>
