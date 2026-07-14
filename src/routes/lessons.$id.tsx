@@ -16,23 +16,8 @@ import { toast } from "sonner";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { cn } from "@/lib/utils";
 
-function BackLink({ to, label }: { to: "/dashboard" | "/lessons" | "/projects"; label: string }) {
-  return (
-    <Link
-      to={to}
-      className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-card px-4 py-1.5 text-sm font-medium text-primary shadow-[0_0_16px_-8px_color-mix(in_oklab,var(--primary)_60%,transparent)] transition-all hover:-translate-y-0.5 hover:border-primary/60 hover:text-primary hover:shadow-[0_0_20px_-6px_color-mix(in_oklab,var(--primary)_70%,transparent)]"
-    >
-      <ArrowLeft className="size-4" />
-      {label}
-    </Link>
-  );
-}
 
 export const Route = createFileRoute("/lessons/$id")({
-  validateSearch: (search: Record<string, unknown>) => {
-    const from = search.from;
-    return { from: from === "dashboard" || from === "lessons" ? from : undefined };
-  },
   head: ({ params }) => {
     const lesson = lessons.find((l) => l.id === params.id);
     const url = `https://autocadcoach.lovable.app/lessons/${params.id}`;
@@ -85,7 +70,6 @@ export const Route = createFileRoute("/lessons/$id")({
 
 function LessonViewer() {
   const { id } = Route.useParams();
-  const search = Route.useSearch();
   const navigate = useNavigate();
   const { state, set, completeLesson, passLessonQuiz, isUnlocked } = useCoach();
   const { t } = useTranslation(["lessons", "common", "dashboard"]);
@@ -149,16 +133,6 @@ function LessonViewer() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 pb-20 md:pb-10 space-y-4 sm:space-y-6">
-      <div className="flex justify-end">
-        <BackLink
-          to={search.from === "dashboard" ? "/dashboard" : "/lessons"}
-          label={
-            search.from === "dashboard"
-              ? t("common:backToDashboard")
-              : t("common:backToLessonsScreen")
-          }
-        />
-      </div>
       <div className="flex flex-wrap items-center gap-3">
         <Badge variant="outline" className="border-primary/30 text-primary">{t("common:day")} {lesson.day}</Badge>
         <Badge variant="outline" className="border-border">{lesson.tag}</Badge>

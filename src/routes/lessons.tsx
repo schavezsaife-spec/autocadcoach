@@ -94,7 +94,7 @@ function LessonList() {
                 {done ? <CheckCircle2 className="size-5" /> : unlocked ? <Sparkles className="size-5" /> : <Lock className="size-5" />}
               </div>
               {unlocked ? (
-                <Link to="/lessons/$id" params={{ id: l.id }} search={{ from: "lessons" }} className={cardCls}>{inner}</Link>
+                <Link to="/lessons/$id" params={{ id: l.id }} className={cardCls}>{inner}</Link>
               ) : (
                 <div className={cardCls} aria-disabled>{inner}</div>
               )}
