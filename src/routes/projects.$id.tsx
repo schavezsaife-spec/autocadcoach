@@ -84,6 +84,7 @@ function ProjectViewer() {
   }
 
   const done = state.completedProjects.includes(project.id);
+  const coverSrc = project.coverImage ?? project.image;
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-6">
@@ -103,7 +104,7 @@ function ProjectViewer() {
         </TabsList>
         <TabsContent value="details" className="space-y-6 mt-0">
           <button onClick={() => setLightbox(true)} className="block w-full rounded-2xl overflow-hidden border border-border group">
-            <img src={project.image} alt={t("projects:referenceAlt", { title: project.title })} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
+            <img src={coverSrc} alt={t("projects:referenceAlt", { title: project.title })} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
       </button>
 
           <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
@@ -167,7 +168,7 @@ function ProjectViewer() {
       </GuestGate>
 
       {lightbox && (
-        <Lightbox src={project.image} alt={project.title} onClose={() => setLightbox(false)} />
+        <Lightbox src={coverSrc} alt={project.title} onClose={() => setLightbox(false)} />
       )}
     </div>
   );
