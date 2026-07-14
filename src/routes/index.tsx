@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  ArrowRight, BookOpen, Compass, Menu, Sparkles, Target, Trophy, Wrench, X,
+  ArrowRight, BookOpen, Compass, Menu, MessageCircle, Sparkles, Target, Trophy, Twitter, Wrench, X, Youtube,
 } from "lucide-react";
 import { useCoach } from "@/lib/coach-store";
 import { lessons } from "@/lib/coach-data";
