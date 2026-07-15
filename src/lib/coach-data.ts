@@ -22,7 +22,6 @@ import rectangleStep1StartCommand from "@/assets/rectangle_step1_start_command.p
 import rectangleStep2PickFirstCorner from "@/assets/rectangle_step2_pick_first_corner.png.asset.json";
 import rectangleStep3TypeSecondCorner from "@/assets/rectangle_step3_type_second_corner.png.asset.json";
 import rectangleStep4VerifyPolyline from "@/assets/rectangle_step4_verify_polyline.png.asset.json";
-import rectangleStep5VisualReference from "@/assets/rectangle_step5_visual_reference.png.asset.json";
 import trimStep1CrossingLines from "@/assets/trim_step1_crossing_lines.png.asset.json";
 import trimStep2StartTrimCommand from "@/assets/trim_step2_start_trim_command.png.asset.json";
 import trimStep3ClickSegmentRemove from "@/assets/trim_step3_click_segment_remove.png.asset.json";
@@ -496,9 +495,6 @@ const richRectangle: RichLesson = {
       },
     },
   ],
-  visualReference: {
-    imageUrl: rectangleStep5VisualReference.url,
-  },
   commonMistakes: [
     { mistake: "Forgetting the @ symbol and getting a rectangle in the wrong place.", fix: "Always type @ before relative offsets, e.g. @200,100." },
     { mistake: "Using LINE four times instead of REC.", fix: "Use REC so the result is a single closed polyline — much easier to fillet, hatch and offset." },
