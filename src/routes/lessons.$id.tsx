@@ -326,7 +326,7 @@ function RichLessonBody({
   lessonId: string;
 }) {
   const { t } = useTranslation(["lessons", "common"]);
-  const hideVisual = lessonId === "interface" || lessonId === "osnap" || lessonId === "layers" || lessonId === "dim-text" || lessonId === "hatch" || lessonId === "blocks" || lessonId === "join";
+  const hideVisual = lessonId === "interface" || lessonId === "osnap" || lessonId === "layers" || lessonId === "dim-text" || lessonId === "hatch" || lessonId === "blocks" || lessonId === "join" || lessonId === "rectangle";
   const sections = hideVisual ? SECTION_IDS.filter((s) => s.id !== "visual") : SECTION_IDS;
 
   const scrollToSection = (sectionId: string) => {
