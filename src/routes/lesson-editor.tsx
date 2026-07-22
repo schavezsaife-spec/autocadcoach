@@ -198,14 +198,53 @@ function LessonEditor() {
   );
 }
 
-function SlotCard({
+function SlotPair({
   lessonId,
   slot,
-  image,
+  enImage,
+  esImage,
 }: {
   lessonId: string;
   slot: Slot;
+  enImage?: string;
+  esImage?: string;
+}) {
+  return (
+    <div className="rounded-2xl bg-card border border-border p-4 flex flex-col gap-4">
+      <div className="font-semibold text-sm">{slot.label}</div>
+      <ImageSlot
+        lessonId={lessonId}
+        slotKey={slot.key}
+        label="English image"
+        image={enImage}
+      />
+      <ImageSlot
+        lessonId={lessonId}
+        slotKey={`${slot.key}${ES_SUFFIX}`}
+        label="Spanish image"
+        image={esImage}
+        emptyHint={
+          !esImage
+            ? "No Spanish image uploaded. The English image will be used as fallback."
+            : undefined
+        }
+      />
+    </div>
+  );
+}
+
+function ImageSlot({
+  lessonId,
+  slotKey,
+  label,
+  image,
+  emptyHint,
+}: {
+  lessonId: string;
+  slotKey: string;
+  label: string;
   image?: string;
+  emptyHint?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -214,8 +253,8 @@ function SlotCard({
     if (!file) return;
     setBusy(true);
     try {
-      await uploadLessonImage(lessonId, slot.key, file);
-      toast.success(`${slot.label} updated`);
+      await uploadLessonImage(lessonId, slotKey, file);
+      toast.success(`${label} updated`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not upload image");
     } finally {
@@ -224,18 +263,16 @@ function SlotCard({
   }
 
   return (
-    <div className="rounded-2xl bg-card border border-border p-4 flex flex-col gap-3">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <div className="font-semibold text-sm">{slot.label}</div>
-        </div>
+    <div className="flex flex-col gap-2">
+      <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        {label}
       </div>
 
       <div className="rounded-xl border border-dashed border-border bg-secondary/30 overflow-hidden">
         {image ? (
           <img
             src={image}
-            alt={slot.label}
+            alt={label}
             loading="lazy"
             decoding="async"
             className="block w-full h-auto bg-black/40"
@@ -249,6 +286,9 @@ function SlotCard({
           </div>
         )}
       </div>
+      {emptyHint && (
+        <p className="text-xs text-muted-foreground">{emptyHint}</p>
+      )}
 
       <div className="flex flex-wrap gap-2">
         <Button
@@ -266,7 +306,7 @@ function SlotCard({
             variant="ghost"
             size="sm"
             onClick={() => {
-              clearLessonImage(lessonId, slot.key)
+              clearLessonImage(lessonId, slotKey)
                 .then(() => toast("Image removed"))
                 .catch((e) =>
                   toast.error(e instanceof Error ? e.message : "Could not remove image"),
