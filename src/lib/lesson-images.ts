@@ -18,6 +18,34 @@ const MAX_BYTES = 25 * 1024 * 1024; // 25MB — preserves original resolution
 
 export type LessonImageMap = Record<string, string>;
 
+// Language-aware slot naming: an English image lives at the base slot (e.g.
+// `step:0`, `visual`, `before`). Its Spanish counterpart lives at
+// `<slot>:es`. Storing them as separate rows means uploading a Spanish
+// image never overwrites the English one, and existing rows keep working
+// as English by default.
+export const ES_SUFFIX = ":es";
+
+export function localizedSlot(slot: string, lang: "en" | "es"): string {
+  return lang === "es" ? `${slot}${ES_SUFFIX}` : slot;
+}
+
+/**
+ * Return a slot→url map where each base slot resolves to the image for the
+ * requested language, falling back to the English image when the Spanish
+ * one is missing. Also preserves the raw `<slot>:es` keys so callers that
+ * want to inspect the Spanish upload directly (e.g. the editor) still can.
+ */
+export function pickLocalizedImages(map: LessonImageMap, lang: "en" | "es"): LessonImageMap {
+  if (lang === "en") return map;
+  const out: LessonImageMap = { ...map };
+  for (const [key, url] of Object.entries(map)) {
+    if (key.endsWith(ES_SUFFIX)) continue;
+    const es = map[`${key}${ES_SUFFIX}`];
+    if (es) out[key] = es;
+  }
+  return out;
+}
+
 type Row = { lesson_id: string; slot: string; url: string; storage_path: string | null };
 
 // -----------------------------------------------------------------------------

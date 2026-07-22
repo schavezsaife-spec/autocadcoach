@@ -24,6 +24,7 @@ import {
   mergeProject,
   mergeQuiz,
 } from "@/lib/coach-data.es";
+import { useLessonImages, pickLocalizedImages, type LessonImageMap } from "@/lib/lesson-images";
 
 function activeLang(lng: string | undefined): "en" | "es" {
   return (lng ?? "en").startsWith("es") ? "es" : "en";
@@ -83,4 +84,16 @@ export function useLocalizedTroubleshooting(): TroubleshootItem[] {
       };
     });
   }, [lang]);
+}
+
+/**
+ * Language-aware view of the uploaded lesson image map. Base slot keys
+ * (`step:0`, `visual`, `before`, …) resolve to the Spanish upload when the
+ * active language is Spanish AND a Spanish image exists; otherwise they
+ * transparently fall back to the English image.
+ */
+export function useLocalizedLessonImages(lessonId: string): LessonImageMap {
+  const lang = useActiveLanguage();
+  const raw = useLessonImages(lessonId);
+  return useMemo(() => pickLocalizedImages(raw, lang), [raw, lang]);
 }
