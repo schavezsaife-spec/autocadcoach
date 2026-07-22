@@ -160,22 +160,22 @@ function LessonEditor() {
               ))}
             </SelectContent>
           </Select>
-          {lesson && (
-            <Badge
-              variant={
-                slots.length > 0 && Object.keys(images).length >= slots.length
-                  ? "success"
-                  : "outline"
-              }
-              className={
-                slots.length > 0 && Object.keys(images).length >= slots.length
-                  ? "self-start sm:self-auto"
-                  : "border-border self-start sm:self-auto"
-              }
-            >
-              {Object.keys(images).length} / {slots.length} uploaded
-            </Badge>
-          )}
+          {lesson && (() => {
+            const enUploaded = slots.filter((s) => images[s.key]).length;
+            const complete = slots.length > 0 && enUploaded >= slots.length;
+            return (
+              <Badge
+                variant={complete ? "success" : "outline"}
+                className={
+                  complete
+                    ? "self-start sm:self-auto"
+                    : "border-border self-start sm:self-auto"
+                }
+              >
+                {enUploaded} / {slots.length} uploaded (EN)
+              </Badge>
+            );
+          })()}
         </div>
 
         {lesson && (
