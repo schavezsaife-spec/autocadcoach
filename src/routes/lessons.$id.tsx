@@ -5,7 +5,8 @@ import { useLocalizedLesson, useLocalizedLessons, useLocalizedLessonQuiz } from 
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
 import { useCoach } from "@/lib/coach-store";
-import { useLessonImages, type LessonImageMap } from "@/lib/lesson-images";
+import { type LessonImageMap } from "@/lib/lesson-images";
+import { useLocalizedLessonImages } from "@/lib/i18n/content";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -76,7 +77,7 @@ function LessonViewer() {
   const localizedList = useLocalizedLessons();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const isAuthed = state.profile.isAuthenticated;
-  const uploadedImages = useLessonImages(id);
+  const uploadedImages = useLocalizedLessonImages(id);
 
   // Always start a lesson at the top, regardless of previous scroll position
   // (dashboard, lesson list, prev/next nav, or a different lesson).
