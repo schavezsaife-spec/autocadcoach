@@ -10,6 +10,7 @@ import {
   reprocessLessonImages,
   type ReprocessResult,
 } from "@/lib/lesson-images";
+import { ES_SUFFIX } from "@/lib/lesson-images";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -180,11 +181,12 @@ function LessonEditor() {
         {lesson && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {slots.map((slot) => (
-              <SlotCard
+              <SlotPair
                 key={slot.key}
                 lessonId={lesson.id}
                 slot={slot}
-                image={images[slot.key]}
+                enImage={images[slot.key]}
+                esImage={images[`${slot.key}${ES_SUFFIX}`]}
               />
             ))}
           </div>
