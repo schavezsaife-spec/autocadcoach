@@ -618,7 +618,7 @@ function ScreenshotSlot({
   shot: { imageUrl?: string };
   fallback: string;
   uploadedUrl?: string;
-  onOpen?: () => void;
+  onOpen?: (img: ActiveLightboxImage) => void;
   large?: boolean;
   lessonId?: string;
   slot?: string;
