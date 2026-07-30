@@ -7,8 +7,9 @@ import i18n from "@/lib/i18n";
 import { useCoach } from "@/lib/coach-store";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, Clock, Search } from "lucide-react";
+import { CheckCircle2, Clock, Lock, Search } from "lucide-react";
 import { GuestBanner } from "@/components/coach/AuthPrompt";
+import { canGuestAccessProject, getProjectIndex } from "@/lib/access-config";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects")({
@@ -53,7 +54,7 @@ function ProjectsLayout() {
 
 function ProjectList() {
   const { state } = useCoach();
-  const { t } = useTranslation(["projects", "common"]);
+  const { t } = useTranslation(["projects", "common", "gate"]);
   const localized = useLocalizedProjects();
   const isAuthed = state.profile.isAuthenticated;
 
@@ -150,6 +151,8 @@ function ProjectList() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {filtered.map((p) => {
               const done = isAuthed && state.completedProjects.includes(p.id);
+              const guestFree = !isAuthed && canGuestAccessProject(getProjectIndex(p.id));
+              const guestRestricted = !isAuthed && !guestFree;
               return (
                 <Link
                   key={p.id}
@@ -157,7 +160,15 @@ function ProjectList() {
                   params={{ id: p.id }}
                   className="rounded-2xl bg-card overflow-hidden border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_24px_-12px_color-mix(in_oklab,var(--primary)_60%,transparent)] transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_0_28px_-8px_color-mix(in_oklab,var(--primary)_70%,transparent)]"
                 >
-                  <img src={p.coverImage ?? p.image} alt={p.title} loading="lazy" decoding="async" width={800} height={450} className="w-full h-36 sm:h-40 object-cover" />
+                  <img
+                    src={p.coverImage ?? p.image}
+                    alt={p.title}
+                    loading="lazy"
+                    decoding="async"
+                    width={800}
+                    height={450}
+                    className={cn("w-full h-36 sm:h-40 object-cover", guestRestricted && "blur-sm opacity-70")}
+                  />
                   <div className="p-4 sm:p-5">
                     <div className="flex items-center justify-between">
                       <Badge variant="outline" className="border-primary/30 text-primary">{t(`projects:difficulty.${p.difficulty}`)}</Badge>
@@ -167,6 +178,14 @@ function ProjectList() {
                     </div>
                     <div className="mt-3 font-semibold">{p.title}</div>
                     <div className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</div>
+                    {guestFree && (
+                      <Badge className="mt-3 bg-primary/15 text-primary border-primary/30">{t("gate:freePreview")}</Badge>
+                    )}
+                    {guestRestricted && (
+                      <Badge variant="outline" className="mt-3 text-muted-foreground/80 border-dashed">
+                        <Lock className="size-3 mr-1" /> {t("gate:accountRequired")}
+                      </Badge>
+                    )}
                     {done && (
                       <Badge className="mt-3 bg-success/20 text-success border-success/30">
                         <CheckCircle2 className="size-3 mr-1" /> {t("projects:built")}

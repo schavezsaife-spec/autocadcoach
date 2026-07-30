@@ -15,6 +15,8 @@ import { ScreenshotCard } from "@/components/coach/ScreenshotCard";
 import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target, Trophy, RotateCcw, XCircle, BookOpen, Compass, MapPin, ListChecks, Image as ImageIcon, Wrench, Dumbbell, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { GuestBanner, AuthRequiredAction } from "@/components/coach/AuthPrompt";
+import { GuestContentGate } from "@/components/coach/GuestContentGate";
+import { isLessonRestrictedForGuest } from "@/lib/access-config";
 import { cn } from "@/lib/utils";
 
 export type ActiveLightboxImage = { src: string; alt: string } | null;
@@ -74,7 +76,7 @@ export const Route = createFileRoute("/lessons/$id")({
 function LessonViewer() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const { state, set, completeLesson, passLessonQuiz, isUnlocked } = useCoach();
+  const { state, set, completeLesson, passLessonQuiz, isUnlocked, hydrated } = useCoach();
   const { t } = useTranslation(["lessons", "common", "dashboard", "gate"]);
   const localizedList = useLocalizedLessons();
   const [lightbox, setLightbox] = useState<ActiveLightboxImage>(null);
@@ -93,6 +95,19 @@ function LessonViewer() {
 
   const lesson = useLocalizedLesson(id);
   const quizQuestions = useLocalizedLessonQuiz(id);
+  const restricted = isLessonRestrictedForGuest(id, isAuthed);
+
+  // Never flash protected content before the session is known.
+  if (!hydrated) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-6 animate-pulse">
+        <div className="h-6 w-40 rounded-lg bg-card border border-border" />
+        <div className="h-10 w-3/4 rounded-lg bg-card border border-border" />
+        <div className="h-64 rounded-2xl bg-card border border-border" />
+      </div>
+    );
+  }
+
   if (!lesson) {
     return (
       <div className="p-10">
@@ -157,9 +172,24 @@ function LessonViewer() {
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{lesson.title}</h1>
       <p className="text-muted-foreground">{lesson.description}</p>
 
-      {!isAuthed && <GuestBanner />}
+      {!isAuthed && !restricted && <GuestBanner />}
 
-      {lesson.rich ? (
+      {restricted ? (
+        <GuestContentGate type="lesson" isRestricted backHref="/lessons" redirectTo={`/lessons/${lesson.id}`}>
+          <div className="space-y-4 pt-2">
+            <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 space-y-3">
+              <div className="font-semibold">{lesson.tag}</div>
+              {lesson.steps.slice(0, 6).map((st, i) => (
+                <p key={i} className="text-sm text-muted-foreground">
+                  {typeof st === "string" ? st : (st as { title?: string }).title}
+                </p>
+              ))}
+            </div>
+            <div className="rounded-2xl bg-card border border-border h-56" />
+            <div className="rounded-2xl bg-card border border-border h-40" />
+          </div>
+        </GuestContentGate>
+      ) : lesson.rich ? (
         <RichLessonBody
           rich={lesson.rich}
           fallbackImage={lesson.image}
@@ -177,7 +207,7 @@ function LessonViewer() {
         />
       )}
 
-      {quizQuestions.length > 0 && (
+      {!restricted && quizQuestions.length > 0 && (
         <LessonQuiz
           lessonId={lesson.id}
           questions={quizQuestions}
@@ -200,7 +230,7 @@ function LessonViewer() {
             </Button>
           )}
         </div>
-        {isAuthed ? (
+        {restricted ? null : isAuthed ? (
           <Button
             onClick={onComplete}
             disabled={quizQuestions.length > 0 && !passed}
@@ -210,13 +240,13 @@ function LessonViewer() {
             <CheckCircle2 className="size-4 mr-1" /> {done ? t("common:markCompleteAgain") : t("lessons:markLessonComplete")}
           </Button>
         ) : (
-          <AuthRequiredAction isAuthenticated={false} message={t("gate:completeMessage")} className="w-full sm:w-auto">
+          <AuthRequiredAction isAuthenticated={false} message={t("gate:completeMessage")} className="w-full sm:w-auto" redirectTo={`/lessons/${lesson.id}`}>
             {null}
           </AuthRequiredAction>
         )}
       </div>
 
-      {lightbox && (
+      {lightbox && !restricted && (
         <Lightbox
           src={lightbox.src}
           alt={lightbox.alt}

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Lock, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GuestBanner } from "@/components/coach/AuthPrompt";
+import { canGuestAccessLesson, getLessonIndex } from "@/lib/access-config";
 
 export const Route = createFileRoute("/lessons")({
   head: () => ({
@@ -71,18 +72,26 @@ function LessonList() {
         {localized.map((l) => {
           const done = isAuthed && state.completedLessons.includes(l.id);
           const unlocked = isUnlocked(l.id);
+          const guestFree = !isAuthed && canGuestAccessLesson(getLessonIndex(l.id));
+          const guestRestricted = !isAuthed && !guestFree;
           const canOpen = !isAuthed || unlocked;
           const cardCls = cn(
             "block rounded-2xl bg-card border border-border p-4 sm:p-5 transition-all",
-            canOpen ? "hover:border-primary/40" : "opacity-60 cursor-not-allowed"
+            canOpen ? "hover:border-primary/40" : "opacity-60 cursor-not-allowed",
+            guestRestricted && "border-dashed"
           );
           const inner = (
             <>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <Badge variant="outline" className="border-primary/30 text-primary">{t("common:day")} {l.day}</Badge>
                 <div className="flex items-center gap-2">
-                  {!isAuthed && (
-                    <Badge variant="outline" className="border-primary/30 text-primary">{t("gate:previewBadge")}</Badge>
+                  {guestFree && (
+                    <Badge variant="outline" className="border-primary/30 text-primary">{t("gate:freePreview")}</Badge>
+                  )}
+                  {guestRestricted && (
+                    <Badge variant="outline" className="text-muted-foreground/80 border-dashed">
+                      <Lock className="size-3 mr-1" /> {t("gate:accountRequired")}
+                    </Badge>
                   )}
                   <Badge variant="outline" className="border-border">{l.xp} {t("common:xp")}</Badge>
                 </div>
@@ -95,9 +104,9 @@ function LessonList() {
             <li key={l.id} className="relative pl-12 sm:pl-14">
               <div className={cn(
                 "absolute left-1 top-4 size-10 rounded-full grid place-items-center ring-4 ring-background shadow-md",
-                done ? "bg-success text-success-foreground shadow-success/30" : canOpen ? "bg-primary/15 text-primary ring-primary/20" : "bg-muted text-muted-foreground"
+                done ? "bg-success text-success-foreground shadow-success/30" : guestRestricted ? "bg-muted text-muted-foreground" : canOpen ? "bg-primary/15 text-primary ring-primary/20" : "bg-muted text-muted-foreground"
               )}>
-                {done ? <CheckCircle2 className="size-5" /> : canOpen ? <Sparkles className="size-5" /> : <Lock className="size-5" />}
+                {done ? <CheckCircle2 className="size-5" /> : guestRestricted || !canOpen ? <Lock className="size-5" /> : <Sparkles className="size-5" />}
               </div>
               {canOpen ? (
                 <Link to="/lessons/$id" params={{ id: l.id }} className={cardCls}>{inner}</Link>

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Logo } from "@/components/coach/Logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
+import { getSafeInternalRedirect, POST_AUTH_KEY } from "@/lib/access-config";
 import i18n from "@/lib/i18n";
 
 export const Route = createFileRoute("/auth_/callback")({
@@ -31,7 +32,9 @@ function AuthCallbackPage() {
   useEffect(() => {
     if (loading) return;
     if (session?.user) {
-      navigate({ to: "/dashboard", replace: true });
+      const stored = typeof window !== "undefined" ? sessionStorage.getItem(POST_AUTH_KEY) : null;
+      if (typeof window !== "undefined") sessionStorage.removeItem(POST_AUTH_KEY);
+      navigate({ to: getSafeInternalRedirect(stored) as "/dashboard", replace: true });
       return;
     }
     // No session yet — give Supabase a moment to parse the URL fragment.

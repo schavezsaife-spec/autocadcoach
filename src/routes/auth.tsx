@@ -9,6 +9,7 @@ import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Logo } from "@/components/coach/Logo";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
+import { getSafeInternalRedirect, POST_AUTH_KEY } from "@/lib/access-config";
 
 /**
  * All authentication goes through the centralized AuthProvider
@@ -16,6 +17,9 @@ import i18n from "@/lib/i18n";
  */
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
+  }),
   head: () => ({
     meta: [
       { title: i18n.t("meta:authTitle") },
@@ -33,6 +37,10 @@ type Mode = "signup" | "signin";
 
 function AuthPage() {
   const { session, loading: authLoading, signIn, signUp, signInWithGoogle } = useAuth();
+  const { redirect: redirectParam } = Route.useSearch();
+  // Where to land after a successful sign-in/sign-up. Validated to stay
+  // inside the app; also stashed so the OAuth round-trip can restore it.
+  const postAuthTarget = getSafeInternalRedirect(redirectParam);
   const { t } = useTranslation(["auth", "common"]);
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("signup");
@@ -49,10 +57,16 @@ function AuthPage() {
   // An already-signed-in visitor belongs on the dashboard. Wait for auth to
   // finish loading first so this can never race into a redirect loop.
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (postAuthTarget === "/dashboard") sessionStorage.removeItem(POST_AUTH_KEY);
+    else sessionStorage.setItem(POST_AUTH_KEY, postAuthTarget);
+  }, [postAuthTarget]);
+
+  useEffect(() => {
     if (!authLoading && session?.user) {
-      navigate({ to: "/dashboard", replace: true });
+      navigate({ to: postAuthTarget as "/dashboard", replace: true });
     }
-  }, [authLoading, session, navigate]);
+  }, [authLoading, session, navigate, postAuthTarget]);
 
   function emailValid(v: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
@@ -100,7 +114,7 @@ function AuthPage() {
         toast.success(t("auth:toastWelcomeBack"));
       }
       // Only reached when a valid authenticated session exists.
-      navigate({ to: "/dashboard", replace: true });
+      navigate({ to: postAuthTarget as "/dashboard", replace: true });
     } finally {
       setLoading(false);
     }
@@ -118,7 +132,7 @@ function AuthPage() {
         return;
       }
       toast.success(t("auth:toastSignedInGoogle"));
-      navigate({ to: "/dashboard", replace: true });
+      navigate({ to: postAuthTarget as "/dashboard", replace: true });
     } finally {
       setGoogleLoading(false);
     }

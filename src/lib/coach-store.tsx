@@ -147,7 +147,11 @@ export function CoachProvider({ children }: { children: ReactNode }) {
             !s.profile.profileImage &&
             !s.profile.firstName &&
             !s.profile.lastName &&
-            !s.profile.email
+            !s.profile.email &&
+            s.completedLessons.length === 0 &&
+            s.completedProjects.length === 0 &&
+            Object.keys(s.lessonQuizPassed).length === 0 &&
+            Object.keys(s.lessonStep).length === 0
           ) {
             return s;
           }
