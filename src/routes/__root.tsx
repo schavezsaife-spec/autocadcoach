@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CoachProvider } from "../lib/coach-store";
+import { AuthProvider } from "../lib/auth-context";
 import { AppShell } from "../components/coach/AppShell";
 import { Toaster } from "../components/ui/sonner";
 import "../lib/i18n";
@@ -135,10 +136,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CoachProvider>
-        <AppRouter />
-        <Toaster />
-      </CoachProvider>
+      <AuthProvider>
+        <CoachProvider>
+          <AppRouter />
+          <Toaster />
+        </CoachProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
