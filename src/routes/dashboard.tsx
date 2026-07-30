@@ -10,7 +10,7 @@ import { lessons } from "@/lib/coach-data";
 import { useLocalizedLessons } from "@/lib/i18n/content";
 import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { GuestGate } from "@/components/coach/GuestGate";
+import { GuestBanner } from "@/components/coach/AuthPrompt";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -64,7 +64,8 @@ function DashboardPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-8 animate-in fade-in duration-150">
-      <GuestGate isAuthenticated={isAuthed}>
+        {!isAuthed && <GuestBanner />}
+
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           <Stat icon={BookOpen} label={t("dashboard:lessons")} value={`${state.completedLessons.length}/${lessons.length}`} />
@@ -109,11 +110,12 @@ function DashboardPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {filtered.map((l) => {
-              const done = state.completedLessons.includes(l.id);
+              const done = isAuthed && state.completedLessons.includes(l.id);
               const unlocked = isUnlocked(l.id);
+              const canOpen = !isAuthed || unlocked;
               const cardCls = cn(
                 "rounded-2xl bg-card border border-border p-4 sm:p-5 transition-all block",
-                unlocked
+                canOpen
                   ? "hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
                   : "opacity-40 cursor-not-allowed saturate-0",
               );
@@ -126,6 +128,10 @@ function DashboardPage() {
                     {done ? (
                       <Badge className="bg-success/20 text-success border-success/30">
                         <CheckCircle2 className="size-3 mr-1" /> {t("dashboard:done")}
+                      </Badge>
+                    ) : !isAuthed ? (
+                      <Badge variant="outline" className="border-primary/30 text-primary">
+                        {t("gate:previewBadge", { ns: "gate" })}
                       </Badge>
                     ) : !unlocked ? (
                       <Badge variant="outline" className="text-muted-foreground/60 border-dashed">
@@ -141,7 +147,7 @@ function DashboardPage() {
                   <div className="text-sm text-muted-foreground mt-1">{l.description}</div>
                 </>
               );
-              return unlocked ? (
+              return canOpen ? (
                 <Link key={l.id} to="/lessons/$id" params={{ id: l.id }} className={cardCls}>
                   {inner}
                 </Link>
@@ -153,7 +159,6 @@ function DashboardPage() {
             })}
           </div>
         </div>
-      </GuestGate>
     </div>
   );
 }
