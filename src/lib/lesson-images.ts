@@ -362,11 +362,24 @@ export async function uploadLessonImage(
   slot: string,
   file: File,
 ): Promise<string> {
-  if (!file.type.startsWith("image/")) {
-    throw new Error("Please choose an image file (PNG, JPG, or WebP).");
+  if (!file || file.size === 0) {
+    throw new LessonImageError("emptyFile");
+  }
+  if (!(ACCEPTED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
+    throw new LessonImageError("unsupportedFormat");
   }
   if (file.size > MAX_BYTES) {
-    throw new Error("Image must be under 25MB.");
+    throw new LessonImageError("tooLarge");
+  }
+  // Reject files that decode to nothing (truncated / corrupt).
+  try {
+    const probe = await loadImageFromBlob(file);
+    if (!probe.naturalWidth || !probe.naturalHeight) {
+      throw new LessonImageError("corrupt");
+    }
+  } catch (err) {
+    if (err instanceof LessonImageError) throw err;
+    throw new LessonImageError("corrupt");
   }
 
   // Auto-trim uniform margins baked into the source image.
@@ -384,13 +397,13 @@ export async function uploadLessonImage(
   const { error: upErr } = await supabase.storage
     .from(BUCKET)
     .upload(path, uploadFile, { cacheControl: "31536000", upsert: false, contentType: uploadFile.type });
-  if (upErr) throw new Error(upErr.message);
+  if (upErr) throw new LessonImageError("uploadFailed", upErr.message);
 
   const { data: signed, error: signErr } = await supabase.storage
     .from(BUCKET)
     .createSignedUrl(path, SIGNED_URL_TTL);
   if (signErr || !signed?.signedUrl) {
-    throw new Error(signErr?.message ?? "Could not generate image URL.");
+    throw new LessonImageError("uploadFailed", signErr?.message);
   }
   const url = signed.signedUrl;
 
@@ -406,7 +419,7 @@ export async function uploadLessonImage(
   if (dbErr) {
     // Roll back the upload so we don't orphan a file.
     await supabase.storage.from(BUCKET).remove([path]).catch(() => undefined);
-    throw new Error(dbErr.message);
+    throw new LessonImageError("uploadFailed", dbErr.message);
   }
 
   // Update caches and notify listeners immediately.
@@ -432,7 +445,7 @@ export async function clearLessonImage(lessonId: string, slot: string): Promise<
     .delete()
     .eq("lesson_id", lessonId)
     .eq("slot", slot);
-  if (error) throw new Error(error.message);
+  if (error) throw new LessonImageError("removeFailed", error.message);
 
   if (previousPath) {
     supabase.storage.from(BUCKET).remove([previousPath]).catch(() => undefined);
