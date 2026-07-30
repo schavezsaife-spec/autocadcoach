@@ -8,7 +8,7 @@ import { useCoach } from "@/lib/coach-store";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Lock, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { GuestGate } from "@/components/coach/GuestGate";
+import { GuestBanner } from "@/components/coach/AuthPrompt";
 
 export const Route = createFileRoute("/lessons")({
   head: () => ({
@@ -60,26 +60,32 @@ function LessonsLayout() {
 
 function LessonList() {
   const { state, isUnlocked } = useCoach();
-  const { t } = useTranslation(["lessons", "common"]);
+  const { t } = useTranslation(["lessons", "common", "gate"]);
   const localized = useLocalizedLessons();
   const isAuthed = state.profile.isAuthenticated;
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-10">
       <p className="mb-6 text-sm text-muted-foreground">{t("lessons:listSubtitle")}</p>
-      <GuestGate isAuthenticated={isAuthed}>
+      {!isAuthed && <GuestBanner className="mb-6" />}
       <ol className="relative space-y-4 before:absolute before:left-5 sm:before:left-6 before:top-0 before:bottom-0 before:w-px before:bg-border">
         {localized.map((l) => {
-          const done = state.completedLessons.includes(l.id);
+          const done = isAuthed && state.completedLessons.includes(l.id);
           const unlocked = isUnlocked(l.id);
+          const canOpen = !isAuthed || unlocked;
           const cardCls = cn(
             "block rounded-2xl bg-card border border-border p-4 sm:p-5 transition-all",
-            unlocked ? "hover:border-primary/40" : "opacity-60 cursor-not-allowed"
+            canOpen ? "hover:border-primary/40" : "opacity-60 cursor-not-allowed"
           );
           const inner = (
             <>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <Badge variant="outline" className="border-primary/30 text-primary">{t("common:day")} {l.day}</Badge>
-                <Badge variant="outline" className="border-border">{l.xp} {t("common:xp")}</Badge>
+                <div className="flex items-center gap-2">
+                  {!isAuthed && (
+                    <Badge variant="outline" className="border-primary/30 text-primary">{t("gate:previewBadge")}</Badge>
+                  )}
+                  <Badge variant="outline" className="border-border">{l.xp} {t("common:xp")}</Badge>
+                </div>
               </div>
               <div className="mt-2 font-semibold text-lg">{l.title}</div>
               <div className="text-sm text-muted-foreground mt-1">{l.description}</div>
@@ -89,11 +95,11 @@ function LessonList() {
             <li key={l.id} className="relative pl-12 sm:pl-14">
               <div className={cn(
                 "absolute left-1 top-4 size-10 rounded-full grid place-items-center ring-4 ring-background shadow-md",
-                done ? "bg-success text-success-foreground shadow-success/30" : unlocked ? "bg-primary/15 text-primary ring-primary/20" : "bg-muted text-muted-foreground"
+                done ? "bg-success text-success-foreground shadow-success/30" : canOpen ? "bg-primary/15 text-primary ring-primary/20" : "bg-muted text-muted-foreground"
               )}>
-                {done ? <CheckCircle2 className="size-5" /> : unlocked ? <Sparkles className="size-5" /> : <Lock className="size-5" />}
+                {done ? <CheckCircle2 className="size-5" /> : canOpen ? <Sparkles className="size-5" /> : <Lock className="size-5" />}
               </div>
-              {unlocked ? (
+              {canOpen ? (
                 <Link to="/lessons/$id" params={{ id: l.id }} className={cardCls}>{inner}</Link>
               ) : (
                 <div className={cardCls} aria-disabled>{inner}</div>
@@ -102,7 +108,6 @@ function LessonList() {
           );
         })}
       </ol>
-      </GuestGate>
     </div>
   );
 }

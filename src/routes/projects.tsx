@@ -8,7 +8,7 @@ import { useCoach } from "@/lib/coach-store";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { CheckCircle2, Clock, Search } from "lucide-react";
-import { GuestGate } from "@/components/coach/GuestGate";
+import { GuestBanner } from "@/components/coach/AuthPrompt";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects")({
@@ -85,7 +85,7 @@ function ProjectList() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
-      <GuestGate isAuthenticated={isAuthed}>
+        {!isAuthed && <GuestBanner className="mb-6" />}
         <div className="flex flex-col gap-3 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="relative w-full sm:max-w-xs">
@@ -149,7 +149,7 @@ function ProjectList() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {filtered.map((p) => {
-              const done = state.completedProjects.includes(p.id);
+              const done = isAuthed && state.completedProjects.includes(p.id);
               return (
                 <Link
                   key={p.id}
@@ -178,7 +178,6 @@ function ProjectList() {
             })}
           </div>
         )}
-      </GuestGate>
     </div>
   );
 }

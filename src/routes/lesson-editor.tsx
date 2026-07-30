@@ -18,6 +18,7 @@ import { Upload, Trash2, ImageIcon, ArrowLeft, Scissors, Loader2 } from "lucide-
 import { toast } from "sonner";
 import { useCoach } from "@/lib/coach-store";
 import { GuestGate } from "@/components/coach/GuestGate";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/lesson-editor")({
   head: () => ({
@@ -41,6 +42,7 @@ type Slot = {
 
 function LessonEditor() {
   const { state } = useCoach();
+  const { t } = useTranslation(["lessonEditor", "common"]);
   const isAuthed = state.profile.isAuthenticated;
   const [adminCheck, setAdminCheck] = useState<"pending" | "yes" | "no">("pending");
 
@@ -85,44 +87,43 @@ function LessonEditor() {
   const slots: Slot[] = useMemo(() => {
     if (!lesson) return [];
     const list: Slot[] = [
-      { key: "before", label: "Before vs After — Before" },
-      { key: "after", label: "Before vs After — After" },
+      { key: "before", label: t("lessonEditor:beforeSlot") },
+      { key: "after", label: t("lessonEditor:afterSlot") },
     ];
     if (lesson.rich) {
       if (lesson.rich.visualReference) {
         list.push({
           key: "visual",
-          label: "Visual reference",
+          label: t("lessonEditor:visualSlot"),
         });
       }
       lesson.rich.detailedSteps.forEach((s, i) => {
         list.push({
           key: `step:${i}`,
-          label: `Step ${i + 1} — ${s.title}`,
+          label: t("lessonEditor:stepSlotTitled", { n: i + 1, title: s.title }),
         });
       });
     } else {
       lesson.steps.forEach((_text, i) => {
-        list.push({ key: `step:${i}`, label: `Step ${i + 1}` });
+        list.push({ key: `step:${i}`, label: t("lessonEditor:stepSlot", { n: i + 1 }) });
       });
     }
     return list;
-  }, [lesson]);
+  }, [lesson, t]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Lesson image editor</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("lessonEditor:title")}</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Upload annotated AutoCAD screenshots for each step. Images are saved to this browser and
-            shown inside the lesson immediately.
+            {t("lessonEditor:subtitle")}
           </p>
         </div>
         {lesson && (
           <Button asChild variant="outline">
             <Link to="/lessons/$id" params={{ id: lesson.id }}>
-              <ArrowLeft className="size-4 mr-1" /> Open lesson
+              <ArrowLeft className="size-4 mr-1" /> {t("lessonEditor:openLesson")}
             </Link>
           </Button>
         )}
@@ -131,15 +132,14 @@ function LessonEditor() {
       <GuestGate isAuthenticated={isAuthed}>
         {adminCheck === "pending" && (
           <div className="rounded-2xl bg-card border border-border p-6 text-sm text-muted-foreground">
-            Checking permissions…
+            {t("lessonEditor:checkingPermissions")}
           </div>
         )}
         {adminCheck === "no" && (
           <div className="rounded-2xl bg-card border border-border p-6 space-y-2">
-            <div className="font-semibold">Admins only</div>
+            <div className="font-semibold">{t("lessonEditor:adminOnly")}</div>
             <p className="text-sm text-muted-foreground">
-              This editor is restricted to AutoCAD Coach admins. If you think you should
-              have access, contact the site owner.
+              {t("lessonEditor:adminOnlyBody")}
             </p>
           </div>
         )}
@@ -147,33 +147,43 @@ function LessonEditor() {
           <>
         <ReprocessPanel />
         <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3">
-          <label className="text-sm text-muted-foreground sm:w-32 shrink-0">Editing lesson</label>
+          <label className="text-sm text-muted-foreground sm:w-32 shrink-0">{t("lessonEditor:editingLesson")}</label>
           <Select value={lessonId} onValueChange={setLessonId}>
             <SelectTrigger className="w-full sm:max-w-md">
-              <SelectValue placeholder="Pick a lesson" />
+              <SelectValue placeholder={t("lessonEditor:pickLesson")} />
             </SelectTrigger>
             <SelectContent>
               {lessons.map((l) => (
                 <SelectItem key={l.id} value={l.id}>
-                  Day {l.day} — {l.title}
+                  {t("common:day")} {l.day} — {l.title}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           {lesson && (() => {
             const enUploaded = slots.filter((s) => images[s.key]).length;
-            const complete = slots.length > 0 && enUploaded >= slots.length;
+            const esUploaded = slots.filter((s) => images[`${s.key}${ES_SUFFIX}`]).length;
+            const enComplete = slots.length > 0 && enUploaded >= slots.length;
+            const esComplete = slots.length > 0 && esUploaded >= slots.length;
+            const status = enComplete && esComplete
+              ? t("lessonEditor:statusComplete")
+              : !enComplete && !esComplete
+                ? t("lessonEditor:statusBothIncomplete")
+                : enComplete
+                  ? t("lessonEditor:statusEsIncomplete")
+                  : t("lessonEditor:statusEnIncomplete");
             return (
-              <Badge
-                variant={complete ? "success" : "outline"}
-                className={
-                  complete
-                    ? "self-start sm:self-auto"
-                    : "border-border self-start sm:self-auto"
-                }
-              >
-                {enUploaded} / {slots.length} uploaded (EN)
-              </Badge>
+              <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                <Badge variant={enComplete ? "success" : "outline"} className={enComplete ? undefined : "border-border"}>
+                  {t("lessonEditor:countEn", { done: enUploaded, total: slots.length })}
+                </Badge>
+                <Badge variant={esComplete ? "success" : "outline"} className={esComplete ? undefined : "border-border"}>
+                  {t("lessonEditor:countEs", { done: esUploaded, total: slots.length })}
+                </Badge>
+                <span className={enComplete && esComplete ? "text-xs text-success" : "text-xs text-muted-foreground"}>
+                  {status}
+                </span>
+              </div>
             );
           })()}
         </div>
@@ -209,25 +219,22 @@ function SlotPair({
   enImage?: string;
   esImage?: string;
 }) {
+  const { t } = useTranslation("lessonEditor");
   return (
     <div className="rounded-2xl bg-card border border-border p-4 flex flex-col gap-4">
       <div className="font-semibold text-sm">{slot.label}</div>
       <ImageSlot
         lessonId={lessonId}
         slotKey={slot.key}
-        label="English image"
+        label={t("englishImage")}
         image={enImage}
       />
       <ImageSlot
         lessonId={lessonId}
         slotKey={`${slot.key}${ES_SUFFIX}`}
-        label="Spanish image"
+        label={t("spanishImage")}
         image={esImage}
-        emptyHint={
-          !esImage
-            ? "No Spanish image uploaded. The English image will be used as fallback."
-            : undefined
-        }
+        emptyHint={!esImage ? t("spanishFallback") : undefined}
       />
     </div>
   );
@@ -248,15 +255,20 @@ function ImageSlot({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const { t } = useTranslation("lessonEditor");
+  const [error, setError] = useState<string | null>(null);
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
     setBusy(true);
+    setError(null);
     try {
       await uploadLessonImage(lessonId, slotKey, file);
-      toast.success(`${label} updated`);
+      toast.success(t("slotUpdated", { label }));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not upload image");
+      const msg = e instanceof Error ? e.message : t("couldNotUpload");
+      setError(msg);
+      toast.error(msg);
     } finally {
       setBusy(false);
     }
@@ -269,7 +281,12 @@ function ImageSlot({
       </div>
 
       <div className="rounded-xl border border-dashed border-border bg-secondary/30 overflow-hidden">
-        {image ? (
+        {busy ? (
+          <div className="aspect-video grid place-items-center">
+            <Loader2 className="size-5 animate-spin text-muted-foreground" aria-hidden />
+            <span className="sr-only">{t("uploading")}</span>
+          </div>
+        ) : image ? (
           <img
             src={image}
             alt={label}
@@ -281,13 +298,16 @@ function ImageSlot({
           <div className="aspect-video grid place-items-center">
             <div className="flex flex-col items-center gap-1 text-xs text-muted-foreground">
               <ImageIcon className="size-5" aria-hidden />
-              <span className="uppercase tracking-wider">No image yet</span>
+              <span className="uppercase tracking-wider">{t("noImageYet")}</span>
             </div>
           </div>
         )}
       </div>
       {emptyHint && (
         <p className="text-xs text-muted-foreground">{emptyHint}</p>
+      )}
+      {error && (
+        <p className="text-xs text-destructive" role="alert">{error}</p>
       )}
 
       <div className="flex flex-wrap gap-2">
@@ -297,24 +317,28 @@ function ImageSlot({
           size="sm"
           onClick={() => inputRef.current?.click()}
           disabled={busy}
+          aria-label={`${label} — ${image ? t("replace") : t("upload")}`}
         >
-          <Upload className="size-4 mr-1" /> {image ? "Replace" : "Upload"}
+          {busy ? <Loader2 className="size-4 mr-1 animate-spin" /> : <Upload className="size-4 mr-1" />}
+          {busy ? t("uploading") : image ? t("replace") : t("upload")}
         </Button>
         {image && (
           <Button
             type="button"
             variant="ghost"
             size="sm"
+            disabled={busy}
+            aria-label={`${label} — ${t("remove")}`}
             onClick={() => {
               clearLessonImage(lessonId, slotKey)
-                .then(() => toast("Image removed"))
+                .then(() => toast(t("imageRemoved")))
                 .catch((e) =>
-                  toast.error(e instanceof Error ? e.message : "Could not remove image"),
+                  toast.error(e instanceof Error ? e.message : t("couldNotRemove")),
                 );
             }}
             className="text-destructive hover:text-destructive"
           >
-            <Trash2 className="size-4 mr-1" /> Remove
+            <Trash2 className="size-4 mr-1" /> {t("remove")}
           </Button>
         )}
       </div>
@@ -338,6 +362,7 @@ const REPROCESS_LESSON_IDS = ["interface", "line", "circle", "rectangle", "trim"
 function ReprocessPanel() {
   const [busy, setBusy] = useState(false);
   const [results, setResults] = useState<ReprocessResult[] | null>(null);
+  const { t } = useTranslation("lessonEditor");
 
   async function run() {
     setBusy(true);
@@ -346,9 +371,9 @@ function ReprocessPanel() {
       const out = await reprocessLessonImages(REPROCESS_LESSON_IDS);
       setResults(out);
       const trimmedCount = out.filter((r) => r.trimmed).length;
-      toast.success(`Reprocessed ${out.length} image${out.length === 1 ? "" : "s"} — ${trimmedCount} trimmed`);
+      toast.success(t("reprocessDone", { count: out.length, trimmed: trimmedCount }));
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Reprocess failed");
+      toast.error(e instanceof Error ? e.message : t("reprocessFailed"));
     } finally {
       setBusy(false);
     }
@@ -359,17 +384,15 @@ function ReprocessPanel() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="font-semibold text-sm flex items-center gap-2">
-            <Scissors className="size-4" /> Reprocess legacy screenshots
+            <Scissors className="size-4" /> {t("reprocessTitle")}
           </div>
           <p className="text-xs text-muted-foreground mt-1 max-w-md">
-            One-time migration: auto-trims empty margins from images already uploaded for
-            lessons {REPROCESS_LESSON_IDS.map((id) => `"${id}"`).join(", ")}. Safe to run
-            more than once — already-tight images are skipped.
+            {t("reprocessDesc", { ids: REPROCESS_LESSON_IDS.map((id) => `"${id}"`).join(", ") })}
           </p>
         </div>
         <Button type="button" onClick={run} disabled={busy} variant="outline" size="sm">
           {busy ? <Loader2 className="size-4 mr-1 animate-spin" /> : <Scissors className="size-4 mr-1" />}
-          {busy ? "Reprocessing…" : "Run reprocess"}
+          {busy ? t("reprocessing") : t("runReprocess")}
         </Button>
       </div>
       {results && (
@@ -380,7 +403,7 @@ function ReprocessPanel() {
               className={r.error ? "text-destructive" : r.trimmed ? "text-success" : "text-muted-foreground"}
             >
               {r.lessonId}/{r.slot}: {r.before[0]}×{r.before[1]} → {r.after[0]}×{r.after[1]}
-              {r.trimmed ? " ✓ trimmed" : r.error ? ` ✕ ${r.error}` : " – skipped"}
+              {r.trimmed ? ` ✓ ${t("trimmedLabel")}` : r.error ? ` ✕ ${r.error}` : ` – ${t("skippedLabel")}`}
             </li>
           ))}
         </ul>

@@ -50,12 +50,26 @@
     "expandSidebar": "Expand sidebar",
     "collapseSidebar": "Collapse sidebar",
     "defaultLearner": "AutoCAD Learner",
-    "profileFallback": "Profile"
+    "profileFallback": "Profile",
+    "signIn": "Sign in",
+    "signUpFree": "Sign up free",
+    "exploreDashboard": "Explore dashboard",
+    "goToDashboard": "Go to dashboard"
   },
   "gate": {
     "title": "Sign in to access this",
     "defaultMessage": "Create a free account to track your progress, earn XP, and interact with lessons.",
-    "chatMessage": "Sign in to chat with AutoCoach."
+    "chatMessage": "Sign in to chat with AutoCoach.",
+    "guestBannerTitle": "Explore all lessons for free",
+    "guestBannerMessage": "Create an account to save progress, earn XP, and track completed lessons.",
+    "signUpFree": "Sign up free",
+    "previewBadge": "Preview",
+    "previewNote": "You're previewing this lesson. Sign up free to save your progress.",
+    "saveProgressMessage": "Create a free account to save your progress and earn XP.",
+    "quizMessage": "Create a free account to complete quizzes and save your progress.",
+    "completeMessage": "Create a free account to mark lessons complete and earn XP.",
+    "projectCompleteMessage": "Create a free account to mark projects complete and earn XP.",
+    "uploadMessage": "Create a free account to upload your final result."
   },
   "auth": {
     "signInTitle": "Sign in",
@@ -351,7 +365,17 @@
     "reprocessDone_other": "Reprocessed {{count}} images — {{trimmed}} trimmed",
     "reprocessFailed": "Reprocess failed",
     "trimmedLabel": "trimmed",
-    "skippedLabel": "skipped"
+    "skippedLabel": "skipped",
+    "englishImage": "English image",
+    "spanishImage": "Spanish image",
+    "spanishFallback": "Spanish image not uploaded. The English image will be shown as a fallback.",
+    "countEn": "{{done}} / {{total}} English images",
+    "countEs": "{{done}} / {{total}} Spanish images",
+    "statusComplete": "Complete in both languages",
+    "statusEsIncomplete": "Spanish images incomplete",
+    "statusEnIncomplete": "English images incomplete",
+    "statusBothIncomplete": "English and Spanish images incomplete",
+    "loading": "Loading…"
   },
   "screenshot": {
     "enlarge": "Enlarge",
@@ -371,8 +395,8 @@
     "heroLine1": "Master AutoCAD",
     "heroLine2": "from zero to fluent.",
     "heroSub": "AutoCAD Coach turns engineering software into a step-by-step game. Lessons, projects, quizzes, and an AI tutor — all in one place.",
-    "ctaPrimary": "Start Learning free",
-    "ctaSecondary": "View Dashboard",
+    "ctaPrimary": "Sign up for free",
+    "ctaSecondary": "Explore the dashboard",
     "socialProof": "Join learners mastering AutoCAD one command at a time.",
     "featuresKicker": "Everything you need",
     "featuresHeadline1": "Learn by doing,",
@@ -405,7 +429,12 @@
     "footerTermsOfService": "Terms of Service",
     "footerCookiePolicy": "Cookie Policy",
     "footerTrust": "Trust & Security",
-    "footerCopyright": "© {{year}} AutoCAD Coach. All rights reserved."
+    "footerCopyright": "© {{year}} AutoCAD Coach. All rights reserved.",
+    "ctaPrimaryAuthed": "Continue learning",
+    "ctaSecondaryAuthed": "Go to dashboard",
+    "ctaNote": "Explore lessons and projects without an account. Sign up to save progress, earn XP, and complete quizzes.",
+    "signUpFree": "Sign up free",
+    "exploreDashboard": "Explore dashboard"
   },
   "legal": {
     "lastUpdated": "Last updated: 1 June 2025",
