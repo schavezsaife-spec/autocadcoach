@@ -127,7 +127,9 @@
     "callbackBody": "Just a moment while we finish setting up your session.",
     "callbackFailedTitle": "We couldn't complete sign-in",
     "callbackFailedBody": "The link may have expired. Please try signing in again.",
-    "resetLinkInvalid": "This reset link is invalid or has expired. Request a new one."
+    "resetLinkInvalid": "This reset link is invalid or has expired. Request a new one.",
+    "errPasswordPwned": "That password has appeared in a known data breach. Please choose a stronger, unique one.",
+    "errPasswordWeak": "Please choose a stronger password."
   },
   "dashboard": {
     "title": "Dashboard",

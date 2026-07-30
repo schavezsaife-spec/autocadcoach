@@ -60,6 +60,10 @@ function friendlyAuthError(err: unknown, context: "signin" | "signup" | "reset")
   console.error(`[auth] ${context} failed`, { code, status, raw, err });
 
   const m = raw.toLowerCase();
+  // Leaked-password protection (HIBP) rejects the signup with HTTP 422.
+  if (code === "weak_password" || m.includes("known to be weak") || m.includes("pwned")) {
+    return tr("errPasswordPwned");
+  }
   if (m.includes("email not confirmed") || code === "email_not_confirmed") {
     return tr("errEmailNotConfirmed");
   }

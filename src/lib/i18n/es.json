@@ -127,7 +127,9 @@
     "callbackBody": "Un momento mientras terminamos de preparar tu sesión.",
     "callbackFailedTitle": "No pudimos completar el inicio de sesión",
     "callbackFailedBody": "Es posible que el enlace haya caducado. Intenta iniciar sesión de nuevo.",
-    "resetLinkInvalid": "Este enlace de restablecimiento no es válido o ha caducado. Solicita uno nuevo."
+    "resetLinkInvalid": "Este enlace de restablecimiento no es válido o ha caducado. Solicita uno nuevo.",
+    "errPasswordPwned": "Esa contraseña ha aparecido en una filtración de datos conocida. Elige una más segura y única.",
+    "errPasswordWeak": "Elige una contraseña más segura."
   },
   "dashboard": {
     "title": "Panel",
