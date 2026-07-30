@@ -31,7 +31,7 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardPage() {
   const { state, totalXp, progressPct, isUnlocked, hydrated } = useCoach();
-  const { t } = useTranslation(["dashboard", "common"]);
+  const { t } = useTranslation(["dashboard", "common", "gate"]);
   const [q, setQ] = useState("");
   const isAuthed = state.profile.isAuthenticated;
   const localizedLessons = useLocalizedLessons();
@@ -68,13 +68,13 @@ function DashboardPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-          <Stat icon={BookOpen} label={t("dashboard:lessons")} value={`${state.completedLessons.length}/${lessons.length}`} />
-          <Stat icon={Trophy} label={t("dashboard:totalXp")} value={`${totalXp}`} />
-          <Stat icon={Wrench} label={t("dashboard:projects")} value={`${state.completedProjects.length}`} />
+          <Stat icon={BookOpen} label={t("dashboard:lessons")} value={`${isAuthed ? state.completedLessons.length : 0}/${lessons.length}`} />
+          <Stat icon={Trophy} label={t("dashboard:totalXp")} value={`${isAuthed ? totalXp : 0}`} />
+          <Stat icon={Wrench} label={t("dashboard:projects")} value={`${isAuthed ? state.completedProjects.length : 0}`} />
           <Stat
             icon={Flame}
             label={t("dashboard:streak")}
-            value={`${state.streak} ${t("dashboard:days", { count: state.streak })}`}
+            value={`${isAuthed ? state.streak : 0} ${t("dashboard:days", { count: isAuthed ? state.streak : 0 })}`}
           />
         </div>
 
@@ -82,10 +82,10 @@ function DashboardPage() {
         <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="font-semibold">{t("dashboard:overallProgress")}</div>
-            <div className="text-sm text-muted-foreground">{progressPct}%</div>
+            <div className="text-sm text-muted-foreground">{isAuthed ? progressPct : 0}%</div>
           </div>
           <Progress
-            value={progressPct}
+            value={isAuthed ? progressPct : 0}
             className="h-2"
             trackClassName="bg-success/20"
             indicatorClassName="bg-success"
@@ -131,7 +131,7 @@ function DashboardPage() {
                       </Badge>
                     ) : !isAuthed ? (
                       <Badge variant="outline" className="border-primary/30 text-primary">
-                        {t("gate:previewBadge", { ns: "gate" })}
+                        {t("gate:previewBadge")}
                       </Badge>
                     ) : !unlocked ? (
                       <Badge variant="outline" className="text-muted-foreground/60 border-dashed">
