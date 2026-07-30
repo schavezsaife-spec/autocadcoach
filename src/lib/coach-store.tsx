@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { lessons } from "./coach-data";
 import { supabase } from "./supabase";
-import type { User } from "@supabase/supabase-js";
 import { setAppLanguage, type AppLanguage } from "./i18n";
+import { useAuth } from "./auth-context";
 
 export type Profile = {
   firstName: string;
@@ -77,6 +77,8 @@ type Ctx = {
   resetProject: (id: string) => void;
   isUnlocked: (id: string) => boolean;
   hydrated: boolean;
+  /** True until the centralized auth state has settled. */
+  authLoading: boolean;
   signOut: () => Promise<void>;
   totalXp: number;
   progressPct: number;
@@ -87,7 +89,15 @@ const CoachCtx = createContext<Ctx | null>(null);
 export function CoachProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<CoachState>(DEFAULT);
   const [hydrated, setHydrated] = useState(false);
-  const [remoteUserId, setRemoteUserId] = useState<string | null>(null);
+  const {
+    user,
+    session,
+    loading: authLoading,
+    profile: remoteProfile,
+    signOut: authSignOut,
+  } = useAuth();
+  // Progress is only ever synced for a confirmed, authenticated session.
+  const remoteUserId = session?.user?.id ?? null;
 
   // Hydrate from localStorage synchronously on mount.
   // setHydrated(true) fires immediately — no waiting for Supabase.
@@ -123,15 +133,14 @@ export function CoachProvider({ children }: { children: ReactNode }) {
     }
   }, [state, hydrated]);
 
-  // Sync auth state from Supabase as the source of truth for
-  // isAuthenticated / email / firstName / lastName / authProvider.
-  // XP, completed lessons, and profile image stay in localStorage.
+  // Mirror the centralized auth state (AuthProvider) into the coach profile.
+  // AuthProvider is the single source of truth; this only projects it into the
+  // existing UI shape. XP, completed lessons and profile image stay local.
   useEffect(() => {
-    function applyUser(user: User | null) {
-      setState((s) => {
-        if (!user) {
-          setRemoteUserId(null);
-          if (
+    if (authLoading) return;
+    setState((s) => {
+      if (!user) {
+        if (
             !s.profile.isAuthenticated &&
             !s.profile.profileImage &&
             !s.profile.firstName &&
@@ -150,9 +159,9 @@ export function CoachProvider({ children }: { children: ReactNode }) {
             streak: 1,
           };
         }
-        setRemoteUserId(user.id);
         const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
         const firstName =
+          remoteProfile?.first_name ||
           (meta.first_name as string) ||
           (meta.given_name as string) ||
           ((meta.full_name as string)?.split(" ")[0] ?? "") ||
@@ -160,6 +169,7 @@ export function CoachProvider({ children }: { children: ReactNode }) {
           s.profile.firstName ||
           (user.email?.split("@")[0] ?? "");
         const lastName =
+          remoteProfile?.last_name ||
           (meta.last_name as string) ||
           (meta.family_name as string) ||
           ((meta.full_name as string)?.split(" ").slice(1).join(" ") ?? "") ||
@@ -178,15 +188,8 @@ export function CoachProvider({ children }: { children: ReactNode }) {
             isAuthenticated: true,
           },
         };
-      });
-    }
-
-    supabase.auth.getSession().then(({ data }) => applyUser(data.session?.user ?? null));
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      applyUser(session?.user ?? null);
     });
-    return () => sub.subscription.unsubscribe();
-  }, []);
+  }, [user, authLoading, remoteProfile]);
 
   // Sync local progress → Supabase whenever the user signs in.
   // Remote wins on scalar fields; arrays union so nothing is lost.
@@ -324,9 +327,7 @@ export function CoachProvider({ children }: { children: ReactNode }) {
   );
 
   async function signOut() {
-    try {
-      await supabase.auth.signOut();
-    } catch {}
+    await authSignOut();
     try {
       localStorage.removeItem(KEY);
     } catch {}
@@ -347,6 +348,7 @@ export function CoachProvider({ children }: { children: ReactNode }) {
         resetProject,
         isUnlocked,
         hydrated,
+        authLoading,
         signOut,
         totalXp,
         progressPct,
