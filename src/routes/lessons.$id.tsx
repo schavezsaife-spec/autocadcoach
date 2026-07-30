@@ -238,7 +238,7 @@ function LegacyLessonBody({
   step: number;
   stepPct: number;
   setStep: (n: number) => void;
-  onOpenLightbox: () => void;
+  onOpenLightbox: (img: ActiveLightboxImage) => void;
 }) {
   const media = lesson.media;
   const heroSrc = media?.hero ?? lesson.image;
@@ -246,7 +246,7 @@ function LegacyLessonBody({
   return (
     <>
       <button
-        onClick={onOpenLightbox}
+        onClick={() => onOpenLightbox({ src: heroSrc, alt: t("lessons:referenceAlt", { title: lesson.title }) })}
         className="block w-full rounded-2xl overflow-hidden border border-border group"
         aria-label={t("lessons:enlargeAria", { title: lesson.title })}
       >
@@ -344,7 +344,7 @@ function RichLessonBody({
   rich: RichLesson;
   fallbackImage: string;
   uploaded: LessonImageMap;
-  onOpenLightbox: () => void;
+  onOpenLightbox: (img: ActiveLightboxImage) => void;
   lessonId: string;
 }) {
   const { t } = useTranslation(["lessons", "common"]);
@@ -665,14 +665,16 @@ function LessonQuiz({
   lessonId,
   questions,
   passed,
+  isAuthed,
   onPass,
 }: {
   lessonId: string;
   questions: Q[];
   passed: boolean;
+  isAuthed: boolean;
   onPass: () => void;
 }) {
-  const { t } = useTranslation(["lessons", "common"]);
+  const { t } = useTranslation(["lessons", "common", "gate"]);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [revealed, setRevealed] = useState<Record<number, boolean>>({});
 
@@ -685,7 +687,7 @@ function LessonQuiz({
   const allAnswered = totalAnswered === questions.length;
   const justPassed = allAnswered && correctCount >= passingScore;
 
-  if (justPassed && !passed) onPass();
+  if (isAuthed && justPassed && !passed) onPass();
 
   const pick = (i: number, choice: number) => {
     if (revealed[i]) return;
@@ -778,6 +780,11 @@ function LessonQuiz({
             ? t("lessons:quizPassResult", { correct: correctCount, total: questions.length })
             : t("lessons:quizFailResult", { correct: correctCount, total: questions.length, needed: passingScore })}
         </div>
+      )}
+      {!isAuthed && (
+        <AuthRequiredAction isAuthenticated={false} message={t("gate:quizMessage")} className="mt-4" >
+          {null}
+        </AuthRequiredAction>
       )}
     </div>
   );
