@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import i18n from "@/lib/i18n";
 
-export const Route = createFileRoute("/auth/callback")({
+export const Route = createFileRoute("/auth_/callback")({
   head: () => ({
     meta: [
       { title: i18n.t("meta:authTitle") },
