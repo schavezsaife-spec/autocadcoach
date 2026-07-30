@@ -365,7 +365,7 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
           >
             {isAuthed ? (
               <Link to={primaryTo} params={{ id: nextLessonId }}>
-                {t("ctaPrimary")} <ArrowRight className="ml-1 size-4 cta-arrow" />
+                {t("ctaPrimaryAuthed")} <ArrowRight className="ml-1 size-4 cta-arrow" />
               </Link>
             ) : (
               <Link to="/auth">
@@ -374,9 +374,14 @@ function Hero({ isAuthed, nextLessonId }: { isAuthed: boolean; nextLessonId: str
             )}
           </Button>
           <Button asChild size="lg" variant="outline" className="border-border bg-card/40 hover:bg-card">
-            <Link to="/dashboard">{t("ctaSecondary")}</Link>
+            <Link to="/dashboard">{isAuthed ? t("ctaSecondaryAuthed") : t("ctaSecondary")}</Link>
           </Button>
         </div>
+        {!isAuthed && (
+          <p className="fade-up mt-4 max-w-xl mx-auto text-sm text-muted-foreground" style={{ animationDelay: "1050ms" }}>
+            {t("ctaNote")}
+          </p>
+        )}
 
         {/* Social proof */}
         <div

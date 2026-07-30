@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useLessonImages } from "@/lib/lesson-images";
 import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { toast } from "sonner";
-import { GuestGate } from "@/components/coach/GuestGate";
+import { GuestBanner, AuthRequiredAction } from "@/components/coach/AuthPrompt";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects/$id")({
@@ -67,7 +67,7 @@ export const Route = createFileRoute("/projects/$id")({
 function ProjectViewer() {
   const { id } = Route.useParams();
   const { state, completeProject, resetProject } = useCoach();
-  const { t } = useTranslation(["projects", "common"]);
+  const { t } = useTranslation(["projects", "common", "gate"]);
   const [lightbox, setLightbox] = useState(false);
   const isAuthed = state.profile.isAuthenticated;
   const project = useLocalizedProject(id);
@@ -83,7 +83,7 @@ function ProjectViewer() {
     );
   }
 
-  const done = state.completedProjects.includes(project.id);
+  const done = isAuthed && state.completedProjects.includes(project.id);
   const coverSrc = project.coverImage ?? project.image;
 
   return (
@@ -96,7 +96,7 @@ function ProjectViewer() {
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{project.title}</h1>
       <p className="text-muted-foreground">{project.description}</p>
 
-      <GuestGate isAuthenticated={isAuthed}>
+      {!isAuthed && <GuestBanner />}
       <Tabs defaultValue="details" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="details">{t("projects:tabs.details")}</TabsTrigger>
@@ -128,24 +128,30 @@ function ProjectViewer() {
         </ol>
       </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
-        <Button
-          onClick={() => { completeProject(project.id); toast.success(t("projects:markedComplete", { title: project.title })); }}
-          className={cn(
-            "w-full sm:w-auto",
-            done
-              ? "bg-success text-success-foreground hover:bg-success/90"
-              : "bg-primary text-primary-foreground hover:bg-primary/90",
+          {isAuthed ? (
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                onClick={() => { completeProject(project.id); toast.success(t("projects:markedComplete", { title: project.title })); }}
+                className={cn(
+                  "w-full sm:w-auto",
+                  done
+                    ? "bg-success text-success-foreground hover:bg-success/90"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90",
+                )}
+              >
+                <CheckCircle2 className="size-4 mr-1" /> {t("common:markComplete")}
+              </Button>
+              {done && (
+                <Button variant="outline" onClick={() => resetProject(project.id)} className="w-full sm:w-auto">
+                  <RotateCcw className="size-4 mr-1" /> {t("common:reset")}
+                </Button>
+              )}
+            </div>
+          ) : (
+            <AuthRequiredAction isAuthenticated={false} message={t("gate:projectCompleteMessage")}>
+              {null}
+            </AuthRequiredAction>
           )}
-        >
-          <CheckCircle2 className="size-4 mr-1" /> {t("common:markComplete")}
-        </Button>
-        {done && (
-          <Button variant="outline" onClick={() => resetProject(project.id)} className="w-full sm:w-auto">
-            <RotateCcw className="size-4 mr-1" /> {t("common:reset")}
-          </Button>
-        )}
-      </div>
         </TabsContent>
         <TabsContent value="final" className="mt-0">
           <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 space-y-3">
@@ -155,8 +161,13 @@ function ProjectViewer() {
               alt={t("projects:finalResultAlt", { title: project.title })}
               lessonId={projectImageKey}
               slot="final"
-              uploadable
+              uploadable={isAuthed}
             />
+            {!isAuthed && (
+              <AuthRequiredAction isAuthenticated={false} message={t("gate:uploadMessage")}>
+                {null}
+              </AuthRequiredAction>
+            )}
             {!finalUrl && (
               <p className="text-sm text-muted-foreground">
                 {t("projects:uploadFinalPrompt")}
@@ -165,7 +176,6 @@ function ProjectViewer() {
           </div>
         </TabsContent>
       </Tabs>
-      </GuestGate>
 
       {lightbox && (
         <Lightbox src={coverSrc} alt={project.title} onClose={() => setLightbox(false)} />
