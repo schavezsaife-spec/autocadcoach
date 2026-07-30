@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
 import { AlertCircle, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { Logo } from "@/components/coach/Logo";
@@ -26,6 +26,7 @@ export const Route = createFileRoute("/forgot-password")({
 
 function ForgotPasswordPage() {
   const { t } = useTranslation(["auth", "common"]);
+  const { resetPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -40,16 +41,13 @@ function ForgotPasswordPage() {
     }
     setLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      if (error) throw error;
+      const res = await resetPassword(email);
+      if (!res.ok) {
+        setError(res.error ?? t("auth:errResetFailed"));
+        return;
+      }
       setSent(true);
       toast.success(t("auth:toastResetLinkSent"));
-    } catch (err) {
-      const m = err instanceof Error ? err.message : t("auth:errResetFailed");
-      setError(m);
-      toast.error(m);
     } finally {
       setLoading(false);
     }
