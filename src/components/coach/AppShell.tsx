@@ -196,7 +196,8 @@ function UserFooter({ collapsed }: { collapsed: boolean }) {
 
   async function handleLogout() {
     await signOut();
-    navigate({ to: "/" });
+    // replace: the protected screen must not be restorable with Back.
+    navigate({ to: "/auth", replace: true });
   }
 
   if (!p.isAuthenticated) {

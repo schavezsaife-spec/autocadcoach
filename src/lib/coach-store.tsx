@@ -3,6 +3,7 @@ import { lessons } from "./coach-data";
 import { supabase } from "./supabase";
 import { setAppLanguage, type AppLanguage } from "./i18n";
 import { useAuth } from "./auth-context";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type Profile = {
   firstName: string;
@@ -89,6 +90,7 @@ const CoachCtx = createContext<Ctx | null>(null);
 export function CoachProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<CoachState>(DEFAULT);
   const [hydrated, setHydrated] = useState(false);
+  const queryClient = useQueryClient();
   const {
     user,
     session,
@@ -327,6 +329,10 @@ export function CoachProvider({ children }: { children: ReactNode }) {
   );
 
   async function signOut() {
+    // Stop in-flight requests before the session disappears, then drop every
+    // cached response so the next visitor never sees the last user's data.
+    await queryClient.cancelQueries();
+    queryClient.clear();
     await authSignOut();
     try {
       localStorage.removeItem(KEY);
