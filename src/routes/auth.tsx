@@ -3,27 +3,16 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useCoach } from "@/lib/coach-store";
-import { supabase } from "@/lib/supabase";
-import { lovable } from "@/integrations/lovable";
+import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
-import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Logo } from "@/components/coach/Logo";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
 
 /**
- * Setup checklist for the developer:
- *
- * 1. Configure Supabase env vars in `.env` (auto-filled by Lovable Cloud):
- *      VITE_SUPABASE_URL=
- *      VITE_SUPABASE_ANON_KEY=        (a.k.a. VITE_SUPABASE_PUBLISHABLE_KEY)
- *
- * 2. Enable Google in the Backend dashboard:
- *      Authentication → Providers → Google → enabled
- *    Lovable Cloud ships managed Google OAuth credentials out of the box,
- *    so no client ID / secret is required for development. To use your own
- *    Google credentials, override them under Auth Settings → Sign In Methods.
+ * All authentication goes through the centralized AuthProvider
+ * (`src/lib/auth-context.tsx`) — this page only renders the form.
  */
 
 export const Route = createFileRoute("/auth")({
@@ -43,7 +32,7 @@ export const Route = createFileRoute("/auth")({
 type Mode = "signup" | "signin";
 
 function AuthPage() {
-  const { state } = useCoach();
+  const { session, loading: authLoading, signIn, signUp, signInWithGoogle } = useAuth();
   const { t } = useTranslation(["auth", "common"]);
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("signup");
@@ -55,13 +44,15 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [confirmSent, setConfirmSent] = useState<string | null>(null);
 
-  // If the user is already signed in (e.g. after a Google redirect), send them on.
+  // An already-signed-in visitor belongs on the dashboard. Wait for auth to
+  // finish loading first so this can never race into a redirect loop.
   useEffect(() => {
-    if (state.profile.isAuthenticated) {
-      navigate({ to: "/dashboard" });
+    if (!authLoading && session?.user) {
+      navigate({ to: "/dashboard", replace: true });
     }
-  }, [state.profile.isAuthenticated, navigate]);
+  }, [authLoading, session, navigate]);
 
   function emailValid(v: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
@@ -70,6 +61,7 @@ function AuthPage() {
   async function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrorMsg(null);
+    setConfirmSent(null);
     if (mode === "signup" && !firstName.trim()) {
       setErrorMsg(t("auth:errFirstNameRequired"));
       return;
@@ -85,38 +77,30 @@ function AuthPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password,
-          options: {
-            data: {
-              first_name: firstName.trim(),
-              last_name: lastName.trim(),
-            },
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-          },
-        });
-        if (error) throw error;
-        if (!data.session) {
-          toast.success(t("auth:toastAccountCreatedCheckEmail"));
+        const res = await signUp(email, password, { firstName, lastName });
+        if (!res.ok) {
+          setErrorMsg(res.error ?? t("auth:errSignUpFailed"));
+          return;
+        }
+        if (res.needsEmailConfirmation) {
+          // NOT a completed login — the user must confirm their email first.
+          setConfirmSent(email.trim().toLowerCase());
           setMode("signin");
           setPassword("");
+          toast.success(t("auth:toastAccountCreatedCheckEmail"));
           return;
         }
         toast.success(t("auth:toastAccountCreated"));
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
-        });
-        if (error) throw error;
+        const res = await signIn(email, password);
+        if (!res.ok) {
+          setErrorMsg(res.error ?? t("auth:errAuthFailed"));
+          return;
+        }
         toast.success(t("auth:toastWelcomeBack"));
       }
-      navigate({ to: "/dashboard" });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : t("auth:errAuthFailed");
-      setErrorMsg(message);
-      toast.error(message);
+      // Only reached when a valid authenticated session exists.
+      navigate({ to: "/dashboard", replace: true });
     } finally {
       setLoading(false);
     }
@@ -124,22 +108,17 @@ function AuthPage() {
 
   async function handleGoogle() {
     setErrorMsg(null);
+    setConfirmSent(null);
     setGoogleLoading(true);
     try {
-      // Lovable Cloud's managed Google OAuth broker.
-      // It calls supabase.auth.signInWithOAuth({ provider: "google" })
-      // under the hood and then sets the Supabase session for us.
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-      if (result.error) throw result.error;
-      if (result.redirected) return; // browser is navigating to Google
+      const res = await signInWithGoogle();
+      if (res.redirected) return; // browser is navigating to Google
+      if (!res.ok) {
+        setErrorMsg(res.error ?? t("auth:errGoogleFailed"));
+        return;
+      }
       toast.success(t("auth:toastSignedInGoogle"));
-      navigate({ to: "/dashboard" });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : t("auth:errGoogleFailed");
-      setErrorMsg(message);
-      toast.error(message);
+      navigate({ to: "/dashboard", replace: true });
     } finally {
       setGoogleLoading(false);
     }
@@ -194,6 +173,15 @@ function AuthPage() {
           </div>
 
           <form onSubmit={handleEmailSubmit} className="space-y-4">
+            {confirmSent && (
+              <div
+                role="status"
+                className="flex items-start gap-2 rounded-lg border border-success/40 bg-success/10 px-3 py-2 text-sm text-success"
+              >
+                <CheckCircle2 className="size-4 mt-0.5 shrink-0" />
+                <span>{t("auth:confirmEmailSent", { email: confirmSent })}</span>
+              </div>
+            )}
             {errorMsg && (
               <div
                 role="alert"
