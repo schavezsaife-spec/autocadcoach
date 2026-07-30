@@ -14,8 +14,10 @@ import { Lightbox } from "@/components/coach/Lightbox";
 import { ScreenshotCard } from "@/components/coach/ScreenshotCard";
 import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target, Trophy, RotateCcw, XCircle, BookOpen, Compass, MapPin, ListChecks, Image as ImageIcon, Wrench, Dumbbell, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { GuestGate } from "@/components/coach/GuestGate";
+import { GuestBanner, AuthRequiredAction } from "@/components/coach/AuthPrompt";
 import { cn } from "@/lib/utils";
+
+export type ActiveLightboxImage = { src: string; alt: string } | null;
 
 
 export const Route = createFileRoute("/lessons/$id")({
@@ -73,11 +75,13 @@ function LessonViewer() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const { state, set, completeLesson, passLessonQuiz, isUnlocked } = useCoach();
-  const { t } = useTranslation(["lessons", "common", "dashboard"]);
+  const { t } = useTranslation(["lessons", "common", "dashboard", "gate"]);
   const localizedList = useLocalizedLessons();
-  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightbox, setLightbox] = useState<ActiveLightboxImage>(null);
   const isAuthed = state.profile.isAuthenticated;
   const uploadedImages = useLocalizedLessonImages(id);
+  // Guests may navigate steps, but that navigation is never persisted.
+  const [guestStep, setGuestStep] = useState<number>(0);
 
   // Always start a lesson at the top, regardless of previous scroll position
   // (dashboard, lesson list, prev/next nav, or a different lesson).
@@ -98,7 +102,7 @@ function LessonViewer() {
     );
   }
 
-  if (!isUnlocked(lesson.id)) {
+  if (isAuthed && !isUnlocked(lesson.id)) {
     return (
       <div className="max-w-2xl mx-auto p-10 pb-24 md:pb-10 text-center">
         <h1 className="text-2xl font-bold">{t("lessons:locked")}</h1>
@@ -111,16 +115,26 @@ function LessonViewer() {
   const idx = localizedList.findIndex((l) => l.id === lesson.id);
   const prev = localizedList[idx - 1];
   const next = localizedList[idx + 1];
-  const step = state.lessonStep[lesson.id] ?? 0;
+  const step = isAuthed ? state.lessonStep[lesson.id] ?? 0 : guestStep;
   const stepPct = Math.round(((step + 1) / lesson.steps.length) * 100);
-  const done = state.completedLessons.includes(lesson.id);
+  const done = isAuthed && state.completedLessons.includes(lesson.id);
 
-  const setStep = (n: number) =>
-    set((s) => ({ lessonStep: { ...s.lessonStep, [lesson.id]: Math.max(0, Math.min(lesson.steps.length - 1, n)) } }));
+  const setStep = (n: number) => {
+    const clamped = Math.max(0, Math.min(lesson.steps.length - 1, n));
+    if (!isAuthed) {
+      setGuestStep(clamped);
+      return;
+    }
+    set((s) => ({ lessonStep: { ...s.lessonStep, [lesson.id]: clamped } }));
+  };
 
-  const passed = !!state.lessonQuizPassed[lesson.id];
+  const passed = isAuthed && !!state.lessonQuizPassed[lesson.id];
 
   const onComplete = () => {
+    if (!isAuthed) {
+      toast.error(t("gate:completeMessage"));
+      return;
+    }
     if (!passed) {
       toast.error(t("lessons:finishQuizFirst"));
       return;
@@ -143,13 +157,14 @@ function LessonViewer() {
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{lesson.title}</h1>
       <p className="text-muted-foreground">{lesson.description}</p>
 
-      <GuestGate isAuthenticated={isAuthed}>
+      {!isAuthed && <GuestBanner />}
+
       {lesson.rich ? (
         <RichLessonBody
           rich={lesson.rich}
           fallbackImage={lesson.image}
           uploaded={uploadedImages}
-          onOpenLightbox={() => setLightboxOpen(true)}
+          onOpenLightbox={setLightbox}
           lessonId={lesson.id}
         />
       ) : (
@@ -158,7 +173,7 @@ function LessonViewer() {
           step={step}
           stepPct={stepPct}
           setStep={setStep}
-          onOpenLightbox={() => setLightboxOpen(true)}
+          onOpenLightbox={setLightbox}
         />
       )}
 
@@ -167,6 +182,7 @@ function LessonViewer() {
           lessonId={lesson.id}
           questions={quizQuestions}
           passed={passed}
+          isAuthed={isAuthed}
           onPass={() => passLessonQuiz(lesson.id)}
         />
       )}
@@ -184,22 +200,27 @@ function LessonViewer() {
             </Button>
           )}
         </div>
-        <Button
-          onClick={onComplete}
-          disabled={quizQuestions.length > 0 && !passed}
-          className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
-          title={quizQuestions.length > 0 && !passed ? t("lessons:passQuizToComplete") : undefined}
-        >
-          <CheckCircle2 className="size-4 mr-1" /> {done ? t("common:markCompleteAgain") : t("lessons:markLessonComplete")}
-        </Button>
+        {isAuthed ? (
+          <Button
+            onClick={onComplete}
+            disabled={quizQuestions.length > 0 && !passed}
+            className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90"
+            title={quizQuestions.length > 0 && !passed ? t("lessons:passQuizToComplete") : undefined}
+          >
+            <CheckCircle2 className="size-4 mr-1" /> {done ? t("common:markCompleteAgain") : t("lessons:markLessonComplete")}
+          </Button>
+        ) : (
+          <AuthRequiredAction isAuthenticated={false} message={t("gate:completeMessage")} className="w-full sm:w-auto">
+            {null}
+          </AuthRequiredAction>
+        )}
       </div>
-      </GuestGate>
 
-      {lightboxOpen && (
+      {lightbox && (
         <Lightbox
-          src={lesson.image}
-          alt={t("lessons:referenceAlt2", { title: lesson.title })}
-          onClose={() => setLightboxOpen(false)}
+          src={lightbox.src}
+          alt={lightbox.alt}
+          onClose={() => setLightbox(null)}
         />
       )}
     </div>
