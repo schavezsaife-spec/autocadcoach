@@ -134,6 +134,7 @@ export type Database = {
     }
     Functions: {
       delete_account: { Args: never; Returns: undefined }
+      email_auth_provider: { Args: { _email: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
