@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Lock, LogIn } from "lucide-react";
+import { Loader2, Lock, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,10 +8,19 @@ interface GuestGateProps {
   children: ReactNode;
   isAuthenticated: boolean;
   message?: string;
+  /** While the session is still resolving, show a spinner instead of the gate. */
+  loading?: boolean;
 }
 
-export function GuestGate({ children, isAuthenticated, message }: GuestGateProps) {
+export function GuestGate({ children, isAuthenticated, message, loading }: GuestGateProps) {
   const { t } = useTranslation(["gate", "common"]);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16 text-muted-foreground" role="status">
+        <Loader2 className="size-5 animate-spin" />
+      </div>
+    );
+  }
   if (isAuthenticated) return <>{children}</>;
 
   return (
