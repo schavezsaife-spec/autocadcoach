@@ -60,7 +60,7 @@ function LessonsLayout() {
 
 function LessonList() {
   const { state, isUnlocked } = useCoach();
-  const { t } = useTranslation(["lessons", "common"]);
+  const { t } = useTranslation(["lessons", "common", "gate"]);
   const localized = useLocalizedLessons();
   const isAuthed = state.profile.isAuthenticated;
   return (
@@ -82,7 +82,7 @@ function LessonList() {
                 <Badge variant="outline" className="border-primary/30 text-primary">{t("common:day")} {l.day}</Badge>
                 <div className="flex items-center gap-2">
                   {!isAuthed && (
-                    <Badge variant="outline" className="border-primary/30 text-primary">{t("previewBadge", { ns: "gate" })}</Badge>
+                    <Badge variant="outline" className="border-primary/30 text-primary">{t("gate:previewBadge")}</Badge>
                   )}
                   <Badge variant="outline" className="border-border">{l.xp} {t("common:xp")}</Badge>
                 </div>
