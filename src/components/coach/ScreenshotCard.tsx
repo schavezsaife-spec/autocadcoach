@@ -1,8 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image as ImageIcon, Maximize2, Upload, Loader2 } from "lucide-react";
 import { Lightbox } from "@/components/coach/Lightbox";
 import { cn } from "@/lib/utils";
-import { uploadLessonImage } from "@/lib/lesson-images";
+import { uploadLessonImage, ACCEPTED_IMAGE_ACCEPT, LessonImageError } from "@/lib/lesson-images";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 export function ScreenshotCard({
   src,
   alt,
+  caption,
   className,
   lessonId,
   slot,
@@ -22,27 +23,41 @@ export function ScreenshotCard({
 }: {
   src?: string;
   alt: string;
+  caption?: string;
   className?: string;
   lessonId?: string;
   slot?: string;
   uploadable?: boolean;
 }) {
-  const { t } = useTranslation("screenshot");
+  const { t } = useTranslation(["screenshot", "lessonEditor"]);
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [localSrc, setLocalSrc] = useState<string | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const canUpload = uploadable && Boolean(lessonId && slot);
 
+  // A language switch swaps `src` (and `slot`) underneath us: drop any stale
+  // optimistic image and close a lightbox still showing the old language.
+  useEffect(() => {
+    setLocalSrc(undefined);
+    setOpen(false);
+  }, [src, slot]);
+
   const onPick = async (file: File | null) => {
     if (!file || !lessonId || !slot) return;
+    // Capture the slot at start: it encodes the language and may change.
+    const targetSlot = slot;
     setUploading(true);
     try {
-      const url = await uploadLessonImage(lessonId, slot, file);
+      const url = await uploadLessonImage(lessonId, targetSlot, file);
       setLocalSrc(url);
       toast.success(t("screenshot:replace"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("screenshot:upload"));
+      toast.error(
+        err instanceof LessonImageError
+          ? t(`lessonEditor:errors.${err.code}`)
+          : t("lessonEditor:uploadError"),
+      );
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -90,8 +105,9 @@ export function ScreenshotCard({
           <input
             ref={inputRef}
             type="file"
-            accept="image/png,image/jpeg,image/webp"
+            accept={ACCEPTED_IMAGE_ACCEPT}
             className="hidden"
+            aria-label={displaySrc ? t("screenshot:replaceAria") : t("screenshot:uploadAria")}
             onChange={(e) => onPick(e.target.files?.[0] ?? null)}
           />
           <button
@@ -115,7 +131,7 @@ export function ScreenshotCard({
       )}
 
       {open && displaySrc && (
-        <Lightbox src={displaySrc} alt={alt} onClose={() => setOpen(false)} />
+        <Lightbox src={displaySrc} alt={alt} caption={caption} onClose={() => setOpen(false)} />
       )}
     </figure>
   );
