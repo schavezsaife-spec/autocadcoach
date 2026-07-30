@@ -5,8 +5,8 @@ import { useLocalizedLesson, useLocalizedLessons, useLocalizedLessonQuiz } from 
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
 import { useCoach } from "@/lib/coach-store";
-import { type LessonImageMap } from "@/lib/lesson-images";
-import { useLocalizedLessonImages } from "@/lib/i18n/content";
+import { type LessonImageMap, getLocalizedImageSlot } from "@/lib/lesson-images";
+import { useLocalizedLessonImages, useActiveLanguage } from "@/lib/i18n/content";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -653,8 +653,14 @@ function ScreenshotSlot({
   slot?: string;
   uploadable?: boolean;
 }) {
+  const lang = useActiveLanguage();
+  // Priority: uploaded image for the active language (already resolved, with
+  // English fallback) → the static image baked into lesson data.
   const src = uploadedUrl ?? shot.imageUrl;
   const { t } = useTranslation("lessons");
+  // Uploads from the lesson page target the active language's slot, so an
+  // admin editing in Spanish never overwrites the English image.
+  const uploadSlot = slot ? getLocalizedImageSlot(slot, lang) : undefined;
   // `fallback`, `onOpen`, `large` are intentionally unused — ScreenshotCard
   // owns its own lightbox and sizes itself to the available card width.
   void fallback;
@@ -666,7 +672,7 @@ function ScreenshotSlot({
         src={src}
         alt={t("screenshotAlt")}
         lessonId={lessonId}
-        slot={slot}
+        slot={uploadSlot}
         uploadable={uploadable}
       />
     </div>
