@@ -185,7 +185,6 @@ function LessonViewer() {
                 </p>
               ))}
             </div>
-            <div className="rounded-2xl bg-card border border-border h-56" />
             <div className="rounded-2xl bg-card border border-border h-40" />
           </div>
         </GuestContentGate>
