@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { projects } from "@/lib/coach-data";
-import { useLocalizedProject } from "@/lib/i18n/content";
+import { useLocalizedProject, useLocalizedLessonImages, useActiveLanguage } from "@/lib/i18n/content";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
 import { useCoach } from "@/lib/coach-store";
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Lightbox } from "@/components/coach/Lightbox";
 import { ScreenshotCard } from "@/components/coach/ScreenshotCard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useLessonImages } from "@/lib/lesson-images";
+import { getLocalizedImageSlot } from "@/lib/lesson-images";
 import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { GuestBanner, AuthRequiredAction } from "@/components/coach/AuthPrompt";
@@ -75,7 +75,9 @@ function ProjectViewer() {
   const project = useLocalizedProject(id);
   const restricted = isProjectRestrictedForGuest(id, isAuthed);
   const projectImageKey = `project:${id}`;
-  const uploaded = useLessonImages(projectImageKey);
+  const lang = useActiveLanguage();
+  // Same localized resolution as lessons: Spanish upload → English upload.
+  const uploaded = useLocalizedLessonImages(projectImageKey);
   const finalUrl = uploaded.final;
 
   // Never flash protected content before the session is known.
@@ -212,7 +214,7 @@ function ProjectViewer() {
               src={finalUrl}
               alt={t("projects:finalResultAlt", { title: project.title })}
               lessonId={projectImageKey}
-              slot="final"
+              slot={getLocalizedImageSlot("final", lang)}
               uploadable={isAuthed}
             />
             {!isAuthed && (

@@ -15,6 +15,27 @@ import { supabase } from "@/integrations/supabase/client";
 const BUCKET = "lesson-screenshots";
 const SIGNED_URL_TTL = 60 * 60 * 24 * 365 * 10; // ~10 years
 const MAX_BYTES = 25 * 1024 * 1024; // 25MB — preserves original resolution
+export const MAX_UPLOAD_BYTES = MAX_BYTES;
+export const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"] as const;
+export const ACCEPTED_IMAGE_ACCEPT = ACCEPTED_IMAGE_TYPES.join(",");
+
+/** Machine-readable upload/removal failures so the UI can localize them. */
+export type LessonImageErrorCode =
+  | "emptyFile"
+  | "unsupportedFormat"
+  | "tooLarge"
+  | "corrupt"
+  | "uploadFailed"
+  | "removeFailed";
+
+export class LessonImageError extends Error {
+  code: LessonImageErrorCode;
+  constructor(code: LessonImageErrorCode, message?: string) {
+    super(message ?? code);
+    this.name = "LessonImageError";
+    this.code = code;
+  }
+}
 
 export type LessonImageMap = Record<string, string>;
 
@@ -25,23 +46,61 @@ export type LessonImageMap = Record<string, string>;
 // as English by default.
 export const ES_SUFFIX = ":es";
 
-export function localizedSlot(slot: string, lang: "en" | "es"): string {
-  return lang === "es" ? `${slot}${ES_SUFFIX}` : slot;
+export type SupportedLanguage = "en" | "es";
+
+/**
+ * Storage slot for `baseSlot` in `language`. Idempotent: passing an already
+ * localized slot never produces `step:0:es:es`.
+ */
+export function getLocalizedImageSlot(baseSlot: string, language: SupportedLanguage): string {
+  const base = getBaseImageSlot(baseSlot);
+  return language === "es" ? `${base}${ES_SUFFIX}` : base;
+}
+
+/** Strip the language suffix, returning the canonical base slot. */
+export function getBaseImageSlot(slot: string): string {
+  return slot.endsWith(ES_SUFFIX) ? slot.slice(0, -ES_SUFFIX.length) : slot;
+}
+
+/** Which language a stored slot belongs to. */
+export function getImageSlotLanguage(slot: string): SupportedLanguage {
+  return slot.endsWith(ES_SUFFIX) ? "es" : "en";
+}
+
+/** @deprecated use {@link getLocalizedImageSlot} */
+export function localizedSlot(slot: string, lang: SupportedLanguage): string {
+  return getLocalizedImageSlot(slot, lang);
 }
 
 /**
- * Return a slot→url map where each base slot resolves to the image for the
- * requested language, falling back to the English image when the Spanish
- * one is missing. Also preserves the raw `<slot>:es` keys so callers that
- * want to inspect the Spanish upload directly (e.g. the editor) still can.
+ * Resolve one base slot for a language. Spanish prefers the Spanish upload
+ * and falls back to the English upload; English never uses Spanish images.
+ * `staticFallback` is the image baked into lesson data, if any.
  */
-export function pickLocalizedImages(map: LessonImageMap, lang: "en" | "es"): LessonImageMap {
-  if (lang === "en") return map;
-  const out: LessonImageMap = { ...map };
-  for (const [key, url] of Object.entries(map)) {
-    if (key.endsWith(ES_SUFFIX)) continue;
-    const es = map[`${key}${ES_SUFFIX}`];
-    if (es) out[key] = es;
+export function pickLocalizedImage(
+  images: LessonImageMap,
+  baseSlot: string,
+  language: SupportedLanguage,
+  staticFallback?: string,
+): string | undefined {
+  const base = getBaseImageSlot(baseSlot);
+  if (language === "es") {
+    return images[`${base}${ES_SUFFIX}`] ?? images[base] ?? staticFallback;
+  }
+  return images[base] ?? staticFallback;
+}
+
+/**
+ * Normalize a raw slot→url map into base-slot keys resolved for `language`.
+ * Raw `<slot>:es` keys are never returned, so rendering components never see
+ * storage details and English mode can never display a Spanish image.
+ */
+export function pickLocalizedImages(map: LessonImageMap, lang: SupportedLanguage): LessonImageMap {
+  const out: LessonImageMap = {};
+  const baseSlots = new Set(Object.keys(map).map(getBaseImageSlot));
+  for (const base of baseSlots) {
+    const url = pickLocalizedImage(map, base, lang);
+    if (url) out[base] = url;
   }
   return out;
 }
@@ -303,11 +362,24 @@ export async function uploadLessonImage(
   slot: string,
   file: File,
 ): Promise<string> {
-  if (!file.type.startsWith("image/")) {
-    throw new Error("Please choose an image file (PNG, JPG, or WebP).");
+  if (!file || file.size === 0) {
+    throw new LessonImageError("emptyFile");
+  }
+  if (!(ACCEPTED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
+    throw new LessonImageError("unsupportedFormat");
   }
   if (file.size > MAX_BYTES) {
-    throw new Error("Image must be under 25MB.");
+    throw new LessonImageError("tooLarge");
+  }
+  // Reject files that decode to nothing (truncated / corrupt).
+  try {
+    const probe = await loadImageFromBlob(file);
+    if (!probe.naturalWidth || !probe.naturalHeight) {
+      throw new LessonImageError("corrupt");
+    }
+  } catch (err) {
+    if (err instanceof LessonImageError) throw err;
+    throw new LessonImageError("corrupt");
   }
 
   // Auto-trim uniform margins baked into the source image.
@@ -325,13 +397,13 @@ export async function uploadLessonImage(
   const { error: upErr } = await supabase.storage
     .from(BUCKET)
     .upload(path, uploadFile, { cacheControl: "31536000", upsert: false, contentType: uploadFile.type });
-  if (upErr) throw new Error(upErr.message);
+  if (upErr) throw new LessonImageError("uploadFailed", upErr.message);
 
   const { data: signed, error: signErr } = await supabase.storage
     .from(BUCKET)
     .createSignedUrl(path, SIGNED_URL_TTL);
   if (signErr || !signed?.signedUrl) {
-    throw new Error(signErr?.message ?? "Could not generate image URL.");
+    throw new LessonImageError("uploadFailed", signErr?.message);
   }
   const url = signed.signedUrl;
 
@@ -347,7 +419,7 @@ export async function uploadLessonImage(
   if (dbErr) {
     // Roll back the upload so we don't orphan a file.
     await supabase.storage.from(BUCKET).remove([path]).catch(() => undefined);
-    throw new Error(dbErr.message);
+    throw new LessonImageError("uploadFailed", dbErr.message);
   }
 
   // Update caches and notify listeners immediately.
@@ -373,7 +445,7 @@ export async function clearLessonImage(lessonId: string, slot: string): Promise<
     .delete()
     .eq("lesson_id", lessonId)
     .eq("slot", slot);
-  if (error) throw new Error(error.message);
+  if (error) throw new LessonImageError("removeFailed", error.message);
 
   if (previousPath) {
     supabase.storage.from(BUCKET).remove([previousPath]).catch(() => undefined);
