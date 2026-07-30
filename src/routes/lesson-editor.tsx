@@ -41,7 +41,7 @@ type Slot = {
 };
 
 function LessonEditor() {
-  const { state } = useCoach();
+  const { state, authLoading } = useCoach();
   const { t } = useTranslation(["lessonEditor", "common"]);
   const isAuthed = state.profile.isAuthenticated;
   const [adminCheck, setAdminCheck] = useState<"pending" | "yes" | "no">("pending");
@@ -129,7 +129,7 @@ function LessonEditor() {
         )}
       </div>
 
-      <GuestGate isAuthenticated={isAuthed}>
+      <GuestGate isAuthenticated={isAuthed} loading={authLoading}>
         {adminCheck === "pending" && (
           <div className="rounded-2xl bg-card border border-border p-6 text-sm text-muted-foreground">
             {t("lessonEditor:checkingPermissions")}

@@ -28,6 +28,7 @@ function ResetPasswordPage() {
   const { t } = useTranslation(["auth", "common"]);
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
+  const [invalid, setInvalid] = useState(false);
   const [pw, setPw] = useState("");
   const [confirm, setConfirm] = useState("");
   const [show, setShow] = useState(false);
@@ -35,7 +36,8 @@ function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Supabase exchanges the recovery token from the URL hash for a session
-  // automatically. We just wait for the PASSWORD_RECOVERY / SIGNED_IN event.
+  // automatically. The form only opens once that recovery session exists —
+  // without it `updateUser` cannot possibly succeed.
   useEffect(() => {
     let cancelled = false;
     supabase.auth.getSession().then(({ data }) => {
@@ -47,13 +49,18 @@ function ResetPasswordPage() {
         setReady(true);
       }
     });
-    // Fallback: after a short delay, allow the form regardless so a user with
-    // a valid hash but no event still sees the form.
-    const t = setTimeout(() => !cancelled && setReady(true), 1200);
+    // If no recovery session materialises the link was bad or expired.
+    const timer = setTimeout(() => {
+      if (cancelled) return;
+      setReady((r) => {
+        if (!r) setInvalid(true);
+        return r;
+      });
+    }, 4000);
     return () => {
       cancelled = true;
       sub.subscription.unsubscribe();
-      clearTimeout(t);
+      clearTimeout(timer);
     };
   }, []);
 
@@ -73,10 +80,12 @@ function ResetPasswordPage() {
       const { error } = await supabase.auth.updateUser({ password: pw });
       if (error) throw error;
       toast.success(t("auth:toastPasswordUpdated"));
+      // Force a fresh sign-in with the new password.
       await supabase.auth.signOut();
-      navigate({ to: "/auth" });
+      navigate({ to: "/auth", replace: true });
     } catch (err) {
-      const m = err instanceof Error ? err.message : t("auth:errUpdateFailed");
+      console.error("[auth] password update failed", err);
+      const m = t("auth:errUpdateFailed");
       setError(m);
       toast.error(m);
     } finally {
@@ -97,7 +106,15 @@ function ResetPasswordPage() {
           <h1 className="text-2xl font-bold tracking-tight">{t("auth:chooseNewPassword")}</h1>
           <p className="text-sm text-muted-foreground mt-1">{t("auth:chooseNewPasswordSubtitle")}</p>
 
-          {!ready ? (
+          {invalid && !ready ? (
+            <div
+              role="alert"
+              className="mt-6 flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            >
+              <AlertCircle className="size-4 mt-0.5 shrink-0" />
+              <span>{t("auth:resetLinkInvalid")}</span>
+            </div>
+          ) : !ready ? (
             <div className="mt-8 flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" /> {t("auth:verifyingLink")}
             </div>

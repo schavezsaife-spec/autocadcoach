@@ -114,7 +114,22 @@
     "toastWelcomeBack": "¡Bienvenido de nuevo!",
     "toastSignedInGoogle": "Sesión iniciada con Google",
     "toastResetLinkSent": "Enlace de restablecimiento enviado — revisa tu bandeja.",
-    "toastPasswordUpdated": "Contraseña actualizada — inicia sesión."
+    "toastPasswordUpdated": "Contraseña actualizada — inicia sesión.",
+    "errBadCredentials": "Correo o contraseña incorrectos.",
+    "errEmailNotConfirmed": "Confirma tu correo antes de iniciar sesión.",
+    "errUseGoogle": "Esta cuenta usa el inicio de sesión con Google. Continúa con Google o restablece tu contraseña.",
+    "errEmailInUse": "Ya existe una cuenta con este correo. Intenta iniciar sesión.",
+    "errTooManyAttempts": "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
+    "errNetwork": "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+    "errSignUpFailed": "No pudimos crear tu cuenta. Inténtalo de nuevo.",
+    "confirmEmailSent": "Cuenta creada. Revisa {{email}} para ver el enlace de confirmación y luego inicia sesión.",
+    "callbackTitle": "Iniciando sesión…",
+    "callbackBody": "Un momento mientras terminamos de preparar tu sesión.",
+    "callbackFailedTitle": "No pudimos completar el inicio de sesión",
+    "callbackFailedBody": "Es posible que el enlace haya caducado. Intenta iniciar sesión de nuevo.",
+    "resetLinkInvalid": "Este enlace de restablecimiento no es válido o ha caducado. Solicita uno nuevo.",
+    "errPasswordPwned": "Esa contraseña ha aparecido en una filtración de datos conocida. Elige una más segura y única.",
+    "errPasswordWeak": "Elige una contraseña más segura."
   },
   "dashboard": {
     "title": "Panel",

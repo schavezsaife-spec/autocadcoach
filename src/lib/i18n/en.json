@@ -114,7 +114,22 @@
     "toastWelcomeBack": "Welcome back!",
     "toastSignedInGoogle": "Signed in with Google",
     "toastResetLinkSent": "Reset link sent — check your inbox.",
-    "toastPasswordUpdated": "Password updated — please sign in."
+    "toastPasswordUpdated": "Password updated — please sign in.",
+    "errBadCredentials": "Incorrect email or password.",
+    "errEmailNotConfirmed": "Please confirm your email before signing in.",
+    "errUseGoogle": "This account uses Google sign-in. Continue with Google or reset your password.",
+    "errEmailInUse": "An account with this email already exists. Try signing in instead.",
+    "errTooManyAttempts": "Too many attempts. Please wait a moment and try again.",
+    "errNetwork": "We couldn't reach the server. Check your connection and try again.",
+    "errSignUpFailed": "We couldn't create your account. Please try again.",
+    "confirmEmailSent": "Account created. Check {{email}} for a confirmation link, then sign in.",
+    "callbackTitle": "Signing you in…",
+    "callbackBody": "Just a moment while we finish setting up your session.",
+    "callbackFailedTitle": "We couldn't complete sign-in",
+    "callbackFailedBody": "The link may have expired. Please try signing in again.",
+    "resetLinkInvalid": "This reset link is invalid or has expired. Request a new one.",
+    "errPasswordPwned": "That password has appeared in a known data breach. Please choose a stronger, unique one.",
+    "errPasswordWeak": "Please choose a stronger password."
   },
   "dashboard": {
     "title": "Dashboard",

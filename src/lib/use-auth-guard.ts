@@ -1,18 +1,25 @@
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useCoach } from "./coach-store";
+import { useAuth } from "./auth-context";
 
 /**
- * Component-level auth guard: redirect to /auth if the user is not
- * authenticated. Returns `true` when the user IS authenticated so the
- * caller can decide whether to render anything.
+ * Component-level auth guard. Waits until the auth state has finished
+ * loading before redirecting, so a signed-in user is never bounced to /auth
+ * during session hydration (and no redirect loop can form).
+ *
+ * Returns "loading" | "authed" | "guest".
  */
+export function useAuthStatus(): "loading" | "authed" | "guest" {
+  const { session, loading } = useAuth();
+  if (loading) return "loading";
+  return session?.user ? "authed" : "guest";
+}
+
 export function useAuthGuard(): boolean {
-  const { state } = useCoach();
+  const status = useAuthStatus();
   const navigate = useNavigate();
-  const authed = state.profile.isAuthenticated;
   useEffect(() => {
-    if (!authed) navigate({ to: "/auth" });
-  }, [authed, navigate]);
-  return authed;
+    if (status === "guest") navigate({ to: "/auth", replace: true });
+  }, [status, navigate]);
+  return status === "authed";
 }

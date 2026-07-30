@@ -41,6 +41,39 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          auth_provider: string | null
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          first_name: string
+          id: string
+          last_name: string
+          updated_at: string
+        }
+        Insert: {
+          auth_provider?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string
+          id: string
+          last_name?: string
+          updated_at?: string
+        }
+        Update: {
+          auth_provider?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_progress: {
         Row: {
           completed_lessons: Json
@@ -101,6 +134,7 @@ export type Database = {
     }
     Functions: {
       delete_account: { Args: never; Returns: undefined }
+      email_auth_provider: { Args: { _email: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
