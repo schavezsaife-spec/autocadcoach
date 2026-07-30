@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Sparkles, LogIn } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { GUEST_ACCESS_LIMITS } from "@/lib/access-config";
 import { cn } from "@/lib/utils";
 
 /**
@@ -20,14 +21,25 @@ export function GuestBanner({ className }: { className?: string }) {
     >
       <div className="flex items-start gap-2 min-w-0 flex-1">
         <Sparkles className="size-4 text-primary mt-0.5 shrink-0" aria-hidden />
-        <p className="text-sm min-w-0">
-          <span className="font-semibold">{t("guestBannerTitle")}</span>{" "}
-          <span className="text-muted-foreground">{t("guestBannerMessage")}</span>
-        </p>
+        <div className="min-w-0">
+          <p className="text-sm min-w-0">
+            <span className="font-semibold">{t("guestBannerTitle")}</span>{" "}
+            <span className="text-muted-foreground">
+              {t("guestBannerMessage", {
+                lessons: GUEST_ACCESS_LIMITS.lessons,
+                projects: GUEST_ACCESS_LIMITS.projects,
+              })}
+            </span>
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {t("lessonsAvailable", { count: GUEST_ACCESS_LIMITS.lessons })} ·{" "}
+            {t("projectsAvailable", { count: GUEST_ACCESS_LIMITS.projects })}
+          </p>
+        </div>
       </div>
       <Button asChild size="sm" className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90">
         <Link to="/auth">
-          <LogIn className="size-4 mr-1.5" aria-hidden /> {t("signUpFree")}
+          <LogIn className="size-4 mr-1.5" aria-hidden /> {t("signUpForFree")}
         </Link>
       </Button>
     </div>
@@ -43,11 +55,13 @@ export function AuthRequiredAction({
   message,
   children,
   className,
+  redirectTo,
 }: {
   isAuthenticated: boolean;
   message?: string;
   children: React.ReactNode;
   className?: string;
+  redirectTo?: string;
 }) {
   const { t } = useTranslation("gate");
   if (isAuthenticated) return <>{children}</>;
@@ -55,8 +69,8 @@ export function AuthRequiredAction({
     <div className={cn("rounded-2xl border border-border bg-card/60 p-4 flex flex-col sm:flex-row sm:items-center gap-3", className)}>
       <p className="text-sm text-muted-foreground min-w-0 flex-1">{message ?? t("saveProgressMessage")}</p>
       <Button asChild size="sm" className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90">
-        <Link to="/auth">
-          <LogIn className="size-4 mr-1.5" aria-hidden /> {t("signUpFree")}
+        <Link to="/auth" search={redirectTo ? { redirect: redirectTo } : undefined}>
+          <LogIn className="size-4 mr-1.5" aria-hidden /> {t("signUpForFree")}
         </Link>
       </Button>
     </div>

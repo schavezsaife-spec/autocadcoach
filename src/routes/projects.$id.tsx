@@ -14,6 +14,8 @@ import { useLessonImages } from "@/lib/lesson-images";
 import { CheckCircle2, RotateCcw, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { GuestBanner, AuthRequiredAction } from "@/components/coach/AuthPrompt";
+import { GuestContentGate } from "@/components/coach/GuestContentGate";
+import { isProjectRestrictedForGuest } from "@/lib/access-config";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects/$id")({
@@ -66,14 +68,26 @@ export const Route = createFileRoute("/projects/$id")({
 
 function ProjectViewer() {
   const { id } = Route.useParams();
-  const { state, completeProject, resetProject } = useCoach();
+  const { state, completeProject, resetProject, hydrated } = useCoach();
   const { t } = useTranslation(["projects", "common", "gate"]);
   const [lightbox, setLightbox] = useState(false);
   const isAuthed = state.profile.isAuthenticated;
   const project = useLocalizedProject(id);
+  const restricted = isProjectRestrictedForGuest(id, isAuthed);
   const projectImageKey = `project:${id}`;
   const uploaded = useLessonImages(projectImageKey);
   const finalUrl = uploaded.final;
+
+  // Never flash protected content before the session is known.
+  if (!hydrated) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-6 animate-pulse">
+        <div className="h-6 w-40 rounded-lg bg-card border border-border" />
+        <div className="h-10 w-3/4 rounded-lg bg-card border border-border" />
+        <div className="h-64 rounded-2xl bg-card border border-border" />
+      </div>
+    );
+  }
 
   if (!project) {
     return (
@@ -96,7 +110,45 @@ function ProjectViewer() {
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{project.title}</h1>
       <p className="text-muted-foreground">{project.description}</p>
 
-      {!isAuthed && <GuestBanner />}
+      {!isAuthed && !restricted && <GuestBanner />}
+
+      {restricted ? (
+        <>
+          <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
+            <div className="font-semibold mb-3">{t("projects:skillsPracticed")}</div>
+            <div className="flex flex-wrap gap-2">
+              {project.skills.map((s) => (
+                <Badge key={s} variant="outline" className="border-primary/30 text-primary">{s}</Badge>
+              ))}
+            </div>
+          </div>
+          <GuestContentGate type="project" isRestricted backHref="/projects" redirectTo={`/projects/${project.id}`}>
+            <div className="space-y-6 pt-2">
+              <img
+                src={coverSrc}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                width={1200}
+                height={800}
+                className="w-full h-64 object-cover rounded-2xl border border-border"
+              />
+              <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
+                <div className="font-semibold mb-3">{t("projects:buildSteps")}</div>
+                <ol className="space-y-2 text-sm">
+                  {project.steps.map((s, i) => (
+                    <li key={i} className="flex gap-3">
+                      <span className="size-6 rounded-full bg-primary/15 text-primary grid place-items-center text-xs font-semibold shrink-0">{i + 1}</span>
+                      <span>{s}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 h-40" />
+            </div>
+          </GuestContentGate>
+        </>
+      ) : (
       <Tabs defaultValue="details" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="details">{t("projects:tabs.details")}</TabsTrigger>
@@ -148,7 +200,7 @@ function ProjectViewer() {
               )}
             </div>
           ) : (
-            <AuthRequiredAction isAuthenticated={false} message={t("gate:projectCompleteMessage")}>
+            <AuthRequiredAction isAuthenticated={false} message={t("gate:projectCompleteMessage")} redirectTo={`/projects/${project.id}`}>
               {null}
             </AuthRequiredAction>
           )}
@@ -164,7 +216,7 @@ function ProjectViewer() {
               uploadable={isAuthed}
             />
             {!isAuthed && (
-              <AuthRequiredAction isAuthenticated={false} message={t("gate:uploadMessage")}>
+              <AuthRequiredAction isAuthenticated={false} message={t("gate:uploadMessage")} redirectTo={`/projects/${project.id}`}>
                 {null}
               </AuthRequiredAction>
             )}
@@ -176,8 +228,9 @@ function ProjectViewer() {
           </div>
         </TabsContent>
       </Tabs>
+      )}
 
-      {lightbox && (
+      {lightbox && !restricted && (
         <Lightbox src={coverSrc} alt={project.title} onClose={() => setLightbox(false)} />
       )}
     </div>

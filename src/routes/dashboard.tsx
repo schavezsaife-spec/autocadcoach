@@ -11,6 +11,7 @@ import { useLocalizedLessons } from "@/lib/i18n/content";
 import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GuestBanner } from "@/components/coach/AuthPrompt";
+import { canGuestAccessLesson, getLessonIndex } from "@/lib/access-config";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -112,12 +113,17 @@ function DashboardPage() {
             {filtered.map((l) => {
               const done = isAuthed && state.completedLessons.includes(l.id);
               const unlocked = isUnlocked(l.id);
+              // Guests: the first N lessons are a full free preview; the rest stay
+              // visible and clickable but open behind the sign-up gate.
+              const guestFree = !isAuthed && canGuestAccessLesson(getLessonIndex(l.id));
+              const guestRestricted = !isAuthed && !guestFree;
               const canOpen = !isAuthed || unlocked;
               const cardCls = cn(
                 "rounded-2xl bg-card border border-border p-4 sm:p-5 transition-all block",
                 canOpen
                   ? "hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg cursor-pointer"
                   : "opacity-40 cursor-not-allowed saturate-0",
+                guestRestricted && "border-dashed",
               );
               const inner = (
                 <>
@@ -129,9 +135,13 @@ function DashboardPage() {
                       <Badge className="bg-success/20 text-success border-success/30">
                         <CheckCircle2 className="size-3 mr-1" /> {t("dashboard:done")}
                       </Badge>
-                    ) : !isAuthed ? (
+                    ) : guestFree ? (
                       <Badge variant="outline" className="border-primary/30 text-primary">
-                        {t("gate:previewBadge")}
+                        {t("gate:freePreview")}
+                      </Badge>
+                    ) : guestRestricted ? (
+                      <Badge variant="outline" className="text-muted-foreground/80 border-dashed">
+                        <Lock className="size-3 mr-1" /> {t("gate:accountRequired")}
                       </Badge>
                     ) : !unlocked ? (
                       <Badge variant="outline" className="text-muted-foreground/60 border-dashed">
@@ -144,7 +154,7 @@ function DashboardPage() {
                     )}
                   </div>
                   <div className="mt-3 font-semibold">{l.title}</div>
-                  <div className="text-sm text-muted-foreground mt-1">{l.description}</div>
+                  <div className={cn("text-sm text-muted-foreground mt-1", guestRestricted && "line-clamp-2")}>{l.description}</div>
                 </>
               );
               return canOpen ? (
