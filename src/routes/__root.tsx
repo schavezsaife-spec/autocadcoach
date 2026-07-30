@@ -163,19 +163,24 @@ function AppRouter() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isPublic = isPublicRoute(pathname);
 
-  // AppShell is ALWAYS mounted — never conditionally unmounted.
-  // Conditional unmount causes a full remount flash every time you
-  // navigate between public and app routes. Instead we hide it with
-  // CSS and render the public Outlet in parallel. React keeps both
-  // subtrees alive, so no layout recalculation happens on navigation.
+  // AppShell is ALWAYS mounted — never conditionally unmounted. Conditional
+  // unmount causes a full remount flash every time you navigate between
+  // public and app routes, so it is hidden with CSS instead.
+  //
+  // <Outlet /> must be rendered EXACTLY ONCE. Rendering it both inside the
+  // hidden shell and outside it mounts every public page twice: duplicate
+  // element ids, duplicate form submissions, and duplicate effects (auth
+  // listeners, redirects, data fetches) all firing in parallel.
   return (
     <>
       {/* App shell — always in DOM, hidden on public routes */}
       <div className={isPublic ? "hidden" : "contents"}>
         <AppShell>
-          <div key={pathname} className="route-transition">
-            <Outlet />
-          </div>
+          {!isPublic && (
+            <div key={pathname} className="route-transition">
+              <Outlet />
+            </div>
+          )}
         </AppShell>
       </div>
 
