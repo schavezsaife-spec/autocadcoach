@@ -41,7 +41,7 @@ type Slot = {
 };
 
 function LessonEditor() {
-  const { state } = useCoach();
+  const { state, authLoading } = useCoach();
   const { t } = useTranslation(["lessonEditor", "common"]);
   const isAuthed = state.profile.isAuthenticated;
   const [adminCheck, setAdminCheck] = useState<"pending" | "yes" | "no">("pending");
