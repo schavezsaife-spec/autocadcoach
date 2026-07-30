@@ -32,7 +32,7 @@ export const Route = createFileRoute("/chat")({
 type Msg = { role: "user" | "assistant"; content: string };
 
 function CoachPage() {
-  const { state } = useCoach();
+  const { state, authLoading } = useCoach();
   const { t } = useTranslation(["chat", "gate"]);
   const isAuthed = state.profile.isAuthenticated;
   return (
@@ -49,7 +49,7 @@ function CoachPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="ask" className="flex-1 min-h-0 mt-4">
-          <GuestGate isAuthenticated={isAuthed} message={t("gate:chatMessage")}>
+          <GuestGate isAuthenticated={isAuthed} loading={authLoading} message={t("gate:chatMessage")}>
             <AskAutoCoach />
           </GuestGate>
         </TabsContent>
