@@ -50,12 +50,26 @@
     "expandSidebar": "Expandir barra lateral",
     "collapseSidebar": "Contraer barra lateral",
     "defaultLearner": "Estudiante de AutoCAD",
-    "profileFallback": "Perfil"
+    "profileFallback": "Perfil",
+    "signIn": "Iniciar sesión",
+    "signUpFree": "Regístrate gratis",
+    "exploreDashboard": "Explorar el panel",
+    "goToDashboard": "Ir al panel"
   },
   "gate": {
     "title": "Inicia sesión para acceder",
     "defaultMessage": "Crea una cuenta gratis para guardar tu progreso, ganar XP e interactuar con las lecciones.",
-    "chatMessage": "Inicia sesión para chatear con AutoCoach."
+    "chatMessage": "Inicia sesión para chatear con AutoCoach.",
+    "guestBannerTitle": "Explora todas las lecciones gratis",
+    "guestBannerMessage": "Crea una cuenta para guardar tu progreso, ganar XP y registrar las lecciones completadas.",
+    "signUpFree": "Regístrate gratis",
+    "previewBadge": "Vista previa",
+    "previewNote": "Estás viendo una vista previa de esta lección. Regístrate gratis para guardar tu progreso.",
+    "saveProgressMessage": "Crea una cuenta gratuita para guardar tu progreso y ganar XP.",
+    "quizMessage": "Crea una cuenta gratuita para completar cuestionarios y guardar tu progreso.",
+    "completeMessage": "Crea una cuenta gratuita para marcar lecciones como completadas y ganar XP.",
+    "projectCompleteMessage": "Crea una cuenta gratuita para marcar proyectos como completados y ganar XP.",
+    "uploadMessage": "Crea una cuenta gratuita para subir tu resultado final."
   },
   "auth": {
     "signInTitle": "Iniciar sesión",
@@ -351,7 +365,17 @@
     "reprocessDone_other": "Se reprocesaron {{count}} imágenes — {{trimmed}} recortadas",
     "reprocessFailed": "Falló el reproceso",
     "trimmedLabel": "recortada",
-    "skippedLabel": "omitida"
+    "skippedLabel": "omitida",
+    "englishImage": "Imagen en inglés",
+    "spanishImage": "Imagen en español",
+    "spanishFallback": "No se ha subido la imagen en español. Se mostrará la imagen en inglés como alternativa.",
+    "countEn": "{{done}} / {{total}} imágenes en inglés",
+    "countEs": "{{done}} / {{total}} imágenes en español",
+    "statusComplete": "Completo en ambos idiomas",
+    "statusEsIncomplete": "Faltan imágenes en español",
+    "statusEnIncomplete": "Faltan imágenes en inglés",
+    "statusBothIncomplete": "Faltan imágenes en inglés y en español",
+    "loading": "Cargando…"
   },
   "screenshot": {
     "enlarge": "Ampliar",
@@ -371,8 +395,8 @@
     "heroLine1": "Domina AutoCAD",
     "heroLine2": "de cero a experto.",
     "heroSub": "AutoCAD Coach convierte el software de ingeniería en un juego paso a paso. Lecciones, proyectos, cuestionarios y un tutor de IA — todo en un solo lugar.",
-    "ctaPrimary": "Empezar a aprender gratis",
-    "ctaSecondary": "Ver panel",
+    "ctaPrimary": "Regístrate gratis",
+    "ctaSecondary": "Explorar el panel",
     "socialProof": "Únete a los que dominan AutoCAD un comando a la vez.",
     "featuresKicker": "Todo lo que necesitas",
     "featuresHeadline1": "Aprende haciendo,",
@@ -405,7 +429,12 @@
     "footerTermsOfService": "Términos del servicio",
     "footerCookiePolicy": "Política de cookies",
     "footerTrust": "Confianza y seguridad",
-    "footerCopyright": "© {{year}} AutoCAD Coach. Todos los derechos reservados."
+    "footerCopyright": "© {{year}} AutoCAD Coach. Todos los derechos reservados.",
+    "ctaPrimaryAuthed": "Continuar aprendiendo",
+    "ctaSecondaryAuthed": "Ir al panel",
+    "ctaNote": "Explora las lecciones y los proyectos sin una cuenta. Regístrate para guardar tu progreso, ganar XP y completar cuestionarios.",
+    "signUpFree": "Regístrate gratis",
+    "exploreDashboard": "Explorar el panel"
   },
   "legal": {
     "lastUpdated": "Última actualización: 1 de junio de 2025",
