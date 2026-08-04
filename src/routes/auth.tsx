@@ -10,6 +10,7 @@ import { Logo } from "@/components/coach/Logo";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
 import { getSafeInternalRedirect, POST_AUTH_KEY } from "@/lib/access-config";
+import { GOOGLE_AUTH_ENABLED } from "@/lib/feature-flags";
 
 /**
  * All authentication goes through the centralized AuthProvider

@@ -122,6 +122,7 @@
     "errPasswordsMismatch": "Las contraseñas no coinciden",
     "errAuthFailed": "Error de autenticación",
     "errGoogleFailed": "No se pudo iniciar sesión con Google",
+    "errGoogleDisabled": "El inicio de sesión con Google no está disponible por ahora. Usa tu correo y contraseña.",
     "errResetFailed": "No se pudo enviar el correo de restablecimiento",
     "errUpdateFailed": "No se pudo actualizar la contraseña",
     "toastAccountCreatedCheckEmail": "Cuenta creada — revisa tu correo para confirmarla.",

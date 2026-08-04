@@ -12,6 +12,7 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import i18n from "@/lib/i18n";
+import { GOOGLE_AUTH_ENABLED } from "@/lib/feature-flags";
 
 export type AuthProfile = {
   id: string;
