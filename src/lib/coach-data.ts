@@ -1,6 +1,6 @@
 import extrudeAction from "@/assets/extrude_action.png.asset.json";
-import keychainHero from "@/assets/keychain-hero.jpg.asset.json";
-import roomLayoutCover from "@/assets/room-layout-cover.png.asset.json";
+import keychainHero from "@/assets/starter-keychain.webp";
+import roomLayoutCover from "@/assets/room-layout.webp";
 import extrudeBefore from "@/assets/extrude_before.png.asset.json";
 import extrudeAfter from "@/assets/extrude_after.png.asset.json";
 import joinAction from "@/assets/join_before.png.asset.json";
@@ -1839,7 +1839,7 @@ export const lessons: Lesson[] = [
       "Click a base point, then click destination.",
       "Repeat with CO for COPY.",
     ],
-    image: keychainHero.url,
+    image: keychainHero,
     mistake: "Picking a random base point — always use a corner or endpoint.",
     challenge: "Copy a circle 5 times in a horizontal row, 100 units apart.",
     rich: richMoveCopy,
@@ -2043,7 +2043,7 @@ export const projects: Project[] = [
       "Add a circle of radius 4 near one edge for the key ring hole.",
       "Save as Keychain.dwg.",
     ],
-    image: keychainHero.url,
+    image: keychainHero,
   },
   {
     id: "wheel", title: "Wheel Outline", difficulty: "Easy", time: "30 min",
@@ -2091,7 +2091,7 @@ export const projects: Project[] = [
       "Use DIM to add measurements around the room.",
     ],
     image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=1200",
-    coverImage: roomLayoutCover.url,
+    coverImage: roomLayoutCover,
   },
   {
     id: "bracket", title: "Bracket Plate", difficulty: "Medium", time: "45 min",
