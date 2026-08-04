@@ -228,6 +228,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithGoogle = useCallback<AuthCtx["signInWithGoogle"]>(async () => {
+    // Kept intact for future reactivation; the flag gates execution only.
+    if (!GOOGLE_AUTH_ENABLED) {
+      console.warn("Google authentication is currently disabled.");
+      return { ok: false, error: tr("errGoogleDisabled") };
+    }
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: `${window.location.origin}/auth/callback`,

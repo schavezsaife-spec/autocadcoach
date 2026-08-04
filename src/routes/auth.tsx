@@ -121,6 +121,12 @@ function AuthPage() {
   }
 
   async function handleGoogle() {
+    // Hard guard: Google auth is disabled behind a feature flag, so no stale
+    // handler, hidden button or direct call can start the OAuth flow.
+    if (!GOOGLE_AUTH_ENABLED) {
+      console.warn("Google authentication is currently disabled.");
+      return;
+    }
     setErrorMsg(null);
     setConfirmSent(null);
     setGoogleLoading(true);
@@ -163,30 +169,34 @@ function AuthPage() {
             {mode === "signup" ? t("auth:signUpSubtitle") : t("auth:signInSubtitle")}
           </p>
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleGoogle}
-            disabled={googleLoading || loading}
-            className="mt-6 w-full border-border bg-secondary hover:bg-secondary/80"
-          >
-            {googleLoading ? (
-              <Loader2 className="size-4 mr-2 animate-spin" />
-            ) : (
-              <GoogleIcon className="size-4 mr-2" />
-            )}
-            {t("auth:continueWithGoogle")}
-          </Button>
+          {GOOGLE_AUTH_ENABLED && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleGoogle}
+                disabled={googleLoading || loading}
+                className="mt-6 w-full border-border bg-secondary hover:bg-secondary/80"
+              >
+                {googleLoading ? (
+                  <Loader2 className="size-4 mr-2 animate-spin" />
+                ) : (
+                  <GoogleIcon className="size-4 mr-2" />
+                )}
+                {t("auth:continueWithGoogle")}
+              </Button>
 
-          <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted-foreground">
-              {t("auth:or")} {mode === "signup" ? t("auth:createAccount") : t("auth:signInTitle")}
-            </span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs text-muted-foreground">
+                  {t("auth:or")} {mode === "signup" ? t("auth:createAccount") : t("auth:signInTitle")}
+                </span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+            </>
+          )}
 
-          <form onSubmit={handleEmailSubmit} className="space-y-4">
+          <form onSubmit={handleEmailSubmit} className="mt-6 space-y-4">
             {confirmSent && (
               <div
                 role="status"
