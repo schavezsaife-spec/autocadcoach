@@ -122,6 +122,7 @@
     "errPasswordsMismatch": "Passwords do not match",
     "errAuthFailed": "Authentication failed",
     "errGoogleFailed": "Google sign-in failed",
+    "errGoogleDisabled": "Google sign-in is currently unavailable. Please use your email and password.",
     "errResetFailed": "Could not send reset email",
     "errUpdateFailed": "Could not update password",
     "toastAccountCreatedCheckEmail": "Account created — check your email to confirm.",
