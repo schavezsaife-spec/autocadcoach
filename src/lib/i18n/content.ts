@@ -24,7 +24,13 @@ import {
   mergeProject,
   mergeQuiz,
 } from "@/lib/coach-data.es";
-import { useLessonImages, pickLocalizedImages, type LessonImageMap } from "@/lib/lesson-images";
+import {
+  useLessonImages,
+  pickLocalizedImages,
+  getBaseImageSlot,
+  ES_SUFFIX,
+  type LessonImageMap,
+} from "@/lib/lesson-images";
 
 function activeLang(lng: string | undefined): "en" | "es" {
   return (lng ?? "en").startsWith("es") ? "es" : "en";
@@ -95,5 +101,17 @@ export function useLocalizedTroubleshooting(): TroubleshootItem[] {
 export function useLocalizedLessonImages(lessonId: string): LessonImageMap {
   const lang = useActiveLanguage();
   const raw = useLessonImages(lessonId);
-  return useMemo(() => pickLocalizedImages(raw, lang), [raw, lang]);
+  return useMemo(() => {
+    if (import.meta.env.DEV && lang === "es") {
+      const missing = [...new Set(Object.keys(raw).map(getBaseImageSlot))]
+        .filter((base) => !raw[`${base}${ES_SUFFIX}`])
+        .sort();
+      if (missing.length) {
+        console.warn(
+          `[i18n/images] lesson "${lessonId}" is missing Spanish images for: ${missing.join(", ")} — falling back to English.`,
+        );
+      }
+    }
+    return pickLocalizedImages(raw, lang);
+  }, [raw, lang, lessonId]);
 }
