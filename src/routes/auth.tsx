@@ -10,6 +10,7 @@ import { Logo } from "@/components/coach/Logo";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
 import { getSafeInternalRedirect, POST_AUTH_KEY } from "@/lib/access-config";
+import { AUTH_EMAILS_ENABLED, GOOGLE_AUTH_ENABLED } from "@/lib/auth-flags";
 
 /**
  * All authentication goes through the centralized AuthProvider
@@ -97,11 +98,15 @@ function AuthPage() {
           return;
         }
         if (res.needsEmailConfirmation) {
-          // NOT a completed login — the user must confirm their email first.
-          setConfirmSent(email.trim().toLowerCase());
-          setMode("signin");
-          setPassword("");
-          toast.success(t("auth:toastAccountCreatedCheckEmail"));
+          // NOT a completed login. Only surfaced when email delivery is on.
+          if (AUTH_EMAILS_ENABLED) {
+            setConfirmSent(email.trim().toLowerCase());
+            setMode("signin");
+            setPassword("");
+            toast.success(t("auth:toastAccountCreatedCheckEmail"));
+          } else {
+            setErrorMsg(t("auth:errNoAutoActivation"));
+          }
           return;
         }
         toast.success(t("auth:toastAccountCreated"));
@@ -163,30 +168,37 @@ function AuthPage() {
             {mode === "signup" ? t("auth:signUpSubtitle") : t("auth:signInSubtitle")}
           </p>
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleGoogle}
-            disabled={googleLoading || loading}
-            className="mt-6 w-full border-border bg-secondary hover:bg-secondary/80"
-          >
-            {googleLoading ? (
-              <Loader2 className="size-4 mr-2 animate-spin" />
-            ) : (
-              <GoogleIcon className="size-4 mr-2" />
-            )}
-            {t("auth:continueWithGoogle")}
-          </Button>
+          {/* Temporarily disabled because Google authentication is not currently offered.
+              Set GOOGLE_AUTH_ENABLED to true to restore it. */}
+          {GOOGLE_AUTH_ENABLED && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleGoogle}
+                disabled={googleLoading || loading}
+                className="mt-6 w-full border-border bg-secondary hover:bg-secondary/80"
+              >
+                {googleLoading ? (
+                  <Loader2 className="size-4 mr-2 animate-spin" />
+                ) : (
+                  <GoogleIcon className="size-4 mr-2" />
+                )}
+                {t("auth:continueWithGoogle")}
+              </Button>
 
-          <div className="my-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted-foreground">
-              {t("auth:or")} {mode === "signup" ? t("auth:createAccount") : t("auth:signInTitle")}
-            </span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs text-muted-foreground">
+                  {t("auth:or")}{" "}
+                  {mode === "signup" ? t("auth:createAccount") : t("auth:signInTitle")}
+                </span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+            </>
+          )}
 
-          <form onSubmit={handleEmailSubmit} className="space-y-4">
+          <form onSubmit={handleEmailSubmit} className="mt-6 space-y-4">
             {confirmSent && (
               <div
                 role="status"
@@ -245,7 +257,7 @@ function AuthPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">{t("auth:password")}</Label>
-                {mode === "signin" && (
+                {mode === "signin" && AUTH_EMAILS_ENABLED && (
                   <Link to="/forgot-password" className="text-xs text-primary hover:underline">
                     {t("auth:forgotPassword")}
                   </Link>

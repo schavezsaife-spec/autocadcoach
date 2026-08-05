@@ -12,6 +12,7 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import i18n from "@/lib/i18n";
+import { AUTH_EMAILS_ENABLED, GOOGLE_AUTH_ENABLED } from "@/lib/auth-flags";
 
 export type AuthProfile = {
   id: string;
@@ -64,9 +65,6 @@ function friendlyAuthError(err: unknown, context: "signin" | "signup" | "reset")
   if (code === "weak_password" || m.includes("known to be weak") || m.includes("pwned")) {
     return tr("errPasswordPwned");
   }
-  if (m.includes("email not confirmed") || code === "email_not_confirmed") {
-    return tr("errEmailNotConfirmed");
-  }
   if (
     m.includes("already registered") ||
     m.includes("already been registered") ||
@@ -74,13 +72,12 @@ function friendlyAuthError(err: unknown, context: "signin" | "signup" | "reset")
   ) {
     return tr("errEmailInUse");
   }
-  if (m.includes("invalid login credentials") || code === "invalid_credentials") {
-    return tr("errBadCredentials");
-  }
   if (m.includes("rate limit") || status === 429) return tr("errTooManyAttempts");
   if (m.includes("password") && m.includes("should be")) return tr("errPasswordShort");
   if (m.includes("failed to fetch") || m.includes("network")) return tr("errNetwork");
-  return context === "signup" ? tr("errSignUpFailed") : tr("errAuthFailed");
+  // Neutral fallback: never reveal whether the account exists or which
+  // provider it uses.
+  return context === "signup" ? tr("errSignUpFailed") : tr("errBadCredentials");
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -180,24 +177,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const email = rawEmail.trim().toLowerCase();
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      // An email registered through Google has no password identity, so
-      // Supabase answers with generic invalid-credentials. Point the user at
-      // the provider they actually used.
-      const isBadCreds =
-        error.message.toLowerCase().includes("invalid login credentials") ||
-        (error as { code?: string }).code === "invalid_credentials";
-      if (isBadCreds) {
-        const { data: hint } = await supabase.rpc("email_auth_provider", { _email: email });
-        if (hint === "google") {
-          console.error("[auth] signin blocked: google-only account", { email });
-          return { ok: false, error: tr("errUseGoogle") };
-        }
-      }
+      // Provider-specific hints are intentionally not surfaced: while Google
+      // auth is disabled, every failure gets the same neutral message.
       return { ok: false, error: friendlyAuthError(error, "signin") };
     }
     if (!data.session?.user) {
       console.error("[auth] signin returned no session", data);
-      return { ok: false, error: tr("errAuthFailed") };
+      return { ok: false, error: tr("errBadCredentials") };
     }
     return { ok: true };
   }, []);
@@ -209,8 +195,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       options: {
         data: { first_name: meta.firstName.trim(), last_name: meta.lastName.trim() },
-        // Must be the site root — confirmation links land on a public page.
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        // Confirmation links are only useful when email delivery is enabled.
+        ...(AUTH_EMAILS_ENABLED
+          ? { emailRedirectTo: `${window.location.origin}/auth/callback` }
+          : {}),
       },
     });
     if (error) return { ok: false, error: friendlyAuthError(error, "signup") };
@@ -221,13 +209,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { ok: false, error: tr("errEmailInUse") };
     }
     if (!data.session) {
-      // Unconfirmed signup is NOT a completed login.
+      // Unconfirmed signup is NOT a completed login. With email delivery
+      // unavailable we must not claim a confirmation email was sent.
+      if (!AUTH_EMAILS_ENABLED) {
+        console.warn("[auth] signup created no session and auth emails are disabled");
+        return { ok: false, error: tr("errNoAutoActivation") };
+      }
       return { ok: true, needsEmailConfirmation: true };
     }
     return { ok: true };
   }, []);
 
   const signInWithGoogle = useCallback<AuthCtx["signInWithGoogle"]>(async () => {
+    // Temporarily disabled because Google authentication is not currently offered.
+    // Set GOOGLE_AUTH_ENABLED to true to restore it.
+    if (!GOOGLE_AUTH_ENABLED) {
+      console.warn("Google authentication is currently disabled.");
+      return { ok: false, error: tr("errAuthFailed") };
+    }
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: `${window.location.origin}/auth/callback`,
@@ -257,6 +256,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetPassword = useCallback<AuthCtx["resetPassword"]>(async (rawEmail) => {
+    // Temporarily disabled because authentication email delivery is unavailable.
+    // Set AUTH_EMAILS_ENABLED to true only after email delivery is configured.
+    if (!AUTH_EMAILS_ENABLED) {
+      console.warn("Authentication emails are currently disabled.");
+      return { ok: false, error: tr("errEmailsUnavailable") };
+    }
     const email = rawEmail.trim().toLowerCase();
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,

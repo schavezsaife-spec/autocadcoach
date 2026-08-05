@@ -9,6 +9,7 @@ import { AlertCircle, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { Logo } from "@/components/coach/Logo";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
+import { AUTH_EMAILS_ENABLED } from "@/lib/auth-flags";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
@@ -35,6 +36,12 @@ function ForgotPasswordPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    // Temporarily disabled because authentication email delivery is unavailable.
+    // Set AUTH_EMAILS_ENABLED to true only after email delivery is configured.
+    if (!AUTH_EMAILS_ENABLED) {
+      console.warn("Authentication emails are currently disabled.");
+      return;
+    }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError(t("auth:errInvalidEmail"));
       return;
@@ -65,9 +72,15 @@ function ForgotPasswordPage() {
 
         <div className="rounded-2xl bg-card/80 backdrop-blur border border-border p-6 sm:p-8 shadow-[var(--shadow-glow)]">
           <h1 className="text-2xl font-bold tracking-tight">{t("auth:resetTitle")}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t("auth:resetSubtitle")}</p>
+          {AUTH_EMAILS_ENABLED && (
+            <p className="text-sm text-muted-foreground mt-1">{t("auth:resetSubtitle")}</p>
+          )}
 
-          {sent ? (
+          {!AUTH_EMAILS_ENABLED ? (
+            <div className="mt-6 rounded-lg border border-border bg-secondary/50 p-4 text-sm text-muted-foreground">
+              {t("auth:errEmailsUnavailable")}
+            </div>
+          ) : sent ? (
             <div className="mt-6 rounded-lg border border-success/30 bg-success/10 p-4 text-sm">
               <div className="flex items-start gap-2 text-success">
                 <CheckCircle2 className="size-4 mt-0.5" />
