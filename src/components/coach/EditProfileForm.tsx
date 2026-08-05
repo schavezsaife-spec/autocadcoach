@@ -1,3 +1,4 @@
+import { GOOGLE_AUTH_ENABLED } from "@/lib/auth-flags";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
