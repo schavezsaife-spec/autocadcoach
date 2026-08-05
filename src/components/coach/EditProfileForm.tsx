@@ -59,10 +59,16 @@ export function EditProfileForm() {
           <Row label={t("profile:firstName")} value={p.firstName || "—"} />
           <Row label={t("profile:lastName")} value={p.lastName || "—"} />
           <Row label={t("profile:email")} value={p.email || "—"} />
-          <Row
-            label={t("profile:signInMethod")}
-            value={p.authProvider === "google" ? t("profile:signInGoogle") : t("profile:signInEmail")}
-          />
+          {/* Temporarily hidden because Google authentication is not currently offered.
+              Set GOOGLE_AUTH_ENABLED to true to restore it. */}
+          {GOOGLE_AUTH_ENABLED && (
+            <Row
+              label={t("profile:signInMethod")}
+              value={
+                p.authProvider === "google" ? t("profile:signInGoogle") : t("profile:signInEmail")
+              }
+            />
+          )}
         </dl>
       </div>
     );
