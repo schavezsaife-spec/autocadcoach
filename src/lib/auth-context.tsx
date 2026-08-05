@@ -12,7 +12,6 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import i18n from "@/lib/i18n";
-import { GOOGLE_AUTH_ENABLED } from "@/lib/feature-flags";
 
 export type AuthProfile = {
   id: string;
@@ -229,11 +228,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signInWithGoogle = useCallback<AuthCtx["signInWithGoogle"]>(async () => {
-    // Kept intact for future reactivation; the flag gates execution only.
-    if (!GOOGLE_AUTH_ENABLED) {
-      console.warn("Google authentication is currently disabled.");
-      return { ok: false, error: tr("errGoogleDisabled") };
-    }
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: `${window.location.origin}/auth/callback`,
