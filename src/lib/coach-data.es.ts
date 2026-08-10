@@ -1326,7 +1326,7 @@ export const richLessonsEs: Record<string, RichLessonEs> = {
     detailedSteps: [
       { title: "Inicia ARRAY", instruction: "Escribe AR y pulsa Enter.", explanation: "AutoCAD pide seleccionar los objetos." },
       { title: "Selecciona el objeto", instruction: "Haz clic en el objeto y pulsa Enter.", explanation: "AutoCAD pregunta qué tipo de matriz quieres." },
-      { title: "Elige tipo", instruction: "Escribe R (Rectangular) o PO (Polar) y pulsa Enter.", explanation: "Cada tipo tiene sus parámetros específicos." },
+      { title: "Elige un tipo de matriz", instruction: "Escribe R (Rectangular) o PO (Polar) y pulsa Enter.", explanation: "Cada tipo tiene sus parámetros específicos." },
       { title: "Revisa Rectangular, Ruta y Polar", instruction: "Define filas, columnas y espaciado en la cinta contextual.", explanation: "La vista previa se actualiza en tiempo real." },
       { title: "Ajusta el conteo y el espaciado", instruction: "Haz clic fuera o pulsa Enter para cerrar la cinta.", explanation: "El array queda creado, editable con seleccionarlo." },
       { title: "Finaliza la matriz" },
