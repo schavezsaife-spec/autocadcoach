@@ -924,8 +924,9 @@ export const richLessonsEs: Record<string, RichLessonEs> = {
     detailedSteps: [
       { title: "Inicia el comando HATCH", instruction: "Escribe H y pulsa Enter.", explanation: "Aparece la pestaña contextual Sombreado con opciones de patrón y escala." },
       { title: "Elige un patrón", instruction: "En el panel Patrón, elige ANSI31.", explanation: "ANSI31 es el diagonal clásico para muchos materiales." },
-      { title: "Haz clic dentro del contorno", instruction: "Haz clic dentro de la forma cerrada que quieras rellenar.", explanation: "AutoCAD detecta el contorno automáticamente y muestra una vista previa." },
-      { title: "Confirma con Enter", instruction: "Pulsa Enter para cerrar el comando.", explanation: "El sombreado queda como un solo objeto asociado al contorno." },
+      { title: "Establece la escala y el ángulo", instruction: "Haz clic dentro de la forma cerrada que quieras rellenar.", explanation: "AutoCAD detecta el contorno automáticamente y muestra una vista previa." },
+      { title: "Haz clic dentro de la región cerrada", instruction: "Pulsa Enter para cerrar el comando.", explanation: "El sombreado queda como un solo objeto asociado al contorno." },
+      { title: "Finaliza el comando" },
     ],
     commonMistakes: [
       { mistake: "Intentar sombrear un contorno abierto.", fix: "Cierra los huecos con TRIM/EXTEND o convierte a polilínea cerrada con JOIN." },
@@ -978,11 +979,12 @@ export const richLessonsEs: Record<string, RichLessonEs> = {
       "Decide un punto base útil (una esquina o el centro)." ,
     ],
     detailedSteps: [
-      { title: "Inicia BLOCK", instruction: "Escribe B y pulsa Enter.", explanation: "Se abre el diálogo Definición de bloque." },
-      { title: "Nombra el bloque", instruction: "Escribe un nombre descriptivo como 'Silla'.", explanation: "Los nombres claros hacen fácil localizarlo al insertar." },
-      { title: "Elige el punto base", instruction: "Haz clic en 'Especificar punto' y engancha a una esquina útil.", explanation: "Ese punto será el punto de inserción cada vez que uses el bloque." },
-      { title: "Selecciona los objetos", instruction: "Haz clic en 'Seleccionar objetos', elige la geometría y pulsa Enter.", explanation: "Los objetos se convierten en la definición del bloque." },
-      { title: "Inserta el bloque", instruction: "Escribe I, Enter. Elige el bloque y haz clic donde quieras insertarlo.", explanation: "Cada inserción es una referencia; editar la definición actualiza todas." },
+      { title: "Selecciona los objetos para agrupar", instruction: "Escribe B y pulsa Enter.", explanation: "Se abre el diálogo Definición de bloque." },
+      { title: "Inicia el comando BLOCK", instruction: "Escribe un nombre descriptivo como 'Silla'.", explanation: "Los nombres claros hacen fácil localizarlo al insertar." },
+      { title: "Nombra el bloque", instruction: "Haz clic en 'Especificar punto' y engancha a una esquina útil.", explanation: "Ese punto será el punto de inserción cada vez que uses el bloque." },
+      { title: "Establece el punto base", instruction: "Haz clic en 'Seleccionar objetos', elige la geometría y pulsa Enter.", explanation: "Los objetos se convierten en la definición del bloque." },
+      { title: "Confirma y convierte", instruction: "Escribe I, Enter. Elige el bloque y haz clic donde quieras insertarlo.", explanation: "Cada inserción es una referencia; editar la definición actualiza todas." },
+      { title: "Inserta el bloque en otro lugar" },
     ],
     commonMistakes: [
       { mistake: "Olvidar el punto base — el bloque se inserta descentrado.", fix: "Elige siempre un punto base significativo antes de crear el bloque." },
@@ -1036,8 +1038,9 @@ export const richLessonsEs: Record<string, RichLessonEs> = {
     ],
     detailedSteps: [
       { title: "Inicia JOIN", instruction: "Escribe J y pulsa Enter.", explanation: "AutoCAD pide seleccionar objetos." },
-      { title: "Selecciona los segmentos", instruction: "Haz clic en todos los segmentos que quieras unir.", explanation: "Pueden ser líneas, arcos o polilíneas siempre que compartan endpoints." },
-      { title: "Confirma con Enter", instruction: "Pulsa Enter para ejecutar la unión.", explanation: "AutoCAD muestra cuántos objetos se unieron y en qué." },
+      { title: "Selecciona el primer segmento", instruction: "Haz clic en todos los segmentos que quieras unir.", explanation: "Pueden ser líneas, arcos o polilíneas siempre que compartan endpoints." },
+      { title: "Selecciona los segmentos restantes", instruction: "Pulsa Enter para ejecutar la unión.", explanation: "AutoCAD muestra cuántos objetos se unieron y en qué." },
+      { title: "Verifica el resultado" },
     ],
     commonMistakes: [
       { mistake: "JOIN dice '0 unidos' porque los extremos no se tocan.", fix: "Usa OSNAP y ajusta los endpoints antes de reintentar." },
@@ -1092,10 +1095,11 @@ export const richLessonsEs: Record<string, RichLessonEs> = {
     ],
     detailedSteps: [
       { title: "Cambia al espacio Modelado 3D", instruction: "En la esquina inferior derecha, elige 'Modelado 3D'.", explanation: "Activa las herramientas y vista adecuadas para 3D." },
-      { title: "Inicia EXTRUDE", instruction: "Escribe EXT y pulsa Enter.", explanation: "AutoCAD pide seleccionar objetos." },
-      { title: "Selecciona el perfil", instruction: "Haz clic en la polilínea cerrada y pulsa Enter.", explanation: "Debe ser una forma cerrada para que EXTRUDE funcione." },
-      { title: "Indica la altura", instruction: "Escribe 50 y pulsa Enter.", explanation: "Se crea un sólido de 50 unidades de altura." },
-      { title: "Cambia a Vista Conceptual", instruction: "Escribe VS, Enter, C, Enter.", explanation: "Verás el sólido sombreado con bordes visibles." },
+      { title: "Dibuja un perfil cerrado", instruction: "Escribe EXT y pulsa Enter.", explanation: "AutoCAD pide seleccionar objetos." },
+      { title: "Inicia el comando EXTRUDE", instruction: "Haz clic en la polilínea cerrada y pulsa Enter.", explanation: "Debe ser una forma cerrada para que EXTRUDE funcione." },
+      { title: "Selecciona el perfil", instruction: "Escribe 50 y pulsa Enter.", explanation: "Se crea un sólido de 50 unidades de altura." },
+      { title: "Introduce la altura", instruction: "Escribe VS, Enter, C, Enter.", explanation: "Verás el sólido sombreado con bordes visibles." },
+      { title: "Cambia el estilo visual a Conceptual" },
     ],
     commonMistakes: [
       { mistake: "EXTRUDE en una polilínea abierta.", fix: "Cierra el contorno con JOIN o dibuja con la opción C." },
@@ -1151,9 +1155,10 @@ export const richLessonsEs: Record<string, RichLessonEs> = {
     ],
     detailedSteps: [
       { title: "Inicia PLINE", instruction: "Escribe PL y pulsa Enter.", explanation: "AutoCAD pide el primer punto." },
-      { title: "Dibuja tramos rectos", instruction: "Haz clic en varios puntos para dibujar segmentos.", explanation: "Cada clic añade un segmento conectado al anterior." },
-      { title: "Cambia a arco", instruction: "Escribe A y pulsa Enter, luego dibuja un arco.", explanation: "El modo Arco añade tramos curvos manteniendo la polilínea." },
-      { title: "Cierra la polilínea", instruction: "Escribe C y pulsa Enter para cerrar de vuelta al inicio.", explanation: "La polilínea se convierte en cerrada — lista para HATCH o EXTRUDE." },
+      { title: "Haz clic en el punto inicial", instruction: "Haz clic en varios puntos para dibujar segmentos.", explanation: "Cada clic añade un segmento conectado al anterior." },
+      { title: "Dibuja segmentos rectos", instruction: "Escribe A y pulsa Enter, luego dibuja un arco.", explanation: "El modo Arco añade tramos curvos manteniendo la polilínea." },
+      { title: "Añade un segmento curvo con la opción Arco", instruction: "Escribe C y pulsa Enter para cerrar de vuelta al inicio.", explanation: "La polilínea se convierte en cerrada — lista para HATCH o EXTRUDE." },
+      { title: "Cierra la polilínea" },
     ],
     commonMistakes: [
       { mistake: "Usar LINE en vez de PLINE cuando necesitas una sola forma.", fix: "Reemplaza con PLINE desde el principio." },
@@ -1205,10 +1210,11 @@ export const richLessonsEs: Record<string, RichLessonEs> = {
     ],
     detailedSteps: [
       { title: "Inicia OFFSET", instruction: "Escribe O, Enter, y escribe una distancia (por ejemplo 10).", explanation: "AutoCAD pide seleccionar el objeto a desplazar." },
-      { title: "Selecciona y elige lado", instruction: "Haz clic en el objeto y luego haz clic hacia el lado deseado.", explanation: "Se crea la copia paralela; el comando sigue activo para más desplazamientos." },
-      { title: "Termina OFFSET", instruction: "Pulsa Enter para terminar.", explanation: "Sales del comando." },
-      { title: "Inicia MIRROR", instruction: "Escribe MI y pulsa Enter.", explanation: "AutoCAD pide seleccionar objetos." },
-      { title: "Define el eje de simetría", instruction: "Selecciona los objetos, Enter, haz clic en dos puntos que definan el eje.", explanation: "AutoCAD pregunta si borrar el original — normalmente responde N." },
+      { title: "Escribe la distancia de OFFSET", instruction: "Haz clic en el objeto y luego haz clic hacia el lado deseado.", explanation: "Se crea la copia paralela; el comando sigue activo para más desplazamientos." },
+      { title: "Selecciona el objeto para hacer OFFSET", instruction: "Pulsa Enter para terminar.", explanation: "Sales del comando." },
+      { title: "Haz clic en el lado", instruction: "Escribe MI y pulsa Enter.", explanation: "AutoCAD pide seleccionar objetos." },
+      { title: "Inicia MIRROR", instruction: "Selecciona los objetos, Enter, haz clic en dos puntos que definan el eje.", explanation: "AutoCAD pregunta si borrar el original — normalmente responde N." },
+      { title: "Define la línea de simetría" },
     ],
     commonMistakes: [
       { mistake: "Olvidar definir la distancia antes de seleccionar en OFFSET.", fix: "Escribe primero la distancia, luego selecciona." },
@@ -1264,6 +1270,8 @@ export const richLessonsEs: Record<string, RichLessonEs> = {
       { title: "Define el radio", instruction: "Escribe R, Enter, y luego el radio (por ejemplo 15). Enter.", explanation: "El radio queda guardado para el siguiente empalme." },
       { title: "Haz clic en dos líneas", instruction: "Haz clic en las dos líneas que forman la esquina.", explanation: "AutoCAD sustituye la esquina por un arco tangente de ese radio." },
       { title: "Repite con CHAMFER", instruction: "Escribe CHA, Enter, define distancias con D, y elige dos líneas.", explanation: "En lugar de un arco, se crea un segmento recto biselado." },
+      { title: "Establece las distancias" },
+      { title: "Selecciona las dos líneas para el chaflán" },
     ],
     commonMistakes: [
       { mistake: "Poner radio 0 sin querer — la esquina queda en pico.", fix: "Comprueba el radio con R antes de hacer clic." },
@@ -1319,8 +1327,10 @@ export const richLessonsEs: Record<string, RichLessonEs> = {
       { title: "Inicia ARRAY", instruction: "Escribe AR y pulsa Enter.", explanation: "AutoCAD pide seleccionar los objetos." },
       { title: "Selecciona el objeto", instruction: "Haz clic en el objeto y pulsa Enter.", explanation: "AutoCAD pregunta qué tipo de matriz quieres." },
       { title: "Elige tipo", instruction: "Escribe R (Rectangular) o PO (Polar) y pulsa Enter.", explanation: "Cada tipo tiene sus parámetros específicos." },
-      { title: "Ajusta parámetros", instruction: "Define filas, columnas y espaciado en la cinta contextual.", explanation: "La vista previa se actualiza en tiempo real." },
-      { title: "Confirma la matriz", instruction: "Haz clic fuera o pulsa Enter para cerrar la cinta.", explanation: "El array queda creado, editable con seleccionarlo." },
+      { title: "Revisa Rectangular, Ruta y Polar", instruction: "Define filas, columnas y espaciado en la cinta contextual.", explanation: "La vista previa se actualiza en tiempo real." },
+      { title: "Ajusta el conteo y el espaciado", instruction: "Haz clic fuera o pulsa Enter para cerrar la cinta.", explanation: "El array queda creado, editable con seleccionarlo." },
+      { title: "Finaliza la matriz" },
+      { title: "Agrega y revisa las cotas" },
     ],
     commonMistakes: [
       { mistake: "Espaciado negativo — las copias se solapan.", fix: "Usa valores positivos o verifica la dirección." },
