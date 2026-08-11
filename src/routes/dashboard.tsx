@@ -14,7 +14,7 @@ import { GuestBanner } from "@/components/coach/AuthPrompt";
 import { canGuestAccessLesson, getLessonIndex } from "@/lib/access-config";
 import { useProjectUnlocks } from "@/lib/use-project-unlocks";
 import { useLocalizedProjects } from "@/lib/i18n/content";
-import { useLessonTitles } from "@/components/coach/ProjectUnlockStatus";
+import { useLessonTitles, ProjectPrerequisites } from "@/components/coach/ProjectUnlockStatus";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
