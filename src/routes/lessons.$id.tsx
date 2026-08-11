@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Lightbox } from "@/components/coach/Lightbox";
+import { SmartImage } from "@/components/coach/SmartImage";
 import { ScreenshotCard } from "@/components/coach/ScreenshotCard";
 import { ArrowLeft, ArrowRight, CheckCircle2, Lightbulb, AlertCircle, Target, Trophy, RotateCcw, XCircle, BookOpen, Compass, MapPin, ListChecks, Image as ImageIcon, Wrench, Dumbbell, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -279,7 +280,15 @@ function LegacyLessonBody({
         className="block w-full rounded-2xl overflow-hidden border border-border group"
         aria-label={t("lessons:enlargeAria", { title: lesson.title })}
       >
-        <img src={heroSrc} alt={t("lessons:referenceAlt", { title: lesson.title })} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-contain bg-secondary/40 group-hover:scale-[1.02] transition-transform" />
+        <SmartImage
+          src={heroSrc}
+          alt={t("lessons:referenceAlt", { title: lesson.title })}
+          priority
+          width={1200}
+          height={800}
+          wrapperClassName="w-full h-64 bg-secondary/40"
+          className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform"
+        />
       </button>
 
       <div className="rounded-2xl bg-card border border-border p-4 sm:p-5 mt-6">

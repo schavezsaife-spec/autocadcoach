@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
+import { SmartImage } from "@/components/coach/SmartImage";
 
 export function Lightbox({
   src,
@@ -72,7 +73,14 @@ export function Lightbox({
         <X className="size-5" />
       </button>
       <figure className="max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
-        <img src={src} alt={alt} className="w-full max-h-[80vh] object-contain rounded-xl" />
+        <SmartImage
+          src={src}
+          alt={alt}
+          // The lightbox is opened by an explicit user action — never defer it.
+          priority
+          wrapperClassName="w-full min-h-[40vh] rounded-xl bg-transparent"
+          className="w-full max-h-[80vh] object-contain rounded-xl"
+        />
         {caption && (
           <figcaption className="mt-3 text-center text-sm text-muted-foreground">{caption}</figcaption>
         )}

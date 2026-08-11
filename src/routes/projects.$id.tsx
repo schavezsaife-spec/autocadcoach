@@ -8,6 +8,7 @@ import { useCoach } from "@/lib/coach-store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Lightbox } from "@/components/coach/Lightbox";
+import { SmartImage } from "@/components/coach/SmartImage";
 import { ScreenshotCard } from "@/components/coach/ScreenshotCard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { getLocalizedImageSlot } from "@/lib/lesson-images";
@@ -156,14 +157,13 @@ function ProjectViewer() {
           </div>
           <GuestContentGate type="project" isRestricted backHref="/projects" redirectTo={`/projects/${project.id}`}>
             <div className="space-y-6 pt-2">
-              <img
+              <SmartImage
                 src={coverSrc}
                 alt=""
-                loading="lazy"
-                decoding="async"
                 width={1200}
                 height={800}
-                className="w-full h-64 object-cover rounded-2xl border border-border"
+                wrapperClassName="w-full h-64 rounded-2xl border border-border"
+                className="w-full h-full object-cover"
               />
               <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
                 <div className="font-semibold mb-3">{t("projects:buildSteps")}</div>
@@ -188,7 +188,15 @@ function ProjectViewer() {
         </TabsList>
         <TabsContent value="details" className="space-y-6 mt-0">
           <button onClick={() => setLightbox(true)} className="block w-full rounded-2xl overflow-hidden border border-border group">
-            <img src={coverSrc} alt={t("projects:referenceAlt", { title: project.title })} loading="lazy" decoding="async" width={1200} height={800} className="w-full h-64 object-cover group-hover:scale-105 transition-transform" />
+            <SmartImage
+              src={coverSrc}
+              alt={t("projects:referenceAlt", { title: project.title })}
+              priority
+              width={1200}
+              height={800}
+              wrapperClassName="w-full h-64"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+            />
       </button>
 
           <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">

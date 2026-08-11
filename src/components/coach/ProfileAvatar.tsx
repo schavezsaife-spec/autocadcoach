@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,11 @@ const sizes = {
 export function ProfileAvatar({ image, firstName, lastName, size = "md", className }: Props) {
   const initials =
     `${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`.toUpperCase() || "";
+  // A dead avatar URL (expired signed link, deleted upload) must degrade to
+  // initials, not to the browser's broken-image glyph. Tracked with the src it
+  // describes so a newly uploaded photo isn't suppressed by an old failure.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const showImage = Boolean(image) && failedSrc !== image;
 
   return (
     <div
@@ -29,8 +35,14 @@ export function ProfileAvatar({ image, firstName, lastName, size = "md", classNa
       )}
       aria-label="Profile avatar"
     >
-      {image ? (
-        <img src={image} alt="Profile" className="w-full h-full object-cover" />
+      {showImage ? (
+        <img
+          src={image!}
+          alt="Profile"
+          decoding="async"
+          className="w-full h-full object-cover"
+          onError={() => setFailedSrc(image)}
+        />
       ) : initials ? (
         <span>{initials}</span>
       ) : (

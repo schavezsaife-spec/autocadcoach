@@ -13,6 +13,7 @@ import { canGuestAccessProject, getProjectIndex } from "@/lib/access-config";
 import { useProjectUnlocks } from "@/lib/use-project-unlocks";
 import { ProjectLockDetails, ProjectStatusBadge } from "@/components/coach/ProjectUnlockStatus";
 import { cn } from "@/lib/utils";
+import { SmartImage } from "@/components/coach/SmartImage";
 
 export const Route = createFileRoute("/projects")({
   head: () => ({
@@ -169,7 +170,7 @@ function ProjectList() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {filtered.map((p) => {
+            {filtered.map((p, i) => {
               const done = isAuthed && state.completedProjects.includes(p.id);
               const unlock = unlockStateFor(p.id);
               const guestFree = !isAuthed && canGuestAccessProject(getProjectIndex(p.id));
@@ -193,15 +194,16 @@ function ProjectList() {
 
               const media = (
                 <div className="relative">
-                  <img
+                  <SmartImage
                     src={p.coverImage ?? p.image}
                     alt={p.title}
-                    loading="lazy"
-                    decoding="async"
+                    // The first row is above the fold on every viewport.
+                    priority={i < 2}
                     width={800}
                     height={450}
+                    wrapperClassName="w-full h-36 sm:h-40"
                     className={cn(
-                      "w-full h-36 sm:h-40 object-cover",
+                      "w-full h-full object-cover",
                       guestRestricted && "blur-sm opacity-70",
                       xpLocked && "opacity-40 saturate-50",
                     )}

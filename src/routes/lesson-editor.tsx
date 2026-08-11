@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Lightbox } from "@/components/coach/Lightbox";
+import { SmartImage } from "@/components/coach/SmartImage";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, Trash2, ImageIcon, ArrowLeft, Scissors, Loader2, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
@@ -397,7 +398,12 @@ function ImageSlotCard({
             className="group relative block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label={`${t("previewImage")} — ${slot.label}`}
           >
-            <img src={displaySrc} alt={alt} loading="lazy" decoding="async" className="block w-full h-auto bg-black/40" />
+            <SmartImage
+              src={displaySrc}
+              alt={alt}
+              wrapperClassName="w-full min-h-24 bg-black/40"
+              className="block w-full h-auto"
+            />
             <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-background/85 px-2 py-1 text-[10px] uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
               <Maximize2 className="size-3" aria-hidden /> {t("previewImage")}
             </span>

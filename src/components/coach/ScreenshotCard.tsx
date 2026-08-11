@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Image as ImageIcon, Maximize2, Upload, Loader2 } from "lucide-react";
 import { Lightbox } from "@/components/coach/Lightbox";
+import { SmartImage } from "@/components/coach/SmartImage";
 import { cn } from "@/lib/utils";
 import { uploadLessonImage, ACCEPTED_IMAGE_ACCEPT, LessonImageError } from "@/lib/lesson-images";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ export function ScreenshotCard({
   lessonId,
   slot,
   uploadable = false,
+  priority = false,
 }: {
   src?: string;
   alt: string;
@@ -28,6 +30,8 @@ export function ScreenshotCard({
   lessonId?: string;
   slot?: string;
   uploadable?: boolean;
+  /** Set on the first screenshot of a page so it isn't lazy-loaded. */
+  priority?: boolean;
 }) {
   const { t } = useTranslation(["screenshot", "lessonEditor"]);
   const [open, setOpen] = useState(false);
@@ -80,12 +84,12 @@ export function ScreenshotCard({
           className="block w-full relative focus:outline-none focus-visible:ring-2 focus-visible:ring-primary aspect-video"
             aria-label={t("enlargeAria", { alt })}
         >
-          <img
+          <SmartImage
             src={displaySrc}
             alt={alt}
-            loading="lazy"
-            decoding="async"
-            className="absolute inset-0 w-full h-full object-contain bg-black/40"
+            priority={priority}
+            wrapperClassName="absolute inset-0 bg-black/40"
+            className="w-full h-full object-contain"
           />
           <span
             aria-hidden
