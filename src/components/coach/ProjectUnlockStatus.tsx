@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Lock, CheckCircle2, Sparkles } from "lucide-react";
+import { Lock, CheckCircle2, Sparkles, Circle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useLocalizedLessons } from "@/lib/i18n/content";
@@ -9,6 +9,46 @@ import { cn } from "@/lib/utils";
 export function useLessonTitles(): (ids: string[]) => string[] {
   const lessons = useLocalizedLessons();
   return (ids) => ids.map((id) => lessons.find((l) => l.id === id)?.title ?? id);
+}
+
+/**
+ * Reusable prerequisite checklist: shows the actual required lesson names with
+ * a completed / not-completed marker. One source of truth for every surface.
+ */
+export function ProjectPrerequisites({
+  requiredLessons,
+  missingLessons,
+  className,
+}: {
+  requiredLessons: string[];
+  missingLessons: string[];
+  className?: string;
+}) {
+  const { t } = useTranslation("projects");
+  const titlesFor = useLessonTitles();
+  if (requiredLessons.length === 0) return null;
+  const titles = titlesFor(requiredLessons);
+
+  return (
+    <div className={cn("space-y-1", className)}>
+      <div className="text-xs font-medium text-muted-foreground">{t("requiredLessonsLabel")}</div>
+      <ul className="space-y-0.5">
+        {requiredLessons.map((id, i) => {
+          const complete = !missingLessons.includes(id);
+          return (
+            <li key={id} className="flex items-center gap-1.5 text-xs leading-tight">
+              {complete ? (
+                <CheckCircle2 className="size-3 text-success shrink-0" aria-hidden />
+              ) : (
+                <Circle className="size-3 text-muted-foreground/70 shrink-0" aria-hidden />
+              )}
+              <span className={complete ? "text-foreground" : "text-muted-foreground"}>{titles[i]}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
 }
 
 export type ProjectStatus = "available" | "locked" | "newlyUnlocked" | "completed";
@@ -58,11 +98,9 @@ export function ProjectLockDetails({
   className?: string;
 }) {
   const { t } = useTranslation("projects");
-  const titlesFor = useLessonTitles();
   if (unlock.alwaysAvailable || unlock.unlocked) return null;
 
   const pct = unlock.requiredXP > 0 ? Math.min(100, Math.round((currentXp / unlock.requiredXP) * 100)) : 100;
-  const missingTitles = titlesFor(unlock.missingLessons);
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -79,11 +117,10 @@ export function ProjectLockDetails({
         )}
       </div>
       <Progress value={pct} className="h-1.5" trackClassName="bg-primary/15" indicatorClassName="bg-primary" />
-      {!unlock.lessonsSatisfied && (
-        <p className="text-xs text-muted-foreground">
-          {missingTitles.length === 1
-            ? t("completeLessonToUnlock", { lesson: missingTitles[0] })
-            : t("completeLessonsToUnlock", { count: missingTitles.length })}
+      <ProjectPrerequisites requiredLessons={unlock.requiredLessons} missingLessons={unlock.missingLessons} />
+      {unlock.lessonsSatisfied && unlock.requiredLessons.length > 0 && (
+        <p className="text-xs text-success font-medium inline-flex items-center gap-1">
+          {t("lessonRequirementsComplete")} <CheckCircle2 className="size-3" />
         </p>
       )}
     </div>
