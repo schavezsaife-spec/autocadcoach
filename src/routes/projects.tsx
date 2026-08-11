@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { projects } from "@/lib/coach-data";
 import { useLocalizedProjects } from "@/lib/i18n/content";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,9 @@ import { Input } from "@/components/ui/input";
 import { CheckCircle2, Clock, Lock, Search } from "lucide-react";
 import { GuestBanner } from "@/components/coach/AuthPrompt";
 import { canGuestAccessProject, getProjectIndex } from "@/lib/access-config";
+import { useProjectUnlocks } from "@/lib/use-project-unlocks";
+import { ProjectLockDetails, ProjectStatusBadge } from "@/components/coach/ProjectUnlockStatus";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects")({
@@ -53,7 +56,8 @@ function ProjectsLayout() {
 }
 
 function ProjectList() {
-  const { state } = useCoach();
+  const { state, totalXp, markProjectUnlockSeen } = useCoach();
+  const { unlockStateFor } = useProjectUnlocks();
   const { t } = useTranslation(["projects", "common", "gate"]);
   const localized = useLocalizedProjects();
   const isAuthed = state.profile.isAuthenticated;
@@ -83,6 +87,23 @@ function ProjectList() {
 
     return result;
   }, [q, difficulty, sort, localized]);
+
+  const newlyUnlockedIds = useMemo(() => {
+    if (!isAuthed) return [] as string[];
+    return localized
+      .filter((p) => {
+        const u = unlockStateFor(p.id);
+        return !u.alwaysAvailable && u.unlocked && !state.seenProjectUnlocks.includes(p.id);
+      })
+      .map((p) => p.id);
+  }, [isAuthed, localized, unlockStateFor, state.seenProjectUnlocks]);
+
+  // The celebration is a one-time state: persist that it has been seen.
+  useEffect(() => {
+    if (newlyUnlockedIds.length === 0) return;
+    const handle = setTimeout(() => newlyUnlockedIds.forEach((id) => markProjectUnlockSeen(id)), 6000);
+    return () => clearTimeout(handle);
+  }, [newlyUnlockedIds, markProjectUnlockSeen]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10">
@@ -151,15 +172,28 @@ function ProjectList() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {filtered.map((p) => {
               const done = isAuthed && state.completedProjects.includes(p.id);
+              const unlock = unlockStateFor(p.id);
               const guestFree = !isAuthed && canGuestAccessProject(getProjectIndex(p.id));
               const guestRestricted = !isAuthed && !guestFree;
-              return (
-                <Link
-                  key={p.id}
-                  to="/projects/$id"
-                  params={{ id: p.id }}
-                  className="rounded-2xl bg-card overflow-hidden border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_24px_-12px_color-mix(in_oklab,var(--primary)_60%,transparent)] transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_0_28px_-8px_color-mix(in_oklab,var(--primary)_70%,transparent)]"
-                >
+              // XP/prerequisite gating only ever applies to signed-in users and
+              // never to the always-available preview projects.
+              const xpLocked = isAuthed && !unlock.alwaysAvailable && !unlock.unlocked;
+              const newlyUnlocked =
+                isAuthed &&
+                !unlock.alwaysAvailable &&
+                unlock.unlocked &&
+                !done &&
+                !state.seenProjectUnlocks.includes(p.id);
+
+              const cardCls = cn(
+                "rounded-2xl bg-card overflow-hidden border border-primary/25 ring-1 ring-primary/10 shadow-[0_0_24px_-12px_color-mix(in_oklab,var(--primary)_60%,transparent)] transition-all",
+                !xpLocked && "hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-[0_0_28px_-8px_color-mix(in_oklab,var(--primary)_70%,transparent)]",
+                xpLocked && "border-dashed border-border/70",
+                newlyUnlocked && "border-success/50 ring-success/30 shadow-[0_0_28px_-6px_color-mix(in_oklab,var(--success)_70%,transparent)]",
+              );
+
+              const media = (
+                <div className="relative">
                   <img
                     src={p.coverImage ?? p.image}
                     alt={p.title}
@@ -167,31 +201,88 @@ function ProjectList() {
                     decoding="async"
                     width={800}
                     height={450}
-                    className={cn("w-full h-36 sm:h-40 object-cover", guestRestricted && "blur-sm opacity-70")}
+                    className={cn(
+                      "w-full h-36 sm:h-40 object-cover",
+                      guestRestricted && "blur-sm opacity-70",
+                      xpLocked && "opacity-40 saturate-50",
+                    )}
                   />
-                  <div className="p-4 sm:p-5">
-                    <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="border-primary/30 text-primary">{t(`projects:difficulty.${p.difficulty}`)}</Badge>
-                      <div className="text-xs text-muted-foreground inline-flex items-center gap-1">
-                        <Clock className="size-3" /> {p.time}
+                  {xpLocked && (
+                    <div className="absolute inset-0 grid place-items-center bg-background/50">
+                      <div className="flex flex-col items-center gap-1 text-center px-3">
+                        <Lock className="size-6 text-primary" aria-hidden />
+                        <span className="text-xs font-semibold uppercase tracking-wide">
+                          {t("projects:xpRequired", { xp: unlock.requiredXP })}
+                        </span>
                       </div>
                     </div>
-                    <div className="mt-3 font-semibold">{p.title}</div>
-                    <div className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</div>
-                    {guestFree && (
-                      <Badge className="mt-3 bg-primary/15 text-primary border-primary/30">{t("gate:freePreview")}</Badge>
-                    )}
-                    {guestRestricted && (
-                      <Badge variant="outline" className="mt-3 text-muted-foreground/80 border-dashed">
+                  )}
+                  {newlyUnlocked && (
+                    <div className="absolute top-2 left-2">
+                      <Badge className="bg-success/20 text-success border-success/30 animate-pulse">
+                        {t("projects:projectUnlocked")}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+              );
+
+              const body = (
+                <div className="p-4 sm:p-5">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline" className="border-primary/30 text-primary">{t(`projects:difficulty.${p.difficulty}`)}</Badge>
+                    <div className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                      <Clock className="size-3" /> {p.time}
+                    </div>
+                  </div>
+                  <div className="mt-3 font-semibold">{p.title}</div>
+                  <div className="text-sm text-muted-foreground mt-1 line-clamp-2">{p.description}</div>
+
+                  {xpLocked && (
+                    <ProjectLockDetails unlock={unlock} currentXp={totalXp} className="mt-3" />
+                  )}
+
+                  {isAuthed && (
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <ProjectStatusBadge
+                        status={done ? "completed" : xpLocked ? "locked" : newlyUnlocked ? "newlyUnlocked" : "available"}
+                        requiredXp={xpLocked ? unlock.requiredXP : undefined}
+                      />
+                      <span className="text-xs text-muted-foreground">
+                        {done
+                          ? t("projects:rewardXpEarned", { xp: unlock.rewardXP })
+                          : t("projects:rewardXp", { xp: unlock.rewardXP })}
+                      </span>
+                    </div>
+                  )}
+
+                  {guestFree && (
+                    <Badge className="mt-3 bg-primary/15 text-primary border-primary/30">{t("gate:freePreview")}</Badge>
+                  )}
+                  {guestRestricted && (
+                    <div className="mt-3 space-y-2">
+                      <Badge variant="outline" className="text-muted-foreground/80 border-dashed">
                         <Lock className="size-3 mr-1" /> {t("gate:accountRequired")}
                       </Badge>
-                    )}
-                    {done && (
-                      <Badge className="mt-3 bg-success/20 text-success border-success/30">
-                        <CheckCircle2 className="size-3 mr-1" /> {t("projects:built")}
-                      </Badge>
-                    )}
+                      <p className="text-xs text-muted-foreground">{t("projects:guestLockedMessage")}</p>
+                    </div>
+                  )}
+                </div>
+              );
+
+              if (xpLocked) {
+                return (
+                  <div key={p.id} className={cardCls} aria-disabled>
+                    {media}
+                    {body}
                   </div>
+                );
+              }
+
+              return (
+                <Link key={p.id} to="/projects/$id" params={{ id: p.id }} className={cn(cardCls, "block")}>
+                  {media}
+                  {body}
                 </Link>
               );
             })}
