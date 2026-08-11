@@ -299,6 +299,8 @@
     "nextProject": "PRÓXIMO PROYECTO",
     "xpToGo": "{{count}} XP para desbloquear",
     "prerequisites": "Requisitos",
+    "requiredLessonsLabel": "Lecciones requeridas:",
+    "lessonRequirementsComplete": "Requisitos de lecciones completados",
     "earnMoreXp": "Gana {{count}} XP más para desbloquearlo.",
     "completeLessonHint": "Completa {{lessons}} para desbloquearlo.",
     "earnAndComplete": "Gana {{count}} XP más y completa {{lessons}}.",
