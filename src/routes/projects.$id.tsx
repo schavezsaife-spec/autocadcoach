@@ -16,6 +16,9 @@ import { toast } from "sonner";
 import { GuestBanner, AuthRequiredAction } from "@/components/coach/AuthPrompt";
 import { GuestContentGate } from "@/components/coach/GuestContentGate";
 import { isProjectRestrictedForGuest } from "@/lib/access-config";
+import { useProjectUnlocks } from "@/lib/use-project-unlocks";
+import { ProjectLockDetails, ProjectStatusBadge } from "@/components/coach/ProjectUnlockStatus";
+import { Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects/$id")({
@@ -68,7 +71,8 @@ export const Route = createFileRoute("/projects/$id")({
 
 function ProjectViewer() {
   const { id } = Route.useParams();
-  const { state, completeProject, resetProject, hydrated } = useCoach();
+  const { state, completeProject, resetProject, hydrated, totalXp } = useCoach();
+  const { unlockStateFor } = useProjectUnlocks();
   const { t } = useTranslation(["projects", "common", "gate"]);
   const [lightbox, setLightbox] = useState(false);
   const isAuthed = state.profile.isAuthenticated;
@@ -101,13 +105,39 @@ function ProjectViewer() {
 
   const done = isAuthed && state.completedProjects.includes(project.id);
   const coverSrc = project.coverImage ?? project.image;
+  const unlock = unlockStateFor(project.id);
+  // Server-independent access check: a signed-in user cannot reach a locked
+  // project body just by typing the URL. Always-available projects are exempt.
+  const xpLocked = isAuthed && !unlock.alwaysAvailable && !unlock.unlocked;
+
+  if (xpLocked) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-5">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{project.title}</h1>
+        <div className="rounded-2xl bg-card border border-dashed border-border p-6 space-y-4 text-center">
+          <Lock className="size-8 text-primary mx-auto" aria-hidden />
+          <div className="font-semibold">{t("projects:lockedPageTitle")}</div>
+          <p className="text-sm text-muted-foreground">{t("projects:lockedPageBody")}</p>
+          <ProjectLockDetails unlock={unlock} currentXp={totalXp} className="text-left max-w-sm mx-auto" />
+          <Button asChild variant="outline">
+            <Link to="/projects">{t("projects:backToProjects")}</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-10 space-y-6">
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="outline" className="border-primary/30 text-primary">{t(`projects:difficulty.${project.difficulty}`)}</Badge>
         <Badge variant="outline" className="border-border"><Clock className="size-3 mr-1" /> {project.time}</Badge>
-        {done && <Badge className="bg-success/20 text-success border-success/30"><CheckCircle2 className="size-3 mr-1" /> {t("projects:built")}</Badge>}
+        {isAuthed && <ProjectStatusBadge status={done ? "completed" : "available"} />}
+        {isAuthed && (
+          <span className="text-xs text-muted-foreground">
+            {done ? t("projects:rewardXpEarned", { xp: unlock.rewardXP }) : t("projects:rewardXp", { xp: unlock.rewardXP })}
+          </span>
+        )}
       </div>
       <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{project.title}</h1>
       <p className="text-muted-foreground">{project.description}</p>
@@ -185,7 +215,15 @@ function ProjectViewer() {
           {isAuthed ? (
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
-                onClick={() => { completeProject(project.id); toast.success(t("projects:markedComplete", { title: project.title })); }}
+                onClick={() => {
+                  if (done) {
+                    // Already completed: never award the reward XP twice.
+                    toast.success(t("projects:markedComplete", { title: project.title }));
+                    return;
+                  }
+                  completeProject(project.id);
+                  toast.success(t("projects:completeToastXp", { title: project.title, xp: unlock.rewardXP }));
+                }}
                 className={cn(
                   "w-full sm:w-auto",
                   done
@@ -193,7 +231,7 @@ function ProjectViewer() {
                     : "bg-primary text-primary-foreground hover:bg-primary/90",
                 )}
               >
-                <CheckCircle2 className="size-4 mr-1" /> {t("common:markComplete")}
+                <CheckCircle2 className="size-4 mr-1" /> {t("projects:markProjectComplete")}
               </Button>
               {done && (
                 <Button variant="outline" onClick={() => resetProject(project.id)} className="w-full sm:w-auto">

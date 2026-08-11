@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { lessons } from "./coach-data";
+import { projectRewardXp } from "./project-unlocks";
 import { supabase } from "./supabase";
 import { setAppLanguage, type AppLanguage } from "./i18n";
 import { useAuth } from "./auth-context";
@@ -24,6 +25,8 @@ export type CoachState = {
   profile: Profile;
   streak: number;
   language: AppLanguage;
+  /** Project ids whose "newly unlocked" celebration has already been shown. */
+  seenProjectUnlocks: string[];
 };
 
 const DEFAULT: CoachState = {
@@ -43,6 +46,7 @@ const DEFAULT: CoachState = {
   },
   streak: 1,
   language: "en",
+  seenProjectUnlocks: [],
 };
 
 const KEY = "autocad-coach-state-v1";
@@ -76,6 +80,7 @@ type Ctx = {
   passLessonQuiz: (id: string) => void;
   completeProject: (id: string) => void;
   resetProject: (id: string) => void;
+  markProjectUnlockSeen: (id: string) => void;
   isUnlocked: (id: string) => boolean;
   hydrated: boolean;
   /** True until the centralized auth state has settled. */
@@ -162,6 +167,7 @@ export function CoachProvider({ children }: { children: ReactNode }) {
             completedProjects: [],
             lessonStep: {},
             lessonQuizPassed: {},
+            seenProjectUnlocks: [],
             streak: 1,
           };
         }
@@ -307,6 +313,11 @@ export function CoachProvider({ children }: { children: ReactNode }) {
   const completeProject = (id: string) =>
     setState((s) => (s.completedProjects.includes(id) ? s : { ...s, completedProjects: [...s.completedProjects, id] }));
 
+  const markProjectUnlockSeen = (id: string) =>
+    setState((s) =>
+      s.seenProjectUnlocks.includes(id) ? s : { ...s, seenProjectUnlocks: [...s.seenProjectUnlocks, id] },
+    );
+
   const resetProject = (id: string) =>
     setState((s) => ({ ...s, completedProjects: s.completedProjects.filter((p) => p !== id) }));
 
@@ -322,8 +333,12 @@ export function CoachProvider({ children }: { children: ReactNode }) {
 
   // Memoized — expensive reduce over lesson array
   const totalXp = useMemo(
-    () => state.completedLessons.reduce((sum, id) => sum + (lessons.find((l) => l.id === id)?.xp ?? 0), 0),
-    [state.completedLessons],
+    () =>
+      state.completedLessons.reduce((sum, id) => sum + (lessons.find((l) => l.id === id)?.xp ?? 0), 0) +
+      // Project rewards are granted once: completedProjects is a de-duplicated set
+      // persisted in the database, so refreshing never re-awards XP.
+      projectRewardXp(state.completedProjects),
+    [state.completedLessons, state.completedProjects],
   );
 
   // Memoized — simple but avoids recalc on unrelated state changes
@@ -356,6 +371,7 @@ export function CoachProvider({ children }: { children: ReactNode }) {
         passLessonQuiz,
         completeProject,
         resetProject,
+        markProjectUnlockSeen,
         isUnlocked,
         hydrated,
         authLoading,

@@ -8,10 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { useCoach } from "@/lib/coach-store";
 import { lessons } from "@/lib/coach-data";
 import { useLocalizedLessons } from "@/lib/i18n/content";
-import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search } from "lucide-react";
+import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search, Circle, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GuestBanner } from "@/components/coach/AuthPrompt";
 import { canGuestAccessLesson, getLessonIndex } from "@/lib/access-config";
+import { useProjectUnlocks } from "@/lib/use-project-unlocks";
+import { useLocalizedProjects } from "@/lib/i18n/content";
+import { useLessonTitles } from "@/components/coach/ProjectUnlockStatus";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -78,6 +81,8 @@ function DashboardPage() {
             value={`${isAuthed ? state.streak : 0} ${t("dashboard:days", { count: isAuthed ? state.streak : 0 })}`}
           />
         </div>
+
+        {isAuthed && <NextProjectCard />}
 
         {/* Progress bar */}
         <div className="rounded-2xl bg-card border border-border p-4 sm:p-5">
@@ -195,6 +200,73 @@ function Stat({
       </div>
       <div className="mt-3 text-sm text-muted-foreground">{label}</div>
       <div className="text-2xl font-bold">{value}</div>
+    </div>
+  );
+}
+
+function NextProjectCard() {
+  const { t } = useTranslation(["projects"]);
+  const { totalXp } = useCoach();
+  const { nextLockedProject } = useProjectUnlocks();
+  const projectsList = useLocalizedProjects();
+  const titlesFor = useLessonTitles();
+  const next = nextLockedProject();
+
+  if (!next) {
+    return (
+      <div className="rounded-2xl bg-card border border-primary/25 p-4 sm:p-5">
+        <div className="text-xs font-semibold tracking-wide text-primary">{t("projects:nextProject")}</div>
+        <p className="mt-2 text-sm text-muted-foreground">{t("projects:allProjectsUnlocked")}</p>
+      </div>
+    );
+  }
+
+  const project = projectsList.find((p) => p.id === next.projectId);
+  const pct = next.requiredXP > 0 ? Math.min(100, Math.round((totalXp / next.requiredXP) * 100)) : 100;
+  const missingTitles = titlesFor(next.missingLessons);
+  const missingLabel = missingTitles.join(", ");
+  const hint = !next.xpSatisfied && missingTitles.length > 0
+    ? t("projects:earnAndComplete", { count: next.xpRemaining, lessons: missingLabel })
+    : !next.xpSatisfied
+      ? t("projects:earnMoreXp", { count: next.xpRemaining })
+      : t("projects:completeLessonHint", { lessons: missingLabel });
+
+  return (
+    <div className="rounded-2xl bg-card border border-primary/25 ring-1 ring-primary/15 p-4 sm:p-5 space-y-3">
+      <div className="flex items-center gap-2">
+        <Rocket className="size-4 text-primary" aria-hidden />
+        <span className="text-xs font-semibold tracking-wide text-primary">{t("projects:nextProject")}</span>
+      </div>
+      <div className="font-semibold">{project?.title ?? next.projectId}</div>
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">
+          {t("projects:xpProgress", { current: Math.min(totalXp, next.requiredXP), required: next.requiredXP })}
+        </span>
+        {!next.xpSatisfied && <span className="text-primary font-medium">{t("projects:xpToGo", { count: next.xpRemaining })}</span>}
+      </div>
+      <Progress value={pct} className="h-1.5" trackClassName="bg-primary/15" indicatorClassName="bg-primary" />
+      {next.requiredLessons.length > 0 && (
+        <div className="space-y-1">
+          <div className="text-xs font-medium text-muted-foreground">{t("projects:prerequisites")}</div>
+          <ul className="space-y-1">
+            {next.requiredLessons.map((id) => {
+              const complete = !next.missingLessons.includes(id);
+              const title = titlesFor([id])[0];
+              return (
+                <li key={id} className="flex items-center gap-2 text-xs">
+                  {complete ? (
+                    <CheckCircle2 className="size-3.5 text-success" aria-hidden />
+                  ) : (
+                    <Circle className="size-3.5 text-muted-foreground" aria-hidden />
+                  )}
+                  <span className={cn(complete ? "text-foreground" : "text-muted-foreground")}>{title}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+      <p className="text-sm text-muted-foreground">{hint}</p>
     </div>
   );
 }
