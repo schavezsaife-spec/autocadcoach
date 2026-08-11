@@ -7,12 +7,11 @@ import i18n from "@/lib/i18n";
 import { useCoach } from "@/lib/coach-store";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, Clock, Lock, Search } from "lucide-react";
+import { Clock, Lock, Search } from "lucide-react";
 import { GuestBanner } from "@/components/coach/AuthPrompt";
 import { canGuestAccessProject, getProjectIndex } from "@/lib/access-config";
 import { useProjectUnlocks } from "@/lib/use-project-unlocks";
 import { ProjectLockDetails, ProjectStatusBadge } from "@/components/coach/ProjectUnlockStatus";
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/projects")({
