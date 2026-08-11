@@ -245,27 +245,7 @@ function NextProjectCard() {
         {!next.xpSatisfied && <span className="text-primary font-medium">{t("projects:xpToGo", { count: next.xpRemaining })}</span>}
       </div>
       <Progress value={pct} className="h-1.5" trackClassName="bg-primary/15" indicatorClassName="bg-primary" />
-      {next.requiredLessons.length > 0 && (
-        <div className="space-y-1">
-          <div className="text-xs font-medium text-muted-foreground">{t("projects:prerequisites")}</div>
-          <ul className="space-y-1">
-            {next.requiredLessons.map((id) => {
-              const complete = !next.missingLessons.includes(id);
-              const title = titlesFor([id])[0];
-              return (
-                <li key={id} className="flex items-center gap-2 text-xs">
-                  {complete ? (
-                    <CheckCircle2 className="size-3.5 text-success" aria-hidden />
-                  ) : (
-                    <Circle className="size-3.5 text-muted-foreground" aria-hidden />
-                  )}
-                  <span className={cn(complete ? "text-foreground" : "text-muted-foreground")}>{title}</span>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
+      <ProjectPrerequisites requiredLessons={next.requiredLessons} missingLessons={next.missingLessons} />
       <p className="text-sm text-muted-foreground">{hint}</p>
     </div>
   );
