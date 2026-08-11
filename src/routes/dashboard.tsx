@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useCoach } from "@/lib/coach-store";
 import { lessons } from "@/lib/coach-data";
 import { useLocalizedLessons } from "@/lib/i18n/content";
-import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search, Circle, Rocket } from "lucide-react";
+import { Flame, Trophy, BookOpen, Wrench, CheckCircle2, Lock, Search, Rocket } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GuestBanner } from "@/components/coach/AuthPrompt";
 import { canGuestAccessLesson, getLessonIndex } from "@/lib/access-config";
