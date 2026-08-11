@@ -300,7 +300,7 @@
     "xpToGo": "{{count}} XP to go",
     "prerequisites": "Prerequisites",
     "requiredLessonsLabel": "Required lessons:",
-    "lessonRequirementsComplete": "Lesson requirements complete"
+    "lessonRequirementsComplete": "Lesson requirements complete",
     "earnMoreXp": "Earn {{count}} more XP to unlock.",
     "completeLessonHint": "Complete {{lessons}} to unlock.",
     "earnAndComplete": "Earn {{count}} more XP and complete {{lessons}}.",
