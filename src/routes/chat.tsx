@@ -13,6 +13,7 @@ import { useLocalizedTroubleshooting } from "@/lib/i18n/content";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { useCoach } from "@/lib/coach-store";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({
@@ -30,6 +31,39 @@ export const Route = createFileRoute("/chat")({
 });
 
 type Msg = { role: "user" | "assistant"; content: string };
+
+/**
+ * The transcript lives in sessionStorage because Radix unmounts the inactive
+ * tab: switching to Troubleshoot and back — or leaving /chat — would otherwise
+ * drop every message. Scoped per user so a second sign-in on the same browser
+ * never inherits someone else's conversation, and session- (not local-)
+ * storage so it dies with the browser tab.
+ */
+const CHAT_STORAGE_PREFIX = "autocadcoach:chat:";
+
+function chatStorageKey(userId: string | undefined) {
+  return `${CHAT_STORAGE_PREFIX}${userId ?? "anon"}`;
+}
+
+function readStoredMessages(key: string): Msg[] | null {
+  try {
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return null;
+    const msgs = parsed.filter(
+      (m): m is Msg =>
+        typeof m === "object" &&
+        m !== null &&
+        ((m as Msg).role === "user" || (m as Msg).role === "assistant") &&
+        typeof (m as Msg).content === "string",
+    );
+    return msgs.length ? msgs : null;
+  } catch {
+    // Corrupt or unavailable storage is not worth breaking the page over.
+    return null;
+  }
+}
 
 function CoachPage() {
   const { state, authLoading } = useCoach();
@@ -74,6 +108,29 @@ function AskAutoCoach() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const storageKey = chatStorageKey(user?.id);
+  // Hydration happens in an effect, not the useState initializer, so the
+  // server-rendered markup and the first client render still agree.
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const stored = readStoredMessages(storageKey);
+    if (stored) setMessages(stored);
+    setHydrated(true);
+  }, [storageKey]);
+
+  // Persist only after hydration, or the initial greeting would overwrite the
+  // saved transcript before we've had a chance to read it back.
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      if (messages.length <= 1) sessionStorage.removeItem(storageKey);
+      else sessionStorage.setItem(storageKey, JSON.stringify(messages));
+    } catch {
+      // Storage full or blocked (private mode): the chat still works in memory.
+    }
+  }, [messages, hydrated, storageKey]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });

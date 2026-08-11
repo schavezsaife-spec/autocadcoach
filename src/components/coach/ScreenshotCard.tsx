@@ -5,6 +5,7 @@ import { SmartImage } from "@/components/coach/SmartImage";
 import { cn } from "@/lib/utils";
 import { uploadLessonImage, ACCEPTED_IMAGE_ACCEPT, LessonImageError } from "@/lib/lesson-images";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/auth-context";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -38,7 +39,10 @@ export function ScreenshotCard({
   const [uploading, setUploading] = useState(false);
   const [localSrc, setLocalSrc] = useState<string | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const canUpload = uploadable && Boolean(lessonId && slot);
+  const { isAdmin } = useAuth();
+  // Guests and ordinary signed-in users never see the upload/replace control;
+  // storage RLS rejects their writes anyway.
+  const canUpload = uploadable && isAdmin && Boolean(lessonId && slot);
 
   // A language switch swaps `src` (and `slot`) underneath us: drop any stale
   // optimistic image and close a lightbox still showing the old language.

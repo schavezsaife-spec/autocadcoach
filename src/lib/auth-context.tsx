@@ -35,6 +35,12 @@ type AuthCtx = {
   user: User | null;
   session: Session | null;
   profile: AuthProfile | null;
+  /**
+   * True only for users holding the 'admin' role in `public.user_roles`.
+   * Client-side gating is for UI only — RLS on the tables/buckets is what
+   * actually enforces this.
+   */
+  isAdmin: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (
@@ -84,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<AuthProfile | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const ensuredFor = useRef<string | null>(null);
 
@@ -98,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(nextSession?.user ?? null);
       if (!nextSession) {
         setProfile(null);
+        setIsAdmin(false);
         ensuredFor.current = null;
       }
       setLoading(false);
@@ -165,6 +173,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (e) {
         // Optional data — a failure here must never block authentication.
         console.error("[auth] profile load/create failed", e);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
+
+  // ---- Admin role: drives UI affordances only; RLS is the real gate ------
+  useEffect(() => {
+    const uid = session?.user?.id;
+    if (!uid) {
+      setIsAdmin(false);
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.rpc("has_role", {
+          _user_id: uid,
+          _role: "admin",
+        });
+        if (error) throw error;
+        if (!cancelled) setIsAdmin(data === true);
+      } catch (e) {
+        // Fail closed: a lookup failure must never grant admin affordances.
+        console.error("[auth] role load failed", e);
+        if (!cancelled) setIsAdmin(false);
       }
     })();
 
@@ -252,6 +289,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setUser(null);
     setProfile(null);
+    setIsAdmin(false);
     ensuredFor.current = null;
   }, []);
 
@@ -275,6 +313,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       session,
       profile,
+      isAdmin,
       loading,
       signIn,
       signUp,
@@ -282,7 +321,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       resetPassword,
     }),
-    [user, session, profile, loading, signIn, signUp, signInWithGoogle, signOut, resetPassword],
+    [user, session, profile, isAdmin, loading, signIn, signUp, signInWithGoogle, signOut, resetPassword],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
