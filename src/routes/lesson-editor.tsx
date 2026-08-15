@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { lessons } from "@/lib/coach-data";
 import { lessonsEs, richLessonsEs, mergeLesson } from "@/lib/coach-data.es";
-import { supabase } from "@/integrations/supabase/client";
+import { useIsOwner } from "@/lib/owner";
 import {
   useLessonImages,
   uploadLessonImage,
@@ -51,34 +51,9 @@ function LessonEditor() {
   const { state, authLoading } = useCoach();
   const { t } = useTranslation(["lessonEditor", "common"]);
   const isAuthed = state.profile.isAuthenticated;
-  const [adminCheck, setAdminCheck] = useState<"pending" | "yes" | "no">("pending");
-
-  useEffect(() => {
-    let active = true;
-    if (!isAuthed) {
-      setAdminCheck("no");
-      return;
-    }
-    (async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      const uid = userData.user?.id;
-      if (!uid) {
-        if (active) setAdminCheck("no");
-        return;
-      }
-      const { data, error } = await supabase.rpc("has_role", { _user_id: uid, _role: "admin" });
-      if (!active) return;
-      if (error) {
-        console.error("[lesson-editor] role check failed", error);
-        setAdminCheck("no");
-      } else {
-        setAdminCheck(data ? "yes" : "no");
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [isAuthed]);
+  const isOwner = useIsOwner();
+  // The editor is restricted to the single owner account, not to all admins.
+  const adminCheck: "pending" | "yes" | "no" = authLoading ? "pending" : isOwner ? "yes" : "no";
 
   const search = Route.useSearch();
   const initial =
