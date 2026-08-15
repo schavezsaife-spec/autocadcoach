@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { assertOwner } from "@/lib/owner";
 
 /**
  * Permanent storage for annotated lesson screenshots. Uploads go to the
@@ -362,6 +363,8 @@ export async function uploadLessonImage(
   slot: string,
   file: File,
 ): Promise<string> {
+  // Server-verified owner check: never trust hidden UI alone.
+  await assertOwner("upload");
   if (!file || file.size === 0) {
     throw new LessonImageError("emptyFile");
   }
@@ -438,6 +441,7 @@ export async function uploadLessonImage(
 }
 
 export async function clearLessonImage(lessonId: string, slot: string): Promise<void> {
+  await assertOwner("removal");
   const previousPath = pathCache.get(lessonId)?.get(slot) ?? null;
 
   const { error } = await supabase
@@ -474,6 +478,7 @@ export type ReprocessResult = {
 };
 
 export async function reprocessLessonImages(lessonIds: string[]): Promise<ReprocessResult[]> {
+  await assertOwner("reprocess");
   const { data, error } = await supabase
     .from("lesson_images")
     .select("lesson_id, slot, url, storage_path")
