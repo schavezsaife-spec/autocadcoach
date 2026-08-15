@@ -142,6 +142,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_lesson_image_owner: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
