@@ -183,7 +183,10 @@ function AskAutoCoach() {
         console.error("[chat] request failed", res.status, raw);
         let message = t("errGeneric");
         if (res.status === 401) {
-          message = t("errSignIn");
+          await signOut();
+          toast.error(t("errSignIn"));
+          await navigate({ to: "/auth", search: { redirect: "/chat" } });
+          return;
         } else if (res.status === 429) {
           message = t("errRate");
         } else if (res.status === 402) {
