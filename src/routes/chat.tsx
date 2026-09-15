@@ -179,8 +179,21 @@ function AskAutoCoach() {
         }
       }
       if (!res.ok) {
+        // Read as text (not .json()) — error responses may be HTML or plain text.
         const raw = await res.text().catch(() => "");
-        console.error("[chat] request failed", res.status, raw);
+        console.error("[chat] request failed", {
+          status: res.status,
+          statusText: res.statusText,
+          body: raw,
+        });
+        let reason = raw.slice(0, 160);
+        try {
+          const parsed = JSON.parse(raw);
+          if (parsed?.error) reason = String(parsed.error);
+        } catch {
+          // non-JSON error body (HTML page / plain text) — keep the raw snippet
+        }
+        if (!reason) reason = res.statusText || "unknown error";
         let message = t("errGeneric");
         if (res.status === 401) {
           await signOut();
@@ -195,12 +208,13 @@ function AskAutoCoach() {
         toast.error(message);
         setMessages((m) => [
           ...m,
-          { role: "assistant", content: t("errReply") },
+          { role: "assistant", content: `${t("errReply")} (${res.status} — ${reason})` },
         ]);
       } else {
         const data = await res.json();
         setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
       }
+
     } catch (err) {
       console.error("[chat] network error", err);
       toast.error(t("errNetwork"));
