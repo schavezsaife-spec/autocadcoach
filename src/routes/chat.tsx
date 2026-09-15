@@ -149,16 +149,29 @@ function AskAutoCoach() {
     setInput("");
     setLoading(true);
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData.session?.access_token;
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ messages: newMsgs, language: i18nHook.language?.startsWith("es") ? "es" : "en" }),
+      const payload = JSON.stringify({
+        messages: newMsgs,
+        language: i18nHook.language?.startsWith("es") ? "es" : "en",
       });
+      const post = (token: string | undefined) =>
+        fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: payload,
+        });
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      let res = await post(sessionData.session?.access_token);
+      // A stale/expired access token on a freshly loaded tab returns 401 even
+      // though the user is signed in — refresh once and retry before giving up.
+      if (res.status === 401) {
+        const { data: refreshed } = await supabase.auth.refreshSession();
+        const freshToken = refreshed.session?.access_token;
+        if (freshToken) res = await post(freshToken);
+      }
       if (!res.ok) {
         const raw = await res.text().catch(() => "");
         console.error("[chat] request failed", res.status, raw);
