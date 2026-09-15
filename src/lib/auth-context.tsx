@@ -111,16 +111,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    supabase.auth
-      .getSession()
-      .then(({ data, error }) => {
+    (async () => {
+      try {
+        const { data: localData, error: localError } = await supabase.auth.getSession();
+        if (localError) throw localError;
+
+        let verifiedSession = localData.session;
+        if (verifiedSession) {
+          const { data: verified, error: verifyError } = await supabase.auth.getUser(
+            verifiedSession.access_token,
+          );
+          if (verifyError || !verified.user) {
+            const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+            verifiedSession = refreshError ? null : refreshed.session;
+          }
+        }
+
         if (!active) return;
-        if (error) console.error("[auth] getSession failed", error);
-        setSession(data.session ?? null);
-        setUser(data.session?.user ?? null);
-      })
-      .catch((e) => console.error("[auth] getSession threw", e))
-      .finally(() => active && setLoading(false));
+        setSession(verifiedSession ?? null);
+        setUser(verifiedSession?.user ?? null);
+        if (!verifiedSession) {
+          setProfile(null);
+          setIsAdmin(false);
+          ensuredFor.current = null;
+        }
+      } catch (e) {
+        console.error("[auth] session verification failed", e);
+        if (!active) return;
+        setSession(null);
+        setUser(null);
+        setProfile(null);
+        setIsAdmin(false);
+        ensuredFor.current = null;
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
 
     return () => {
       active = false;
