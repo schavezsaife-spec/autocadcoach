@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useTranslation } from "react-i18next";
@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalizedTroubleshooting } from "@/lib/i18n/content";
 import { GuestGate } from "@/components/coach/GuestGate";
-import { useCoach } from "@/lib/coach-store";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 
@@ -66,9 +65,9 @@ function readStoredMessages(key: string): Msg[] | null {
 }
 
 function CoachPage() {
-  const { state, authLoading } = useCoach();
+  const { session, loading: authLoading } = useAuth();
   const { t } = useTranslation(["chat", "gate"]);
-  const isAuthed = state.profile.isAuthenticated;
+  const isAuthed = Boolean(session?.user);
   return (
     <div className="w-full px-4 sm:px-6 lg:px-10 py-4 md:py-6 pb-6 md:pb-8 flex flex-col min-h-[calc(100dvh-4rem)] md:min-h-0 md:h-dvh" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
       
@@ -108,7 +107,8 @@ function AskAutoCoach() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
+  const { user, session, signOut } = useAuth();
+  const navigate = useNavigate();
   const storageKey = chatStorageKey(user?.id);
   // Hydration happens in an effect, not the useState initializer, so the
   // server-rendered markup and the first client render still agree.
@@ -163,21 +163,30 @@ function AskAutoCoach() {
           body: payload,
         });
 
-      const { data: sessionData } = await supabase.auth.getSession();
-      let res = await post(sessionData.session?.access_token);
+      let res = await post(session?.access_token);
       // A stale/expired access token on a freshly loaded tab returns 401 even
       // though the user is signed in — refresh once and retry before giving up.
       if (res.status === 401) {
-        const { data: refreshed } = await supabase.auth.refreshSession();
+        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
         const freshToken = refreshed.session?.access_token;
-        if (freshToken) res = await post(freshToken);
+        if (!refreshError && freshToken) {
+          res = await post(freshToken);
+        } else {
+          await signOut();
+          toast.error(t("errSignIn"));
+          await navigate({ to: "/auth", search: { redirect: "/chat" } });
+          return;
+        }
       }
       if (!res.ok) {
         const raw = await res.text().catch(() => "");
         console.error("[chat] request failed", res.status, raw);
         let message = t("errGeneric");
         if (res.status === 401) {
-          message = t("errSignIn");
+          await signOut();
+          toast.error(t("errSignIn"));
+          await navigate({ to: "/auth", search: { redirect: "/chat" } });
+          return;
         } else if (res.status === 429) {
           message = t("errRate");
         } else if (res.status === 402) {
