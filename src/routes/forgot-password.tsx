@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { AlertCircle, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import { Logo } from "@/components/coach/Logo";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
-import { AUTH_EMAILS_ENABLED } from "@/lib/auth-flags";
+import { PASSWORD_RESET_ENABLED } from "@/lib/auth-flags";
 
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
@@ -25,6 +25,8 @@ export const Route = createFileRoute("/forgot-password")({
   component: ForgotPasswordPage,
 });
 
+const RESEND_COOLDOWN_SECONDS = 60;
+
 function ForgotPasswordPage() {
   const { t } = useTranslation(["auth", "common"]);
   const { resetPassword } = useAuth();
@@ -32,16 +34,38 @@ function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  function startCooldown() {
+    setCooldown(RESEND_COOLDOWN_SECONDS);
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCooldown((c) => {
+        if (c <= 1) {
+          if (timerRef.current) clearInterval(timerRef.current);
+          timerRef.current = null;
+          return 0;
+        }
+        return c - 1;
+      });
+    }, 1000);
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    // Temporarily disabled because authentication email delivery is unavailable.
-    // Set AUTH_EMAILS_ENABLED to true only after email delivery is configured.
-    if (!AUTH_EMAILS_ENABLED) {
-      console.warn("Authentication emails are currently disabled.");
+    if (!PASSWORD_RESET_ENABLED) {
+      console.warn("Password reset is currently disabled.");
       return;
     }
+    if (cooldown > 0) return;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError(t("auth:errInvalidEmail"));
       return;
@@ -53,7 +77,9 @@ function ForgotPasswordPage() {
         setError(res.error ?? t("auth:errResetFailed"));
         return;
       }
+      // Deliberately generic: never reveal whether the email is registered.
       setSent(true);
+      startCooldown();
       toast.success(t("auth:toastResetLinkSent"));
     } finally {
       setLoading(false);
@@ -72,23 +98,34 @@ function ForgotPasswordPage() {
 
         <div className="rounded-2xl bg-card/80 backdrop-blur border border-border p-6 sm:p-8 shadow-[var(--shadow-glow)]">
           <h1 className="text-2xl font-bold tracking-tight">{t("auth:resetTitle")}</h1>
-          {AUTH_EMAILS_ENABLED && (
-            <p className="text-sm text-muted-foreground mt-1">{t("auth:resetSubtitle")}</p>
-          )}
+          <p className="text-sm text-muted-foreground mt-1">{t("auth:resetSubtitle")}</p>
 
-          {!AUTH_EMAILS_ENABLED ? (
+          {!PASSWORD_RESET_ENABLED ? (
             <div className="mt-6 rounded-lg border border-border bg-secondary/50 p-4 text-sm text-muted-foreground">
               {t("auth:errEmailsUnavailable")}
             </div>
           ) : sent ? (
-            <div className="mt-6 rounded-lg border border-success/30 bg-success/10 p-4 text-sm">
-              <div className="flex items-start gap-2 text-success">
-                <CheckCircle2 className="size-4 mt-0.5" />
-                <div>
-                  <div className="font-medium">{t("auth:resetSent")}</div>
-                  <p className="text-muted-foreground mt-1">{t("auth:resetSentBody", { email })}</p>
+            <div className="mt-6 space-y-4">
+              <div className="rounded-lg border border-success/30 bg-success/10 p-4 text-sm">
+                <div className="flex items-start gap-2 text-success">
+                  <CheckCircle2 className="size-4 mt-0.5" />
+                  <div>
+                    <div className="font-medium">{t("auth:resetSent")}</div>
+                    <p className="text-muted-foreground mt-1">{t("auth:resetSentGeneric")}</p>
+                  </div>
                 </div>
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={cooldown > 0}
+                onClick={() => setSent(false)}
+                className="w-full border-border"
+              >
+                {cooldown > 0
+                  ? t("auth:resendIn", { seconds: cooldown })
+                  : t("auth:sendAnotherLink")}
+              </Button>
             </div>
           ) : (
             <form onSubmit={submit} className="mt-6 space-y-4">
@@ -110,9 +147,9 @@ function ForgotPasswordPage() {
                   className="bg-secondary border-border"
                 />
               </div>
-              <Button type="submit" disabled={loading} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button type="submit" disabled={loading || cooldown > 0} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                 {loading && <Loader2 className="size-4 mr-2 animate-spin" />}
-                {t("auth:sendResetLink")}
+                {cooldown > 0 ? t("auth:resendIn", { seconds: cooldown }) : t("auth:sendResetLink")}
               </Button>
             </form>
           )}
