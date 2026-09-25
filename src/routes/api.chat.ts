@@ -87,8 +87,34 @@ export const Route = createFileRoute("/api/chat")({
           );
         }
 
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) {
+        // Providers in priority order: direct Gemini first, Lovable gateway as fallback.
+        // Both speak the OpenAI chat-completions format.
+        const providers: {
+          name: string;
+          url: string;
+          headers: Record<string, string>;
+          model: string;
+        }[] = [];
+        const geminiKey = process.env.GEMINI_API_KEY;
+        if (geminiKey) {
+          providers.push({
+            name: "gemini",
+            url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+            headers: { Authorization: `Bearer ${geminiKey}` },
+            model: "gemini-2.5-flash",
+          });
+        }
+        const lovableKey = process.env.LOVABLE_API_KEY;
+        if (lovableKey) {
+          providers.push({
+            name: "lovable",
+            url: "https://ai.gateway.lovable.dev/v1/chat/completions",
+            headers: { "Lovable-API-Key": lovableKey },
+            model: "google/gemini-2.5-flash",
+          });
+        }
+        if (providers.length === 0) {
+          console.error("[api/chat] no AI provider configured (GEMINI_API_KEY / LOVABLE_API_KEY)");
           return Response.json(
             { error: "AutoCoach hit a snag — please try again." },
             { status: 500 },
@@ -103,29 +129,37 @@ export const Route = createFileRoute("/api/chat")({
             : "\n\n## Language\n- Respond in English.";
         const systemContent = SYSTEM + languageInstruction;
 
-        const callGateway = () =>
-          fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        const callProvider = (p: (typeof providers)[number]) =>
+          fetch(p.url, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Lovable-API-Key": key,
-            },
+            headers: { "Content-Type": "application/json", ...p.headers },
             body: JSON.stringify({
-              model: "google/gemini-2.5-flash",
+              model: p.model,
               messages: [{ role: "system", content: systemContent }, ...messages],
             }),
           });
 
-        let res: Response;
-        try {
-          res = await callGateway();
-          if (res.status >= 500) {
-            const rawFirst = await res.text().catch(() => "");
-            console.error("[api/chat] gateway 5xx, retrying once:", res.status, rawFirst);
-            res = await callGateway();
+        // Try each provider (retrying once on 5xx); fall through to the next on any failure.
+        let res: Response | undefined;
+        for (const p of providers) {
+          try {
+            res = await callProvider(p);
+            if (res.status >= 500) {
+              const rawFirst = await res.text().catch(() => "");
+              console.error(`[api/chat] ${p.name} 5xx, retrying once:`, res.status, rawFirst);
+              res = await callProvider(p);
+            }
+          } catch (err) {
+            console.error(`[api/chat] ${p.name} network error:`, err);
+            res = undefined;
+            continue;
           }
-        } catch (err) {
-          console.error("[api/chat] network error:", err);
+          if (res.ok) break;
+          const raw = await res.text().catch(() => "");
+          console.error(`[api/chat] ${p.name} error`, res.status, raw);
+        }
+
+        if (!res) {
           return Response.json(
             { error: "AutoCoach hit a snag — please try again." },
             { status: 502 },
@@ -133,8 +167,6 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         if (!res.ok) {
-          const raw = await res.text().catch(() => "");
-          console.error("[api/chat] gateway error", res.status, raw);
           let message = "AutoCoach hit a snag — please try again.";
           if (res.status === 429) {
             message = "AutoCoach is getting a lot of questions — try again shortly.";
