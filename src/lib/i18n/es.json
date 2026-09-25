@@ -146,7 +146,11 @@
     "errPasswordPwned": "Tu contraseña no cumple con los requisitos de seguridad.",
     "errPasswordWeak": "Tu contraseña no cumple con los requisitos de seguridad.",
     "errNoAutoActivation": "No se pudo activar tu cuenta automáticamente. Comunícate con el soporte de AutoCAD Coach para recibir ayuda.",
-    "errEmailsUnavailable": "La recuperación de contraseña no está disponible temporalmente. Comunícate con el soporte de AutoCAD Coach para recibir ayuda."
+    "errEmailsUnavailable": "La recuperación de contraseña no está disponible temporalmente. Comunícate con el soporte de AutoCAD Coach para recibir ayuda.",
+    "resetSentGeneric": "Si existe una cuenta con ese correo, te enviamos un enlace para restablecer la contraseña. Revisa tu bandeja de entrada y la carpeta de spam.",
+    "resendIn": "Puedes pedir otro enlace en {{seconds}} s",
+    "sendAnotherLink": "Enviar otro enlace",
+    "requestNewLink": "Solicitar un nuevo enlace"
   },
   "dashboard": {
     "title": "Panel",
@@ -370,7 +374,13 @@
     "accountDeleted": "Tu cuenta ha sido eliminada.",
     "deleteFailed": "No se pudo eliminar la cuenta. Contacta con schavezsaife@gmail.com.",
     "firstNameEmailRequired": "El nombre y el correo son obligatorios",
-    "profileUpdated": "Perfil actualizado"
+    "profileUpdated": "Perfil actualizado",
+    "changePassword": "Cambiar contraseña",
+    "changePasswordBody": "Ingresa tu contraseña actual para establecer una nueva.",
+    "currentPassword": "Contraseña actual",
+    "passwordChanged": "Contraseña actualizada correctamente.",
+    "passwordChangeFailed": "No se pudo actualizar tu contraseña. Inténtalo de nuevo.",
+    "errCurrentPasswordWrong": "Tu contraseña actual es incorrecta."
   },
   "trust": {
     "title": "Confianza y seguridad",

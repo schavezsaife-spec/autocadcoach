@@ -12,7 +12,7 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import i18n from "@/lib/i18n";
-import { AUTH_EMAILS_ENABLED, GOOGLE_AUTH_ENABLED } from "@/lib/auth-flags";
+import { AUTH_EMAILS_ENABLED, GOOGLE_AUTH_ENABLED, PASSWORD_RESET_ENABLED } from "@/lib/auth-flags";
 
 export type AuthProfile = {
   id: string;
@@ -320,10 +320,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const resetPassword = useCallback<AuthCtx["resetPassword"]>(async (rawEmail) => {
-    // Temporarily disabled because authentication email delivery is unavailable.
-    // Set AUTH_EMAILS_ENABLED to true only after email delivery is configured.
-    if (!AUTH_EMAILS_ENABLED) {
-      console.warn("Authentication emails are currently disabled.");
+    // Password reset uses the default Lovable Cloud auth email sender and is
+    // decoupled from AUTH_EMAILS_ENABLED (which still gates signup emails).
+    if (!PASSWORD_RESET_ENABLED) {
+      console.warn("Password reset is currently disabled.");
       return { ok: false, error: tr("errEmailsUnavailable") };
     }
     const email = rawEmail.trim().toLowerCase();

@@ -35,20 +35,50 @@ function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Supabase exchanges the recovery token from the URL hash for a session
-  // automatically. The form only opens once that recovery session exists —
-  // without it `updateUser` cannot possibly succeed.
+  // The form only opens when this page was reached via a genuine recovery
+  // link: a PASSWORD_RECOVERY auth event, a hash token (type=recovery), or a
+  // PKCE ?code= parameter. A plain signed-in user landing here is sent to
+  // /profile instead; anyone else sees the "link invalid" state.
   useEffect(() => {
     let cancelled = false;
-    supabase.auth.getSession().then(({ data }) => {
-      if (!cancelled && data.session) setReady(true);
-    });
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("code");
+    const hash = window.location.hash;
+    const hasRecoveryToken = hash.includes("type=recovery") || hash.includes("access_token");
+
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (cancelled) return;
-      if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) {
+      if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session && hasRecoveryToken)) {
         setReady(true);
       }
     });
+
+    (async () => {
+      if (code) {
+        // PKCE recovery link: exchange the code for a recovery session.
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (cancelled) return;
+        if (error) setInvalid(true);
+        else setReady(true);
+        return;
+      }
+      if (hasRecoveryToken) {
+        // Hash-token link: the client exchanges it automatically; the event
+        // listener above flips `ready`. getSession covers the already-done case.
+        const { data } = await supabase.auth.getSession();
+        if (!cancelled && data.session) setReady(true);
+        return;
+      }
+      // No recovery hint in the URL at all.
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
+      if (data.session) {
+        navigate({ to: "/profile", replace: true });
+      } else {
+        setInvalid(true);
+      }
+    })();
+
     // If no recovery session materialises the link was bad or expired.
     const timer = setTimeout(() => {
       if (cancelled) return;
@@ -56,13 +86,13 @@ function ResetPasswordPage() {
         if (!r) setInvalid(true);
         return r;
       });
-    }, 4000);
+    }, 6000);
     return () => {
       cancelled = true;
       sub.subscription.unsubscribe();
       clearTimeout(timer);
     };
-  }, []);
+  }, [navigate]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -107,12 +137,21 @@ function ResetPasswordPage() {
           <p className="text-sm text-muted-foreground mt-1">{t("auth:chooseNewPasswordSubtitle")}</p>
 
           {invalid && !ready ? (
-            <div
-              role="alert"
-              className="mt-6 flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-            >
-              <AlertCircle className="size-4 mt-0.5 shrink-0" />
-              <span>{t("auth:resetLinkInvalid")}</span>
+            <div className="mt-6 space-y-4">
+              <div
+                role="alert"
+                className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+              >
+                <AlertCircle className="size-4 mt-0.5 shrink-0" />
+                <span>{t("auth:resetLinkInvalid")}</span>
+              </div>
+              <Button
+                type="button"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={() => navigate({ to: "/forgot-password" })}
+              >
+                {t("auth:requestNewLink")}
+              </Button>
             </div>
           ) : !ready ? (
             <div className="mt-8 flex items-center justify-center gap-2 text-sm text-muted-foreground">

@@ -3,9 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useCoach } from "@/lib/coach-store";
+import { useAuth } from "@/lib/auth-context";
 import { lessons, projects } from "@/lib/coach-data";
-import { Trophy, Flame, BookOpen, Wrench, Target, CheckCircle2, Camera, Trash2, AlertTriangle, Loader2 } from "lucide-react";
+import { Trophy, Flame, BookOpen, Wrench, Target, CheckCircle2, Camera, Trash2, AlertTriangle, Loader2, KeyRound, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProfileAvatar } from "@/components/coach/ProfileAvatar";
 import { EditProfileForm } from "@/components/coach/EditProfileForm";
@@ -191,6 +195,9 @@ function ProfilePage() {
         <EditProfileForm />
       </div>
 
+      {/* Change password (email/password users only) */}
+      <ChangePasswordCard />
+
       {/* Completed lessons */}
       <div className="rounded-2xl bg-card border border-border p-5">
         <div className="flex items-center justify-between mb-4">
@@ -296,6 +303,124 @@ function ProfilePage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function ChangePasswordCard() {
+  const { t } = useTranslation(["profile", "auth", "common"]);
+  const { user } = useAuth();
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [show, setShow] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Only email/password accounts can change a password here; OAuth-only users
+  // (e.g. Google) manage credentials with their provider.
+  const isEmailUser =
+    user?.app_metadata?.provider === "email" ||
+    (user?.identities ?? []).some((id) => id.provider === "email");
+  if (!user?.email || !isEmailUser) return null;
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (next.length < 6) {
+      toast.error(t("auth:errPasswordShort"));
+      return;
+    }
+    if (next !== confirm) {
+      toast.error(t("auth:errPasswordsMismatch"));
+      return;
+    }
+    setSaving(true);
+    try {
+      // Verify the current password before allowing the change.
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: user!.email!,
+        password: current,
+      });
+      if (verifyError) {
+        toast.error(t("profile:errCurrentPasswordWrong"));
+        return;
+      }
+      const { error } = await supabase.auth.updateUser({ password: next });
+      if (error) throw error;
+      toast.success(t("profile:passwordChanged"));
+      setCurrent("");
+      setNext("");
+      setConfirm("");
+    } catch (err) {
+      console.error("[profile] password change failed", err);
+      toast.error(t("profile:passwordChangeFailed"));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl bg-card border border-border p-5">
+      <div className="flex items-center gap-2 font-semibold mb-1">
+        <KeyRound className="size-4 text-primary" />
+        {t("profile:changePassword")}
+      </div>
+      <p className="text-sm text-muted-foreground mb-4">{t("profile:changePasswordBody")}</p>
+      <form onSubmit={submit} className="space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="currentPw">{t("profile:currentPassword")}</Label>
+          <div className="relative">
+            <Input
+              id="currentPw"
+              type={show ? "text" : "password"}
+              required
+              value={current}
+              onChange={(e) => setCurrent(e.target.value)}
+              autoComplete="current-password"
+              className="bg-secondary border-border pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShow((v) => !v)}
+              className="absolute inset-y-0 right-0 px-3 grid place-items-center text-muted-foreground hover:text-foreground"
+              aria-label={show ? t("common:hidePassword") : t("common:showPassword")}
+            >
+              {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            </button>
+          </div>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="newPw">{t("auth:newPassword")}</Label>
+            <Input
+              id="newPw"
+              type={show ? "text" : "password"}
+              required
+              minLength={6}
+              value={next}
+              onChange={(e) => setNext(e.target.value)}
+              autoComplete="new-password"
+              className="bg-secondary border-border"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="confirmPw">{t("auth:confirmNewPassword")}</Label>
+            <Input
+              id="confirmPw"
+              type={show ? "text" : "password"}
+              required
+              minLength={6}
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              autoComplete="new-password"
+              className="bg-secondary border-border"
+            />
+          </div>
+        </div>
+        <Button type="submit" disabled={saving} className="bg-primary text-primary-foreground hover:bg-primary/90">
+          {saving && <Loader2 className="size-4 mr-2 animate-spin" />}
+          {t("profile:changePassword")}
+        </Button>
+      </form>
     </div>
   );
 }

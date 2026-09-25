@@ -146,7 +146,11 @@
     "errPasswordPwned": "Your password does not meet the security requirements.",
     "errPasswordWeak": "Your password does not meet the security requirements.",
     "errNoAutoActivation": "Your account could not be activated automatically. Please contact AutoCAD Coach support for assistance.",
-    "errEmailsUnavailable": "Password recovery is temporarily unavailable. Please contact AutoCAD Coach support for assistance."
+    "errEmailsUnavailable": "Password recovery is temporarily unavailable. Please contact AutoCAD Coach support for assistance.",
+    "resetSentGeneric": "If an account exists for that email, we've sent a password reset link. Check your inbox and spam folder.",
+    "resendIn": "You can request another link in {{seconds}}s",
+    "sendAnotherLink": "Send another link",
+    "requestNewLink": "Request a new reset link"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -370,7 +374,13 @@
     "accountDeleted": "Your account has been deleted.",
     "deleteFailed": "Could not delete account. Please contact schavezsaife@gmail.com.",
     "firstNameEmailRequired": "First name and email are required",
-    "profileUpdated": "Profile updated"
+    "profileUpdated": "Profile updated",
+    "changePassword": "Change password",
+    "changePasswordBody": "Enter your current password to set a new one.",
+    "currentPassword": "Current password",
+    "passwordChanged": "Password updated successfully.",
+    "passwordChangeFailed": "Couldn't update your password. Please try again.",
+    "errCurrentPasswordWrong": "Your current password is incorrect."
   },
   "trust": {
     "title": "Trust & Security",
