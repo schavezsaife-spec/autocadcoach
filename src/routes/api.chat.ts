@@ -54,9 +54,13 @@ export const Route = createFileRoute("/api/chat")({
     handlers: {
       POST: async ({ request }) => {
         // 1. Verify Supabase session via Bearer token.
-        const SUPABASE_URL = process.env.SUPABASE_URL;
-        const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+        // Fall back to the build-time VITE_* values: the deployed Worker may not have the
+        // non-prefixed vars set at runtime, and both values are public anyway.
+        const SUPABASE_URL = process.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
+        const SUPABASE_PUBLISHABLE_KEY =
+          process.env.SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
         if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+          console.error("[api/chat] missing SUPABASE_URL / SUPABASE_PUBLISHABLE_KEY");
           return Response.json({ error: "Server misconfigured." }, { status: 500 });
         }
         const authHeader = request.headers.get("authorization") ?? "";
