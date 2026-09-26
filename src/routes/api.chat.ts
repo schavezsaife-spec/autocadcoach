@@ -54,8 +54,9 @@ export const Route = createFileRoute("/api/chat")({
     handlers: {
       POST: async ({ request }) => {
         // 1. Verify Supabase session via Bearer token.
-        const SUPABASE_URL = process.env.SUPABASE_URL;
-        const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+        const SUPABASE_URL = process.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
+        const SUPABASE_PUBLISHABLE_KEY =
+          process.env.SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
         if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
           return Response.json({ error: "Server misconfigured." }, { status: 500 });
         }
@@ -87,66 +88,60 @@ export const Route = createFileRoute("/api/chat")({
           );
         }
 
-        const key = process.env.LOVABLE_API_KEY;
+        const key = process.env.GEMINI_API_KEY;
         if (!key) {
-          return Response.json(
-            { error: "AutoCoach hit a snag — please try again." },
-            { status: 500 },
-          );
+          console.error("[api/chat] GEMINI_API_KEY not set");
+          return Response.json({ error: "AutoCoach isn't configured yet." }, { status: 500 });
         }
-        const body = (await request.json()) as { messages: Msg[]; language?: string };
-        const messages = body.messages;
+        let body: { messages?: Msg[]; language?: string };
+        try {
+          body = await request.json();
+        } catch {
+          return Response.json({ error: "Invalid request." }, { status: 400 });
+        }
+        const messages = (Array.isArray(body.messages) ? body.messages : [])
+          .filter((m) => (m?.role === "user" || m?.role === "assistant") && typeof m.content === "string")
+          .slice(-20);
         const lang = body.language === "es" ? "es" : "en";
-        const languageInstruction =
-          lang === "es"
+        const systemContent =
+          SYSTEM +
+          (lang === "es"
             ? "\n\n## Language\n- Respond in Spanish (español). Keep AutoCAD command names in uppercase English (e.g. `TRIM`, `EXTRUDE`). Translate all explanatory prose."
-            : "\n\n## Language\n- Respond in English.";
-        const systemContent = SYSTEM + languageInstruction;
-
-        const callGateway = () =>
-          fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            : "\n\n## Language\n- Respond in English.");
+        const call = () =>
+          fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Lovable-API-Key": key,
-            },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
             body: JSON.stringify({
-              model: "google/gemini-2.5-flash",
+              model: "gemini-2.5-flash",
               messages: [{ role: "system", content: systemContent }, ...messages],
             }),
           });
-
         let res: Response;
         try {
-          res = await callGateway();
-          if (res.status >= 500) {
-            const rawFirst = await res.text().catch(() => "");
-            console.error("[api/chat] gateway 5xx, retrying once:", res.status, rawFirst);
-            res = await callGateway();
-          }
+          res = await call();
+          if (res.status >= 500) res = await call();
         } catch (err) {
           console.error("[api/chat] network error:", err);
-          return Response.json(
-            { error: "AutoCoach hit a snag — please try again." },
-            { status: 502 },
-          );
+          return Response.json({ error: "AutoCoach hit a snag — please try again." }, { status: 502 });
         }
-
         if (!res.ok) {
-          const raw = await res.text().catch(() => "");
-          console.error("[api/chat] gateway error", res.status, raw);
-          let message = "AutoCoach hit a snag — please try again.";
-          if (res.status === 429) {
-            message = "AutoCoach is getting a lot of questions — try again shortly.";
-          } else if (res.status === 402) {
-            message = "AutoCoach is temporarily out of AI credits.";
-          }
-          return Response.json({ error: message }, { status: res.status });
+          console.error("[api/chat] gemini error", res.status, await res.text().catch(() => ""));
+          if (res.status === 429)
+            return Response.json(
+              { error: "AutoCoach is getting a lot of questions — try again shortly." },
+              { status: 429 },
+            );
+          return Response.json({ error: "AutoCoach hit a snag — please try again." }, { status: 502 });
         }
-
-        const data = await res.json();
-        const reply: string = data?.choices?.[0]?.message?.content ?? "Sorry, I didn't catch that.";
-        return Response.json({ reply });
+        try {
+          const data = await res.json();
+          return Response.json({
+            reply: data?.choices?.[0]?.message?.content ?? "Sorry, I didn't catch that.",
+          });
+        } catch {
+          return Response.json({ error: "AutoCoach hit a snag — please try again." }, { status: 502 });
+        }
       },
     },
   },
