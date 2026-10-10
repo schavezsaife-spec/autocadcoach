@@ -3,6 +3,12 @@ import { createClient } from "@supabase/supabase-js";
 
 type Msg = { role: "user" | "assistant" | "system"; content: string };
 
+// gemini-2.5-flash is now limited to legacy users; Google recommends 3.8 Flash for new projects.
+const GEMINI_MODEL = "gemini-3.8-flash";
+const GEMINI_TIMEOUT_MS = 25_000;
+const MAX_BODY_BYTES = 32 * 1024;
+const MAX_MESSAGE_CHARS = 4_000;
+
 const SYSTEM = `You are AutoCoach, an expert AutoCAD tutor built into AutoCAD Coach — a beginner-friendly learning platform. You are knowledgeable, encouraging, and precise.
 
 ## Your persona
@@ -93,15 +99,32 @@ export const Route = createFileRoute("/api/chat")({
           console.error("[api/chat] GEMINI_API_KEY not set");
           return Response.json({ error: "AutoCoach isn't configured yet." }, { status: 500 });
         }
+        const snag = () =>
+          Response.json({ error: "AutoCoach hit a snag — please try again." }, { status: 502 });
+        const invalid = () => Response.json({ error: "Invalid request." }, { status: 400 });
+        const tooLarge = () => Response.json({ error: "Message too long." }, { status: 413 });
+
+        const declared = Number(request.headers.get("content-length") ?? "0");
+        if (declared > MAX_BODY_BYTES) return tooLarge();
+        let rawBody: string;
+        try {
+          rawBody = await request.text();
+        } catch {
+          return invalid();
+        }
+        if (new TextEncoder().encode(rawBody).length > MAX_BODY_BYTES) return tooLarge();
         let body: { messages?: Msg[]; language?: string };
         try {
-          body = await request.json();
+          body = JSON.parse(rawBody);
         } catch {
-          return Response.json({ error: "Invalid request." }, { status: 400 });
+          return invalid();
         }
-        const messages = (Array.isArray(body.messages) ? body.messages : [])
+        const messages = (Array.isArray(body?.messages) ? body.messages : [])
           .filter((m) => (m?.role === "user" || m?.role === "assistant") && typeof m.content === "string")
+          .map((m) => ({ role: m.role, content: m.content.trim().slice(0, MAX_MESSAGE_CHARS) }))
+          .filter((m) => m.content.length > 0)
           .slice(-20);
+        if (messages.length === 0 || messages[messages.length - 1].role !== "user") return invalid();
         const lang = body.language === "es" ? "es" : "en";
         const systemContent =
           SYSTEM +
@@ -113,34 +136,60 @@ export const Route = createFileRoute("/api/chat")({
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
             body: JSON.stringify({
-              model: "gemini-2.5-flash",
+              model: GEMINI_MODEL,
               messages: [{ role: "system", content: systemContent }, ...messages],
             }),
+            signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
           });
-        let res: Response;
-        try {
-          res = await call();
-          if (res.status >= 500) res = await call();
-        } catch (err) {
-          console.error("[api/chat] network error:", err);
-          return Response.json({ error: "AutoCoach hit a snag — please try again." }, { status: 502 });
+        const isTimeout = (err: unknown) =>
+          err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
+        const timeoutResponse = () =>
+          Response.json({ error: "AutoCoach took too long — please try again." }, { status: 504 });
+
+        let res: Response | undefined;
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            res = await call();
+            if (res.status < 500) break;
+            console.error("[api/chat] gemini server error", res.status, "attempt", attempt + 1);
+          } catch (err) {
+            if (isTimeout(err)) {
+              console.error("[api/chat] gemini timeout, attempt", attempt + 1);
+              if (attempt === 1) return timeoutResponse();
+            } else {
+              console.error("[api/chat] network error, attempt", attempt + 1, (err as Error)?.name);
+              if (attempt === 1) return snag();
+            }
+            res = undefined;
+          }
         }
+        if (!res) return snag();
         if (!res.ok) {
-          console.error("[api/chat] gemini error", res.status, await res.text().catch(() => ""));
-          if (res.status === 429)
+          const errBody = await res.text().catch(() => "");
+          if (res.status === 429) {
+            console.error("[api/chat] gemini rate limited 429", errBody);
             return Response.json(
               { error: "AutoCoach is getting a lot of questions — try again shortly." },
               { status: 429 },
             );
-          return Response.json({ error: "AutoCoach hit a snag — please try again." }, { status: 502 });
+          }
+          if (res.status === 404) console.error("[api/chat] model not found", GEMINI_MODEL, errBody);
+          else if (res.status === 400 || res.status === 401 || res.status === 403)
+            console.error(`[api/chat] gemini rejected key or request ${res.status}`, errBody);
+          else console.error("[api/chat] gemini error", res.status, errBody);
+          return snag();
         }
         try {
           const data = await res.json();
-          return Response.json({
-            reply: data?.choices?.[0]?.message?.content ?? "Sorry, I didn't catch that.",
-          });
-        } catch {
-          return Response.json({ error: "AutoCoach hit a snag — please try again." }, { status: 502 });
+          const reply = data?.choices?.[0]?.message?.content;
+          if (typeof reply !== "string" || !reply.trim()) {
+            console.error("[api/chat] empty reply from gemini");
+            return snag();
+          }
+          return Response.json({ reply });
+        } catch (err) {
+          if (isTimeout(err)) return timeoutResponse();
+          return snag();
         }
       },
     },
