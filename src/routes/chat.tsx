@@ -186,14 +186,6 @@ function AskAutoCoach() {
           statusText: res.statusText,
           body: raw,
         });
-        let reason = raw.slice(0, 160);
-        try {
-          const parsed = JSON.parse(raw);
-          if (parsed?.error) reason = String(parsed.error);
-        } catch {
-          // non-JSON error body (HTML page / plain text) — keep the raw snippet
-        }
-        if (!reason) reason = res.statusText || "unknown error";
         let message = t("errGeneric");
         if (res.status === 401) {
           await signOut();
@@ -202,13 +194,15 @@ function AskAutoCoach() {
           return;
         } else if (res.status === 429) {
           message = t("errRate");
-        } else if (res.status === 402) {
-          message = t("errCredits");
+        } else if (res.status === 413) {
+          message = t("errTooLong");
+        } else if (res.status === 504) {
+          message = t("errTimeout");
         }
         toast.error(message);
         setMessages((m) => [
           ...m,
-          { role: "assistant", content: `${t("errReply")} (${res.status} — ${reason})` },
+          { role: "assistant", content: `${t("errReply")} (${t("errStatus", { status: res.status })})` },
         ]);
       } else {
         const data = await res.json();
