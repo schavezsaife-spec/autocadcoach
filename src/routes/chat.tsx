@@ -308,6 +308,7 @@ function AskAutoCoach() {
           onChange={(e) => setInput(e.target.value)}
           placeholder={t("placeholder")}
           aria-label={t("placeholder")}
+          maxLength={4000}
           className="bg-card border-primary/30 focus-visible:border-primary/60"
           disabled={loading}
         />
