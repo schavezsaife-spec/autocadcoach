@@ -9,77 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as CertificationRouteImport } from './routes/certification'
-import { Route as ChatRouteImport } from './routes/chat'
-import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as LessonEditorRouteImport } from './routes/lesson-editor'
-import { Route as LessonsRouteImport } from './routes/lessons'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as ProjectsRouteImport } from './routes/projects'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TrustRouteImport } from './routes/trust'
-import { Route as ApiChatRouteImport } from './routes/api.chat'
-import { Route as AuthCallbackRouteImport } from './routes/auth_.callback'
-import { Route as LessonsIdRouteImport } from './routes/lessons.$id'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ProjectsRouteImport } from './routes/projects'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as LessonsRouteImport } from './routes/lessons'
+import { Route as LessonEditorRouteImport } from './routes/lesson-editor'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ChatRouteImport } from './routes/chat'
+import { Route as CertificationRouteImport } from './routes/certification'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
+import { Route as LessonsIdRouteImport } from './routes/lessons.$id'
+import { Route as AuthCallbackRouteImport } from './routes/auth_.callback'
+import { Route as ApiChatRouteImport } from './routes/api.chat'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CertificationRoute = CertificationRouteImport.update({
-  id: '/certification',
-  path: '/certification',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChatRoute = ChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LessonEditorRoute = LessonEditorRouteImport.update({
-  id: '/lesson-editor',
-  path: '/lesson-editor',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LessonsRoute = LessonsRouteImport.update({
-  id: '/lessons',
-  path: '/lessons',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsRoute = ProjectsRouteImport.update({
-  id: '/projects',
-  path: '/projects',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
+const TrustRoute = TrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -87,30 +37,80 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TrustRoute = TrustRouteImport.update({
-  id: '/trust',
-  path: '/trust',
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiChatRoute = ApiChatRouteImport.update({
-  id: '/api/chat',
-  path: '/api/chat',
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthCallbackRoute = AuthCallbackRouteImport.update({
-  id: '/auth_/callback',
-  path: '/auth/callback',
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
+} as any)
+const LessonsRoute = LessonsRouteImport.update({
+  id: '/lessons',
+  path: '/lessons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LessonEditorRoute = LessonEditorRouteImport.update({
+  id: '/lesson-editor',
+  path: '/lesson-editor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CertificationRoute = CertificationRouteImport.update({
+  id: '/certification',
+  path: '/certification',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsIdRoute = ProjectsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ProjectsRoute,
 } as any)
 const LessonsIdRoute = LessonsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => LessonsRoute,
 } as any)
-const ProjectsIdRoute = ProjectsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => ProjectsRoute,
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth_/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -251,81 +251,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/certification': {
-      id: '/certification'
-      path: '/certification'
-      fullPath: '/certification'
-      preLoaderRoute: typeof CertificationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/chat': {
-      id: '/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ChatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lesson-editor': {
-      id: '/lesson-editor'
-      path: '/lesson-editor'
-      fullPath: '/lesson-editor'
-      preLoaderRoute: typeof LessonEditorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lessons': {
-      id: '/lessons'
-      path: '/lessons'
-      fullPath: '/lessons'
-      preLoaderRoute: typeof LessonsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/profile': {
-      id: '/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projects': {
-      id: '/projects'
-      path: '/projects'
-      fullPath: '/projects'
-      preLoaderRoute: typeof ProjectsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
+    '/trust': {
+      id: '/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof TrustRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -335,26 +265,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/trust': {
-      id: '/trust'
-      path: '/trust'
-      fullPath: '/trust'
-      preLoaderRoute: typeof TrustRouteImport
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatRouteImport
+    '/projects': {
+      id: '/projects'
+      path: '/projects'
+      fullPath: '/projects'
+      preLoaderRoute: typeof ProjectsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth_/callback': {
-      id: '/auth_/callback'
-      path: '/auth/callback'
-      fullPath: '/auth/callback'
-      preLoaderRoute: typeof AuthCallbackRouteImport
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/lessons': {
+      id: '/lessons'
+      path: '/lessons'
+      fullPath: '/lessons'
+      preLoaderRoute: typeof LessonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lesson-editor': {
+      id: '/lesson-editor'
+      path: '/lesson-editor'
+      fullPath: '/lesson-editor'
+      preLoaderRoute: typeof LessonEditorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/certification': {
+      id: '/certification'
+      path: '/certification'
+      fullPath: '/certification'
+      preLoaderRoute: typeof CertificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/$id': {
+      id: '/projects/$id'
+      path: '/$id'
+      fullPath: '/projects/$id'
+      preLoaderRoute: typeof ProjectsIdRouteImport
+      parentRoute: typeof ProjectsRoute
     }
     '/lessons/$id': {
       id: '/lessons/$id'
@@ -363,12 +356,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonsIdRouteImport
       parentRoute: typeof LessonsRoute
     }
-    '/projects/$id': {
-      id: '/projects/$id'
-      path: '/$id'
-      fullPath: '/projects/$id'
-      preLoaderRoute: typeof ProjectsIdRouteImport
-      parentRoute: typeof ProjectsRoute
+    '/auth_/callback': {
+      id: '/auth_/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
