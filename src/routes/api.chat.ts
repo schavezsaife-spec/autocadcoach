@@ -5,7 +5,7 @@ type Msg = { role: "user" | "assistant" | "system"; content: string };
 
 // gemini-2.5-flash is now limited to legacy users; Google recommends 3.8 Flash for new projects.
 const GEMINI_MODEL = "gemini-3.8-flash";
-const GEMINI_TIMEOUT_MS = 25_000;
+const GEMINI_TIMEOUT_MS = 45_000;
 const MAX_BODY_BYTES = 160 * 1024;
 const MAX_MESSAGE_CHARS = 4_000;
 
@@ -137,6 +137,7 @@ export const Route = createFileRoute("/api/chat")({
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
             body: JSON.stringify({
               model: GEMINI_MODEL,
+              reasoning_effort: "low",
               messages: [{ role: "system", content: systemContent }, ...messages],
             }),
             signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
@@ -148,14 +149,16 @@ export const Route = createFileRoute("/api/chat")({
 
         let res: Response | undefined;
         for (let attempt = 0; attempt < 2; attempt++) {
+          const started = Date.now();
           try {
             res = await call();
+            console.log("[api/chat] gemini ms", Date.now() - started, "status", res.status);
             if (res.status < 500) break;
             console.error("[api/chat] gemini server error", res.status, "attempt", attempt + 1);
           } catch (err) {
             if (isTimeout(err)) {
-              console.error("[api/chat] gemini timeout, attempt", attempt + 1);
-              if (attempt === 1) return timeoutResponse();
+              console.error("[api/chat] gemini timeout, attempt", attempt + 1, "ms", Date.now() - started);
+              return timeoutResponse(); // never retry a timeout
             } else {
               console.error("[api/chat] network error, attempt", attempt + 1, (err as Error)?.name);
               if (attempt === 1) return snag();
