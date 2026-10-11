@@ -29,7 +29,7 @@ export const Route = createFileRoute("/chat")({
   component: CoachPage,
 });
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { role: "user" | "assistant"; content: string; error?: boolean };
 
 /**
  * The transcript lives in sessionStorage because Radix unmounts the inactive
@@ -149,8 +149,15 @@ function AskAutoCoach() {
     setInput("");
     setLoading(true);
     try {
+      // Send only real conversation turns: skip the opening greeting (index 0)
+      // and our own error bubbles, keep the last 20, each capped at 4,000 chars.
+      const apiMessages = newMsgs
+        .filter((m, i) => !(i === 0 && m.role === "assistant"))
+        .filter((m) => (m.role === "user" || m.role === "assistant") && !m.error)
+        .slice(-20)
+        .map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }));
       const payload = JSON.stringify({
-        messages: newMsgs,
+        messages: apiMessages,
         language: i18nHook.language?.startsWith("es") ? "es" : "en",
       });
       const post = (token: string | undefined) =>
@@ -202,7 +209,7 @@ function AskAutoCoach() {
         toast.error(message);
         setMessages((m) => [
           ...m,
-          { role: "assistant", content: `${t("errReply")} (${t("errStatus", { status: res.status })})` },
+          { role: "assistant", content: `${t("errReply")} (${t("errStatus", { status: res.status })})`, error: true },
         ]);
       } else {
         const data = await res.json();

@@ -6,7 +6,7 @@ type Msg = { role: "user" | "assistant" | "system"; content: string };
 // gemini-2.5-flash is now limited to legacy users; Google recommends 3.8 Flash for new projects.
 const GEMINI_MODEL = "gemini-3.8-flash";
 const GEMINI_TIMEOUT_MS = 25_000;
-const MAX_BODY_BYTES = 32 * 1024;
+const MAX_BODY_BYTES = 160 * 1024;
 const MAX_MESSAGE_CHARS = 4_000;
 
 const SYSTEM = `You are AutoCoach, an expert AutoCAD tutor built into AutoCAD Coach — a beginner-friendly learning platform. You are knowledgeable, encouraging, and precise.
