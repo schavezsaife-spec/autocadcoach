@@ -13,6 +13,7 @@ import { useLocalizedTroubleshooting } from "@/lib/i18n/content";
 import { GuestGate } from "@/components/coach/GuestGate";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
+import { TrademarkNotice } from "@/components/coach/TrademarkNotice";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({
@@ -90,6 +91,7 @@ function CoachPage() {
           <TroubleshootGrid />
         </TabsContent>
       </Tabs>
+      <TrademarkNotice className="mt-3 shrink-0 text-center" />
     </div>
   );
 }

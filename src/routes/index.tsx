@@ -23,6 +23,7 @@ import { Logo, LogoMark } from "@/components/coach/Logo";
 import { LegalModal, useLegal } from "@/components/coach/LegalModal";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
+import { TrademarkNotice } from "@/components/coach/TrademarkNotice";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -698,6 +699,7 @@ function Footer({ legal }: { legal: ReturnType<typeof useLegal> }) {
             <span className="text-[11px] tabular-nums">v1.0</span>
           </div>
         </div>
+        <TrademarkNotice className="mt-6 text-center sm:text-left" />
       </div>
     </footer>
   );

@@ -17,6 +17,7 @@ import { CoachProvider } from "../lib/coach-store";
 import { AuthProvider } from "../lib/auth-context";
 import { AppShell } from "../components/coach/AppShell";
 import { Toaster } from "../components/ui/sonner";
+import { TrademarkFooter } from "../components/coach/TrademarkNotice";
 import "../lib/i18n";
 import i18n from "../lib/i18n";
 import { useTranslation } from "react-i18next";
@@ -53,6 +54,7 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
+    <>
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("errorTitle")}</h1>
@@ -78,6 +80,8 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
         </div>
       </div>
     </div>
+    <TrademarkFooter />
+    </>
   );
 }
 
@@ -150,6 +154,9 @@ function RootComponent() {
 // Routes that render WITHOUT the AppShell sidebar layout
 const PUBLIC_ROUTES = ["/", "/trust"];
 
+// Routes that render the trademark notice inside their own layout
+const ROUTES_WITH_OWN_NOTICE = ["/", "", "/trust", "/certification", "/chat"];
+
 function isPublicRoute(pathname: string): boolean {
   return (
     PUBLIC_ROUTES.includes(pathname) ||
@@ -163,6 +170,7 @@ function isPublicRoute(pathname: string): boolean {
 function AppRouter() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isPublic = isPublicRoute(pathname);
+  const showTrademarkFooter = !ROUTES_WITH_OWN_NOTICE.includes(pathname);
 
   // AppShell is ALWAYS mounted — never conditionally unmounted. Conditional
   // unmount causes a full remount flash every time you navigate between
@@ -178,8 +186,11 @@ function AppRouter() {
       <div className={isPublic ? "hidden" : "contents"}>
         <AppShell>
           {!isPublic && (
-            <div key={pathname} className="route-transition">
-              <Outlet />
+            <div className="flex min-h-full flex-col">
+              <div key={pathname} className="route-transition flex-1">
+                <Outlet />
+              </div>
+              {showTrademarkFooter && <TrademarkFooter />}
             </div>
           )}
         </AppShell>
@@ -187,9 +198,12 @@ function AppRouter() {
 
       {/* Public pages — rendered outside AppShell */}
       {isPublic && (
-        <div key={pathname} className="route-transition">
-          <Outlet />
-        </div>
+        <>
+          <div key={pathname} className="route-transition">
+            <Outlet />
+          </div>
+          {showTrademarkFooter && <TrademarkFooter />}
+        </>
       )}
     </>
   );
