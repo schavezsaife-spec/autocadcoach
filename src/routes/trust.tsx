@@ -3,6 +3,7 @@ import { LogoMark } from "@/components/coach/Logo";
 import { Shield, Lock, Server, Eye, RefreshCw, Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/lib/i18n";
+import { TrademarkNotice } from "@/components/coach/TrademarkNotice";
 
 export const Route = createFileRoute("/trust")({
   head: () => ({
@@ -88,6 +89,7 @@ function TrustPage() {
           </div>
           <div>© {new Date().getFullYear()} AutoCAD Coach</div>
         </div>
+        <TrademarkNotice className="max-w-6xl mx-auto mt-4 text-center sm:text-left" />
       </footer>
     </div>
   );

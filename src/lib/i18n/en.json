@@ -1,5 +1,6 @@
 {
   "common": {
+    "trademarkNotice": "AutoCAD® is the registered trademark of Autodesk, Inc., and/or its subsidiaries, and/or affiliates in the USA and/or other countries. This website is independent of Autodesk, Inc., and is not affiliated with, authorized, endorsed, sponsored, or otherwise approved by Autodesk, Inc.",
     "signIn": "Sign in",
     "signInOrCreate": "Sign in or create account",
     "signOut": "Log out",
