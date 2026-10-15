@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalizedTroubleshooting } from "@/lib/i18n/content";
 import { GuestGate } from "@/components/coach/GuestGate";
+import { TrademarkNotice } from "@/components/coach/TrademarkNotice";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 
@@ -90,6 +91,9 @@ function CoachPage() {
           <TroubleshootGrid />
         </TabsContent>
       </Tabs>
+
+      {/* Inside the page, not the root footer: the chat fills the screen on desktop */}
+      <TrademarkNotice className="mt-3 shrink-0 text-center" />
     </div>
   );
 }

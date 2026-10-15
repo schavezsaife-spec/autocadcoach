@@ -35,7 +35,8 @@
     "learnMore": "Learn more →",
     "toggleMenu": "Toggle menu",
     "hidePassword": "Hide password",
-    "showPassword": "Show password"
+    "showPassword": "Show password",
+    "trademarkNotice": "AutoCAD® is the registered trademark of Autodesk, Inc., and/or its subsidiaries, and/or affiliates in the USA and/or other countries. This website is independent of Autodesk, Inc., and is not affiliated with, authorized, endorsed, sponsored, or otherwise approved by Autodesk, Inc."
   },
   "nav": {
     "dashboard": "Dashboard",
