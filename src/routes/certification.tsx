@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LogoMark } from "@/components/coach/Logo";
-import { TrademarkNotice } from "@/components/coach/TrademarkNotice";
 import { Award, CheckCircle2, Target, BookOpen, ClipboardList, Clock } from "lucide-react";
 
 const TITLE = "AutoCAD Certification Guide — Certified Professional Exam Roadmap";
@@ -294,9 +293,9 @@ function CertificationPage() {
 
       <footer className="border-t border-border py-8 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} AutoCAD Coach
+          © {new Date().getFullYear()} AutoCAD Coach · Not affiliated with Autodesk. AutoCAD® is a registered
+          trademark of Autodesk, Inc.
         </div>
-        <TrademarkNotice className="max-w-4xl mx-auto mt-3 text-center" />
       </footer>
     </div>
   );

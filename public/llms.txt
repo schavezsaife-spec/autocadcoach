@@ -4,8 +4,6 @@
 
 AutoCAD Coach turns engineering software into a step-by-step learning game. Users progress through sequential lessons that cover commands from basic drawing (LINE, CIRCLE, ARC) to advanced modeling (EXTRUDE, UNION, JOIN). Each lesson includes annotated screenshots, before-and-after visuals, common mistakes, troubleshooting guides, vocabulary, and step-by-step instructions. Learners earn XP, complete real CAD projects, and can ask an AI tutor (AutoCoach) for help when stuck.
 
-AutoCAD® is the registered trademark of Autodesk, Inc., and/or its subsidiaries, and/or affiliates in the USA and/or other countries. This website is independent of Autodesk, Inc., and is not affiliated with, authorized, endorsed, sponsored, or otherwise approved by Autodesk, Inc.
-
 ## Pages
 
 - [Home](/): Overview of the platform, features, and call-to-action to start learning.
