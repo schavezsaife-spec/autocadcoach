@@ -6,12 +6,25 @@ type Msg = { role: "user" | "assistant" | "system"; content: string };
 
 // gemini-2.5-flash is now limited to legacy users; Google recommends 3.8 Flash for new projects.
 const GEMINI_MODEL = "gemini-3.8-flash";
-// Primary + backup must finish well under the host's ~30s request limit,
-// or the platform returns its own 504 before our fallback can answer.
-const GEMINI_TIMEOUT_MS = 12_000;
-// Backup via Lovable AI — only used on primary timeout or 503.
+// All Gemini attempts share one budget; with the backup's time on top it stays under
+// the host's ~30s request limit, so we answer with our own 504 before the platform does.
+// Custom domain (autocadcoach.com): Gemini only — the Lovable AI backup doesn't work there.
+const GEMINI_BUDGET_MS = 25_000;
+// Lovable hosts (*.lovable.app, *.lovableproject.com): shorter Gemini budget, then the backup.
+const GEMINI_BUDGET_WITH_FALLBACK_MS = 12_000;
 const FALLBACK_MODEL = "google/gemini-3.8-flash";
 const FALLBACK_TIMEOUT_MS = 15_000;
+// Only retry a 5xx when at least this much of the budget is left.
+const MIN_RETRY_MS = 8_000;
+
+const isLovableHost = (request: Request) => {
+  const host = (request.headers.get("x-forwarded-host") ?? new URL(request.url).host)
+    .split(",")[0]
+    .trim()
+    .toLowerCase()
+    .replace(/:\d+$/, "");
+  return host.endsWith(".lovable.app") || host.endsWith(".lovableproject.com");
+};
 const MAX_BODY_BYTES = 160 * 1024;
 const MAX_MESSAGE_CHARS = 4_000;
 
@@ -137,6 +150,9 @@ export const Route = createFileRoute("/api/chat")({
           (lang === "es"
             ? "\n\n## Language\n- Respond in Spanish (español). Keep AutoCAD command names in uppercase English (e.g. `TRIM`, `EXTRUDE`). Translate all explanatory prose."
             : "\n\n## Language\n- Respond in English.");
+        const useFallback = isLovableHost(request);
+        const deadline =
+          Date.now() + (useFallback ? GEMINI_BUDGET_WITH_FALLBACK_MS : GEMINI_BUDGET_MS);
         const call = () =>
           fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
             method: "POST",
@@ -146,14 +162,15 @@ export const Route = createFileRoute("/api/chat")({
               reasoning_effort: "low",
               messages: [{ role: "system", content: systemContent }, ...messages],
             }),
-            signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
+            // The signal also covers reading the body in res.json() below.
+            signal: AbortSignal.timeout(Math.max(1, deadline - Date.now())),
           });
         const isTimeout = (err: unknown) =>
           err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
         const timeoutResponse = () =>
           Response.json({ error: "AutoCoach took too long — please try again." }, { status: 504 });
 
-        // Backup: Lovable AI, used ONLY when the primary Gemini call times out or returns 503.
+        // Backup: Lovable AI, used ONLY on Lovable hosts when Gemini times out or returns 503.
         const fallback = async (reason: string): Promise<Response> => {
           const started = Date.now();
           try {
@@ -187,20 +204,20 @@ export const Route = createFileRoute("/api/chat")({
           try {
             res = await call();
             console.log("[api/chat] gemini ms", Date.now() - started, "status", res.status);
-            if (res.status === 503) return fallback("503");
+            if (res.status === 503 && useFallback) return fallback("503");
             if (res.status < 500) break;
             console.error("[api/chat] gemini server error", res.status, "attempt", attempt + 1);
-            if (attempt === 0) await new Promise((r) => setTimeout(r, 1000)); // brief backoff before retrying 5xx
           } catch (err) {
             if (isTimeout(err)) {
               console.error("[api/chat] gemini timeout, attempt", attempt + 1, "ms", Date.now() - started);
-              return fallback("timeout"); // never retry the primary after a timeout
-            } else {
-              console.error("[api/chat] network error, attempt", attempt + 1, (err as Error)?.name);
-              if (attempt === 1) return snag();
+              // Budget is spent; never retry Gemini after a timeout.
+              return useFallback ? fallback("timeout") : timeoutResponse();
             }
+            console.error("[api/chat] network error, attempt", attempt + 1, (err as Error)?.name);
             res = undefined;
           }
+          if (attempt === 1 || deadline - Date.now() < MIN_RETRY_MS) break; // no time left for a retry
+          await new Promise((r) => setTimeout(r, 1000)); // brief backoff before retrying
         }
         if (!res) return snag();
         if (!res.ok) {
