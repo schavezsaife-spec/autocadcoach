@@ -1,11 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
+import { generateChatCompletion, GatewayError } from "@lovable.dev/ai-gateway";
 
 type Msg = { role: "user" | "assistant" | "system"; content: string };
 
 // gemini-2.5-flash is now limited to legacy users; Google recommends 3.8 Flash for new projects.
 const GEMINI_MODEL = "gemini-3.8-flash";
-const GEMINI_TIMEOUT_MS = 25_000;
+const GEMINI_TIMEOUT_MS = 20_000;
+// Backup via Lovable AI — only used on primary timeout or 503.
+const FALLBACK_MODEL = "google/gemini-3.8-flash";
+const FALLBACK_TIMEOUT_MS = 20_000;
 const MAX_BODY_BYTES = 160 * 1024;
 const MAX_MESSAGE_CHARS = 4_000;
 
@@ -147,19 +151,47 @@ export const Route = createFileRoute("/api/chat")({
         const timeoutResponse = () =>
           Response.json({ error: "AutoCoach took too long — please try again." }, { status: 504 });
 
+        // Backup: Lovable AI, used ONLY when the primary Gemini call times out or returns 503.
+        const fallback = async (reason: string): Promise<Response> => {
+          const started = Date.now();
+          try {
+            const out = await generateChatCompletion(
+              {
+                model: FALLBACK_MODEL,
+                messages: [{ role: "system", content: systemContent }, ...messages],
+              },
+              { signal: AbortSignal.timeout(FALLBACK_TIMEOUT_MS) },
+            );
+            const reply = out?.choices?.[0]?.message?.content;
+            console.log("[api/chat] fallback ms", Date.now() - started, "reason", reason);
+            if (typeof reply !== "string" || !reply.trim()) {
+              console.error("[api/chat] empty reply from fallback");
+              return reason === "timeout" ? timeoutResponse() : snag();
+            }
+            return Response.json({ reply });
+          } catch (err) {
+            console.error(
+              "[api/chat] fallback failed ms", Date.now() - started,
+              err instanceof GatewayError ? err.code : (err as Error)?.name,
+            );
+            return reason === "timeout" ? timeoutResponse() : snag();
+          }
+        };
+
         let res: Response | undefined;
         for (let attempt = 0; attempt < 2; attempt++) {
           const started = Date.now();
           try {
             res = await call();
             console.log("[api/chat] gemini ms", Date.now() - started, "status", res.status);
+            if (res.status === 503) return fallback("503");
             if (res.status < 500) break;
             console.error("[api/chat] gemini server error", res.status, "attempt", attempt + 1);
             if (attempt === 0) await new Promise((r) => setTimeout(r, 1000)); // brief backoff before retrying 5xx
           } catch (err) {
             if (isTimeout(err)) {
               console.error("[api/chat] gemini timeout, attempt", attempt + 1, "ms", Date.now() - started);
-              return timeoutResponse(); // never retry a timeout
+              return fallback("timeout"); // never retry the primary after a timeout
             } else {
               console.error("[api/chat] network error, attempt", attempt + 1, (err as Error)?.name);
               if (attempt === 1) return snag();
