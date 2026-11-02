@@ -6,7 +6,7 @@ import i18n from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertTriangle, Compass, Send, User, Wrench } from "lucide-react";
+import { AlertTriangle, Compass, RotateCcw, Send, User, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useLocalizedTroubleshooting } from "@/lib/i18n/content";
@@ -30,7 +30,13 @@ export const Route = createFileRoute("/chat")({
   component: CoachPage,
 });
 
-type Msg = { role: "user" | "assistant"; content: string; error?: boolean };
+// Error bubbles carry `retry`: the question that failed, so "Try again" can resend it.
+type Msg = { role: "user" | "assistant"; content: string; error?: boolean; retry?: string };
+
+// A little longer than the server's own budget, so the server's 504 normally wins.
+const CHAT_CLIENT_TIMEOUT_MS = 35_000;
+// After this long, the typing bubble tells the student a reply can take a while.
+const SLOW_HINT_MS = 8_000;
 
 /**
  * The transcript lives in sessionStorage because Radix unmounts the inactive
@@ -108,6 +114,7 @@ function AskAutoCoach() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [slow, setSlow] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { user, session, signOut } = useAuth();
   const navigate = useNavigate();
@@ -138,15 +145,35 @@ function AskAutoCoach() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
 
+  useEffect(() => {
+    setSlow(false);
+    if (!loading) return;
+    const timer = setTimeout(() => setSlow(true), SLOW_HINT_MS);
+    return () => clearTimeout(timer);
+  }, [loading]);
+
   // Refresh the initial greeting when language toggles before first message.
   useEffect(() => {
     setMessages((m) => (m.length === 1 && m[0].role === "assistant" ? [{ role: "assistant", content: t("greeting") }] : m));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i18nHook.language]);
 
-  const send = async (text: string) => {
+  // Shows the failure as an AutoCoach bubble with a "Try again" button.
+  const showError = (content: string, text: string, status?: number) =>
+    setMessages((m) => [
+      ...m,
+      {
+        role: "assistant",
+        content: status ? `${content} (${t("errStatus", { status })})` : content,
+        error: true,
+        retry: text,
+      },
+    ]);
+
+  // `base` lets "Try again" drop the failed question and its error bubble first.
+  const send = async (text: string, base: Msg[] = messages) => {
     if (!text.trim() || loading) return;
-    const newMsgs: Msg[] = [...messages, { role: "user", content: text }];
+    const newMsgs: Msg[] = [...base, { role: "user", content: text }];
     setMessages(newMsgs);
     setInput("");
     setLoading(true);
@@ -170,6 +197,7 @@ function AskAutoCoach() {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
           body: payload,
+          signal: AbortSignal.timeout(CHAT_CLIENT_TIMEOUT_MS),
         });
 
       let res = await post(session?.access_token);
@@ -204,23 +232,22 @@ function AskAutoCoach() {
         } else if (res.status === 429) {
           message = t("errRate");
         } else if (res.status === 413) {
+          // Retrying the same text can't help: hand it back to the input to shorten.
+          setInput(text);
           message = t("errTooLong");
-        } else if (res.status === 504) {
+        } else if (res.status === 502 || res.status === 503 || res.status === 504) {
           message = t("errTimeout");
         }
-        toast.error(message);
-        setMessages((m) => [
-          ...m,
-          { role: "assistant", content: `${t("errReply")} (${t("errStatus", { status: res.status })})`, error: true },
-        ]);
+        showError(message, res.status === 413 ? "" : text, res.status);
       } else {
         const data = await res.json();
         setMessages((m) => [...m, { role: "assistant", content: data.reply }]);
       }
 
     } catch (err) {
+      const timedOut = err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
       console.error("[chat] network error", err);
-      toast.error(t("errNetwork"));
+      showError(timedOut ? t("errTimeout") : t("errNetworkChat"), text);
     } finally {
       setLoading(false);
     }
@@ -243,9 +270,34 @@ function AskAutoCoach() {
               className={cn(
                 "rounded-2xl px-4 py-3 text-sm max-w-[80%]",
                 m.role === "assistant" ? "bg-secondary text-foreground" : "bg-primary text-primary-foreground",
+                m.error && "border border-amber-500/40 bg-amber-500/10",
               )}
             >
-              {m.role === "assistant" ? (
+              {m.error ? (
+                <div role="alert" className="space-y-2">
+                  <p className="flex items-start gap-2">
+                    <AlertTriangle className="size-4 shrink-0 mt-0.5 text-amber-500" aria-hidden />
+                    <span>{m.content}</span>
+                  </p>
+                  {typeof m.retry === "string" && m.retry.trim() && i === messages.length - 1 && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      disabled={loading}
+                      onClick={() => {
+                        // Drop the error bubble and the question before it, then ask again.
+                        const prev = messages[i - 1];
+                        const base = prev?.role === "user" ? messages.slice(0, i - 1) : messages.slice(0, i);
+                        send(m.retry!, base);
+                      }}
+                    >
+                      <RotateCcw className="size-3.5" aria-hidden />
+                      {t("retry")}
+                    </Button>
+                  )}
+                </div>
+              ) : m.role === "assistant" ? (
                 <div
                   className="prose prose-sm prose-invert max-w-none
                   [&>p]:mb-2 [&>p:last-child]:mb-0
@@ -286,7 +338,7 @@ function AskAutoCoach() {
                   style={{ animationDelay: "300ms" }}
                 />
               </span>
-              {t("thinking")}
+              <span aria-live="polite">{slow ? t("thinkingSlow") : t("thinking")}</span>
             </div>
           </div>
         )}
