@@ -6,10 +6,12 @@ type Msg = { role: "user" | "assistant" | "system"; content: string };
 
 // gemini-2.5-flash is now limited to legacy users; Google recommends 3.8 Flash for new projects.
 const GEMINI_MODEL = "gemini-3.8-flash";
-const GEMINI_TIMEOUT_MS = 20_000;
+// Primary + backup must finish well under the host's ~30s request limit,
+// or the platform returns its own 504 before our fallback can answer.
+const GEMINI_TIMEOUT_MS = 12_000;
 // Backup via Lovable AI — only used on primary timeout or 503.
 const FALLBACK_MODEL = "google/gemini-3.8-flash";
-const FALLBACK_TIMEOUT_MS = 20_000;
+const FALLBACK_TIMEOUT_MS = 15_000;
 const MAX_BODY_BYTES = 160 * 1024;
 const MAX_MESSAGE_CHARS = 4_000;
 
@@ -158,6 +160,7 @@ export const Route = createFileRoute("/api/chat")({
             const out = await generateChatCompletion(
               {
                 model: FALLBACK_MODEL,
+                reasoning_effort: "low",
                 messages: [{ role: "system", content: systemContent }, ...messages],
               },
               { signal: AbortSignal.timeout(FALLBACK_TIMEOUT_MS) },
