@@ -1,30 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
-import { generateChatCompletion, GatewayError } from "@lovable.dev/ai-gateway";
+import { chatWithBackup, isBackupConfigured } from "@/lib/chat-ai.server";
 
 type Msg = { role: "user" | "assistant" | "system"; content: string };
 
 // gemini-2.5-flash is now limited to legacy users; Google recommends 3.8 Flash for new projects.
 const GEMINI_MODEL = "gemini-3.8-flash";
-// All Gemini attempts share one budget; with the backup's time on top it stays under
-// the host's ~30s request limit, so we answer with our own 504 before the platform does.
-// Custom domain (autocadcoach.com): Gemini only — the Lovable AI backup doesn't work there.
-const GEMINI_BUDGET_MS = 25_000;
-// Lovable hosts (*.lovable.app, *.lovableproject.com): shorter Gemini budget, then the backup.
-const GEMINI_BUDGET_WITH_FALLBACK_MS = 12_000;
-const FALLBACK_MODEL = "google/gemini-3.8-flash";
-const FALLBACK_TIMEOUT_MS = 15_000;
-// Only retry a 5xx when at least this much of the budget is left.
-const MIN_RETRY_MS = 8_000;
-
-const isLovableHost = (request: Request) => {
-  const host = (request.headers.get("x-forwarded-host") ?? new URL(request.url).host)
-    .split(",")[0]
-    .trim()
-    .toLowerCase()
-    .replace(/:\d+$/, "");
-  return host.endsWith(".lovable.app") || host.endsWith(".lovableproject.com");
-};
 const MAX_BODY_BYTES = 160 * 1024;
 const MAX_MESSAGE_CHARS = 4_000;
 
@@ -118,8 +99,6 @@ export const Route = createFileRoute("/api/chat")({
           console.error("[api/chat] GEMINI_API_KEY not set");
           return Response.json({ error: "AutoCoach isn't configured yet." }, { status: 500 });
         }
-        const snag = () =>
-          Response.json({ error: "AutoCoach hit a snag — please try again." }, { status: 502 });
         const invalid = () => Response.json({ error: "Invalid request." }, { status: 400 });
         const tooLarge = () => Response.json({ error: "Message too long." }, { status: 413 });
 
@@ -150,103 +129,18 @@ export const Route = createFileRoute("/api/chat")({
           (lang === "es"
             ? "\n\n## Language\n- Respond in Spanish (español). Keep AutoCAD command names in uppercase English (e.g. `TRIM`, `EXTRUDE`). Translate all explanatory prose."
             : "\n\n## Language\n- Respond in English.");
-        const useFallback = isLovableHost(request);
-        const deadline =
-          Date.now() + (useFallback ? GEMINI_BUDGET_WITH_FALLBACK_MS : GEMINI_BUDGET_MS);
-        const call = () =>
-          fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
-            body: JSON.stringify({
-              model: GEMINI_MODEL,
-              reasoning_effort: "low",
-              messages: [{ role: "system", content: systemContent }, ...messages],
-            }),
-            // The signal also covers reading the body in res.json() below.
-            signal: AbortSignal.timeout(Math.max(1, deadline - Date.now())),
-          });
-        const isTimeout = (err: unknown) =>
-          err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError");
-        const timeoutResponse = () =>
-          Response.json({ error: "AutoCoach took too long — please try again." }, { status: 504 });
 
-        // Backup: Lovable AI, used ONLY on Lovable hosts when Gemini times out or returns 503.
-        const fallback = async (reason: string): Promise<Response> => {
-          const started = Date.now();
-          try {
-            const out = await generateChatCompletion(
-              {
-                model: FALLBACK_MODEL,
-                reasoning_effort: "low",
-                messages: [{ role: "system", content: systemContent }, ...messages],
-              },
-              { signal: AbortSignal.timeout(FALLBACK_TIMEOUT_MS) },
-            );
-            const reply = out?.choices?.[0]?.message?.content;
-            console.log("[api/chat] fallback ms", Date.now() - started, "reason", reason);
-            if (typeof reply !== "string" || !reply.trim()) {
-              console.error("[api/chat] empty reply from fallback");
-              return reason === "timeout" ? timeoutResponse() : snag();
-            }
-            return Response.json({ reply });
-          } catch (err) {
-            console.error(
-              "[api/chat] fallback failed ms", Date.now() - started,
-              err instanceof GatewayError ? err.code : (err as Error)?.name,
-            );
-            return reason === "timeout" ? timeoutResponse() : snag();
-          }
-        };
-
-        let res: Response | undefined;
-        for (let attempt = 0; attempt < 2; attempt++) {
-          const started = Date.now();
-          try {
-            res = await call();
-            console.log("[api/chat] gemini ms", Date.now() - started, "status", res.status);
-            if (res.status === 503 && useFallback) return fallback("503");
-            if (res.status < 500) break;
-            console.error("[api/chat] gemini server error", res.status, "attempt", attempt + 1);
-          } catch (err) {
-            if (isTimeout(err)) {
-              console.error("[api/chat] gemini timeout, attempt", attempt + 1, "ms", Date.now() - started);
-              // Budget is spent; never retry Gemini after a timeout.
-              return useFallback ? fallback("timeout") : timeoutResponse();
-            }
-            console.error("[api/chat] network error, attempt", attempt + 1, (err as Error)?.name);
-            res = undefined;
-          }
-          if (attempt === 1 || deadline - Date.now() < MIN_RETRY_MS) break; // no time left for a retry
-          await new Promise((r) => setTimeout(r, 1000)); // brief backoff before retrying
-        }
-        if (!res) return snag();
-        if (!res.ok) {
-          const errBody = await res.text().catch(() => "");
-          if (res.status === 429) {
-            console.error("[api/chat] gemini rate limited 429", errBody);
-            return Response.json(
-              { error: "AutoCoach is getting a lot of questions — try again shortly." },
-              { status: 429 },
-            );
-          }
-          if (res.status === 404) console.error("[api/chat] model not found", GEMINI_MODEL, errBody);
-          else if (res.status === 400 || res.status === 401 || res.status === 403)
-            console.error(`[api/chat] gemini rejected key or request ${res.status}`, errBody);
-          else console.error("[api/chat] gemini error", res.status, errBody);
-          return snag();
-        }
-        try {
-          const data = await res.json();
-          const reply = data?.choices?.[0]?.message?.content;
-          if (typeof reply !== "string" || !reply.trim()) {
-            console.error("[api/chat] empty reply from gemini");
-            return snag();
-          }
-          return Response.json({ reply });
-        } catch (err) {
-          if (isTimeout(err)) return timeoutResponse();
-          return snag();
-        }
+        // Primary: Gemini. Backup: Lovable AI, running on this same server, so it
+        // works on every hostname we serve (lovable.app and autocadcoach.com).
+        // The backup is selected by whether the server actually has its
+        // credentials (LOVABLE_API_KEY), not by the request's hostname.
+        return chatWithBackup({
+          systemContent,
+          messages,
+          geminiKey: key,
+          geminiModel: GEMINI_MODEL,
+          useBackup: isBackupConfigured(),
+        });
       },
     },
   },
