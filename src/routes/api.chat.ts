@@ -119,7 +119,7 @@ export const Route = createFileRoute("/api/chat")({
         }
         const messages = (Array.isArray(body?.messages) ? body.messages : [])
           .filter((m) => (m?.role === "user" || m?.role === "assistant") && typeof m.content === "string")
-          .map((m) => ({ role: m.role, content: m.content.trim().slice(0, MAX_MESSAGE_CHARS) }))
+          .map((m) => ({ role: m.role as "user" | "assistant", content: m.content.trim().slice(0, MAX_MESSAGE_CHARS) }))
           .filter((m) => m.content.length > 0)
           .slice(-20);
         if (messages.length === 0 || messages[messages.length - 1].role !== "user") return invalid();
