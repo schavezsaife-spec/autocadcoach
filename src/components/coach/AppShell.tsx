@@ -101,11 +101,11 @@ function MobileNavItems({ pathname }: { pathname: string }) {
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 flex-1 py-2 rounded-xl transition-all text-xs font-medium",
                   active
-                    ? "text-primary bg-gradient-to-b from-primary/20 to-success/15 shadow-[0_0_18px_-4px_color-mix(in_oklab,var(--primary)_55%,transparent)]"
+                    ? "text-primary bg-primary/10"
                     : "text-muted-foreground hover:text-primary",
                 )}
               >
-                <Icon className={cn("size-5", active && "drop-shadow-[0_0_6px_currentColor]")} />
+                <Icon className="size-5" />
                 <span>{label}</span>
               </Link>
             );
@@ -165,14 +165,17 @@ function SidebarInner({
                 "group flex items-center rounded-xl text-sm font-medium transition-all",
                 collapsed ? "justify-center h-10 w-10 mx-auto" : "gap-3 px-3 py-2.5",
                 active
-                  ? "bg-gradient-to-r from-primary/25 via-primary/15 to-success/20 text-primary ring-1 ring-primary/40 shadow-[0_0_20px_-4px_color-mix(in_oklab,var(--primary)_55%,transparent)]"
+                  ? cn(
+                      "bg-primary/10 text-foreground font-semibold",
+                      !collapsed && "relative before:absolute before:left-0 before:top-1/2 before:h-[60%] before:w-[3px] before:-translate-y-1/2 before:rounded-full before:bg-primary before:content-['']",
+                    )
                   : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-primary",
               )}
             >
               <Icon
                 className={cn(
                   "size-4 shrink-0 transition-colors",
-                  active ? "text-primary drop-shadow-[0_0_6px_color-mix(in_oklab,var(--primary)_70%,transparent)]" : "text-primary/70 group-hover:text-primary",
+                  active ? "text-primary" : "text-primary/70 group-hover:text-primary",
                 )}
               />
               <span className={cn("truncate transition-opacity", collapsed && "opacity-0 w-0 overflow-hidden")}>
