@@ -13,7 +13,13 @@ vi.mock("@lovable.dev/ai-gateway", async (importOriginal) => {
 });
 
 import { generateChatCompletion } from "@lovable.dev/ai-gateway";
-import { chatWithBackup, isBackupConfigured, OVERALL_BUDGET_MS, BACKUP_BUDGET_MS } from "./chat-ai.server";
+import {
+  chatWithBackup,
+  isBackupConfigured,
+  OVERALL_BUDGET_MS,
+  BACKUP_BUDGET_MS,
+  PRIMARY_WITH_BACKUP_MS,
+} from "./chat-ai.server";
 
 const genMock = vi.mocked(generateChatCompletion);
 
@@ -162,5 +168,9 @@ describe("chatWithBackup", () => {
   it("time budgets leave room for the backup inside one overall deadline", () => {
     expect(BACKUP_BUDGET_MS).toBeLessThan(OVERALL_BUDGET_MS);
     expect(OVERALL_BUDGET_MS - BACKUP_BUDGET_MS).toBeGreaterThanOrEqual(10_000);
+  });
+
+  it("6s primary + 12s backup + 1s delivery fit inside the 25s overall budget", () => {
+    expect(PRIMARY_WITH_BACKUP_MS + BACKUP_BUDGET_MS + 1_000).toBeLessThanOrEqual(OVERALL_BUDGET_MS);
   });
 });

@@ -235,7 +235,7 @@ function AskAutoCoach() {
           // Retrying the same text can't help: hand it back to the input to shorten.
           setInput(text);
           message = t("errTooLong");
-        } else if (res.status === 502 || res.status === 503 || res.status === 504) {
+        } else if (res.status === 504) {
           message = t("errTimeout");
         }
         showError(message, res.status === 413 ? "" : text, res.status);

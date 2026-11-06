@@ -17,6 +17,7 @@ export type ChatMsg = { role: "user" | "assistant"; content: string };
 // delivery; 25s keeps total waits bounded.
 export const OVERALL_BUDGET_MS = 25_000;
 export const BACKUP_BUDGET_MS = 12_000;
+export const PRIMARY_WITH_BACKUP_MS = 6_000;
 // Only retry a 5xx when at least this much of the overall budget is left
 // (plus whatever the backup needs).
 export const MIN_RETRY_MS = 8_000;
@@ -83,10 +84,7 @@ export async function chatWithBackup(opts: {
 }): Promise<Response> {
   const { systemContent, messages, geminiKey, geminiModel, useBackup } = opts;
   const overallDeadline = Date.now() + OVERALL_BUDGET_MS;
-  // When the backup may run, reserve time for it plus response delivery.
-  const primaryBudget = useBackup
-    ? OVERALL_BUDGET_MS - BACKUP_BUDGET_MS - 1_000
-    : OVERALL_BUDGET_MS;
+  const primaryBudget = useBackup ? PRIMARY_WITH_BACKUP_MS : OVERALL_BUDGET_MS;
 
   const call = () =>
     fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
